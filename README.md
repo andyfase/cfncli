@@ -1,10 +1,17 @@
 # AWS CloudFormation CLI
 
-The missing CloudFormation CLI.
+The missing CloudFormation CLI. Reborn!
 
-> [Official](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/what-is-cloudformation-cli.html)  `cfncli` is not designed to manage stacks at this point. 
+> This code base was forked from [https://github.com/Kotaimen/awscfncli](https://github.com/Kotaimen/awscfncli) with the aim of continuing its use alongside AWS CLI v2 which enables login through AWS Identity Center
 
-[TOC]
+This codebase does not aim to maintain the backwards compatibility that the original `cfn-cli` repo maintained. As such it was forked, detached and will be maintained separately with feature development that will likely not be paralleled in the original code base. This allows for modern dependencies of boto3 and botocore and other python libraries to be used - reducing conflict on installation of the CLI.
+
+This version of `cfn-cli` has been tested and validated operational on AWS CloudShell, AWS Cloud 9, AWS Linux 2023 AMIs. 
+
+
+## Compatibility
+
+This tool supports Python 3.7 and above. Python 2.X is not supported.
 
 ## Introduction
 
@@ -22,13 +29,11 @@ Highlights:
 
 ## Install
 
-Install from [pypi](https://pypi.python.org/pypi/awscfncli):
+Install from "Test" PyPi
 
-    pip install --user --pre cfncli 
-
-When install globally, use [`pipx`](https://github.com/pipxproject/pipx) is recommended:
-
-    pipx install cfncli 
+```
+pip3 install cfncli --extra-index-url=https://test.pypi.org/simple/
+```
 
 ## Usage
 
@@ -274,73 +279,3 @@ This feature make managing related cross-account and/or cross-region stacks much
 See [VPC peering](samples/Advanced/VpcPeering/cfn-cli.yml) and [CodePipeline](https://github.com/Kotaimen/sample-python-sam-ci/blob/master/cfn-cli.sample400.yaml) for example.
 
 > Note: Take care of the order of deployment so eferenced stack is deployed first.
-
-## Breaking Changes in 3.0
-
-Generally only major version changes cli and config syntax, and support of last config version is gaunteered.
-
-### CLI
-
-- `stack describe` is depecated, use `status` instead.
-- `sync` now defaults to `--confirm`, use `--no-confirm` to overwrite this.
-
-## Breaking Changes in 2.1
-
-### CLI
-
-- `cfn` is renamed to `cfn-cli` to avoid conflict with `troposphere`. 
-- `template` command is removed.
-- `changeset` command is removed, replaced by `sync` command.
-- Because config file supports multiple stages and stacks, stack selector must be specified when you want to operate a subset of stacks.
-
-### Config
-
-"Cross stack reference" feature requires version `3`:
-
-```yaml
-Version: 3
-Stages:
-  Default:
-    ...
-```
-
-Parameter `NotificationARNs`, `ResourceTypes`, `RollbackConfiguration` are supported now but no changes is required if old config file is not using them.
-
-## Breaking Changes in 2.0
-
-New configuration file supports multiple stages and stacks, to convert an `0.x` configure file to current version, do following:
-
-1. Add following block to the head of conf file and indent the rest properly:
-
-```yaml
-Version: 3
-Stages:
-  Default:
-    << old config file >>
-```
-
-2. Change any `TemplateURL` or `TemplateBody` parameter to `Template`:
-
-  Old:
-
-  ```yaml
-  Stack:
-    TemplateURL:          https://s3.amazonaws.com/...
-    Region:               us-east-1
-    StackName:            SampleIAMUsersGroupsAndPolicies
-    Capabilities:         [CAPABILITY_IAM]
-  ```
-
-  New:
-
-  ```yaml
-  Version: 2
-  Stages:
-    Default:
-      Stack:
-        Template:          https://s3.amazonaws.com/...
-        Region:               us-east-1
-        StackName:            SampleIAMUsersGroupsAndPolicies
-        Capabilities:         [CAPABILITY_IAM]
-  ```
-

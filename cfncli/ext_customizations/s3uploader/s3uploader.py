@@ -22,7 +22,7 @@ import botocore.exceptions
 from s3transfer.manager import TransferManager
 from s3transfer.subscribers import BaseSubscriber
 
-#from awscli.compat import collections_abc
+# Original Import:from awscli.compat import collections_abc
 from six.moves import collections_abc
 
 LOG = logging.getLogger(__name__)
