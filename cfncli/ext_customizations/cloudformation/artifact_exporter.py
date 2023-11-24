@@ -18,17 +18,18 @@ import zipfile
 import contextlib
 import uuid
 import shutil
-# from awscli.compat import six
+# Original Import:from awscli.compat import six
 import six
 from botocore.utils import set_value_from_jmespath
 
-#from awscli.compat import urlparse
+# Original Import:from awscli.compat import urlparse
 import urllib.parse as urlparse
 
 
 from contextlib import contextmanager
-# from awscli.customizations.cloudformation import exceptions
-# from awscli.customizations.cloudformation.yamlhelper import yaml_dump, yaml_parse
+
+# Original Import:from awscli.customizations.cloudformation import exceptions
+# Original Import:from awscli.customizations.cloudformation.yamlhelper import yaml_dump, yaml_parse
 from . import exceptions
 from .yamlhelper import yaml_dump, yaml_parse
 import jmespath

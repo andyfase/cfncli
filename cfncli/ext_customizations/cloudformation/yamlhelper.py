@@ -16,7 +16,7 @@ from botocore.compat import OrderedDict
 import yaml
 from yaml.resolver import ScalarNode, SequenceNode
 
-#from awscli.compat import six
+# Original Import:from awscli.compat import six
 import six
 
 def intrinsics_multi_constructor(loader, tag_prefix, node):
