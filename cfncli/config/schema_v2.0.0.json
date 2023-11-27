@@ -133,6 +133,14 @@
         "properties": {
           "Order": {
             "type": "integer"
+          },
+          "Config": {
+            "type": "object",
+            "properties": {
+              "Account": {
+                "type": "string"
+              }
+            }
           }
         },
         "patternProperties": {

@@ -63,6 +63,7 @@ class FormatV2(ConfigFormat):
 
     STAGE_CONFIG = dict(
         Order=(six.integer_types, None),
+        Config=(dict, {})
     )
 
     STACK_CONFIG = dict(
@@ -104,12 +105,11 @@ class FormatV2(ConfigFormat):
 
         blueprints = config.get('Blueprints', dict())
 
-        stage_configs = config.get('Stages', dict())
-        for stage_key, stage_config in stage_configs.items():
-            for stack_key, stack_config in stage_config.items():
-                if stack_key == 'Order':
-                    continue
-
+        stages = config.get('Stages', dict())
+        for stage_key, stacks in stages.items():
+            stage_config = stacks.pop('Config', {})
+            stage_config.update({'Order': stacks.pop('Order', 0)})
+            for stack_key, stack_config in stacks.items():
                 base = dict()
                 blueprint_id = stack_config.get('Extends')
                 if blueprint_id:
@@ -191,7 +191,7 @@ class FormatV2(ConfigFormat):
         stack_metadata = StackMetadata.from_dict(**stack_config)
 
         stack = StackDeployment(
-            key, stack_metadata, stack_profile, stack_parameters)
+            key, stack_metadata, stack_profile, stack_parameters, stage_config)
 
         return stack
 
