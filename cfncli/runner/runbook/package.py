@@ -3,6 +3,7 @@
 import logging
 import os
 import tempfile
+import json
 
 ##
 ## Please see README.md for the reasoning behind the use of these external libraries
@@ -62,6 +63,28 @@ def package_template(ppt, session, template_path, bucket_region,
                 s3_client.create_bucket(
                     Bucket=bucket_name
                 )
+            ## add default bucket policy forcing SSL use
+            s3_client.put_bucket_policy(
+                Bucket=bucket_name,
+                Policy=json.dumps({
+                    "Version": "2012-10-17",
+                    "Statement": [{
+                        "Sid": "RestrictToTLSRequestsOnly",
+                        "Action": "s3:*",
+                        "Effect": "Deny",
+                        "Resource": [
+                            f"arn:aws:s3:::{bucket_name}",
+                            f"arn:aws:s3:::{bucket_name}/*"
+                        ],
+                        "Condition": {
+                            "Bool": {
+                                "aws:SecureTransport": "false"
+                            }
+                        },
+                        "Principal": "*"
+                    }]
+                })
+            )
             ppt.secho('Created artifact bucket {}'.format(bucket_name))
         else:
             raise e
