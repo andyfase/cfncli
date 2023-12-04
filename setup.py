@@ -5,7 +5,7 @@ import os
 from setuptools import setup, find_packages
 
 __author__ = 'andyfase'
-__date__ = '23-Nov-2023'
+__date__ = '04-Dec-2023'
 
 # here = os.path.abspath(os.path.dirname(__file__))
 

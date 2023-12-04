@@ -39,10 +39,10 @@ Highlights:
 
 ## Install
 
-Install from "Test" PyPi
+Install from PyPi
 
 ```
-pip3 install cfncli --extra-index-url=https://test.pypi.org/simple/
+pip3 install cfncli
 ```
 
 ## Usage
