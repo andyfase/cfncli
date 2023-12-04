@@ -33,6 +33,13 @@ Stages:
 
   # Stage name, must match[a-zA-Z][-a-zA-Z0-9]{0,127}
   Develop:
+    # A sstage can have a config object 
+    Config:
+        # Guardrail Account config specifies the account that should be used to used to deploy all stacks in this stage
+        # If the AWS creds are not for this account the CLI will exit with an error. 
+        # Note each stack can have a "profile" defined in which case that overrides this check
+        Account: "12345678912"
+
 
     # Defines deployment order of the stage.
     # By default, stages are deployed by definition order.
@@ -54,10 +61,10 @@ Stages:
 
       # Defines deployment order of the stack.
       # By default, stacks are deployed by definition order.
-#      Order: 1
+      Order: 1
 
       # AWS CLI profile name. Use "default" profile if not specified.
-#      Profile: default
+      Profile: default
 
       # AWS region name for the stack.
       # Use region configured in the awscli profile if not specified.

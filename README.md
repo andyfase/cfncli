@@ -11,15 +11,25 @@ This version of `cfn-cli` has been tested and validated operational on AWS Cloud
 
 ## Compatibility
 
-This tool supports Python 3.7 and above. Python 2.X is not supported.
+This tool supports Python 3.7 and above. Python 2.X is not supported. 
+
+> Note this tool is incompatible with the [AWS `cloudformation-cli` package](https://github.com/aws-cloudformation/cloudformation-cli) due to the name clash between the two tools. A "rename" is not being considered at the moment as it is considered unlilkely to require both this tool and the AWS module/resource provider development tool within the same Python environment (i.e. without use of .venv)
+
+## License
+
+This tool is distributed under the MIT license. The AWS CLI dependent code is distributed under the Apache 2.0 license - see ext_customizations README and LICENCE.
+
+## Whats New
+
+See [Feature Development](./FEATURE_DEVELOPMENT.md) for a list of new features added since the repo was forked from the original source.
 
 ## Introduction
 
-`awscfncli` helps build and manage AWS CloudFormation stacks. 
+`cfncli` helps manage AWS CloudFormation deployments. 
 
 Highlights:
 
-- Manage stacks in different accounts and regions use single YAML config file.
+- Manage deployments accoss accounts and regions use single YAML config file.
 - Cross-stack parameter reference works cross-region and cross-account.
 - Organize stack using stages and blueprints.
 - Automatically package and upload template resources.

@@ -95,7 +95,7 @@ class StackParameters(
 
 
 class StackDeployment(
-    namedtuple('StackDeployment', 'stack_key, metadata, profile, parameters')):
+    namedtuple('StackDeployment', 'stack_key, metadata, profile, parameters, stage_config')):
     pass
 
 
