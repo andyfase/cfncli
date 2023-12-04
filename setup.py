@@ -66,5 +66,6 @@ setup(
     entry_points='''
     [console_scripts]
     cfn-cli=cfncli.__main__:main
+    cfn=cfncli.__main__:main
     ''',
 )
