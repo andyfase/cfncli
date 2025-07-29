@@ -54,8 +54,8 @@ class StackChangesetCommand(Command):
         parameters['ChangeSetType'] = changeset_type
         parameters.pop('StackPolicyBody', None)
         parameters.pop('StackPolicyURL', None)
-        termination_protection = parameters.pop(
-            'EnableTerminationProtection', None)
+        parameters.pop('DisableRollback', None)
+        termination_protection = parameters.pop('EnableTerminationProtection', None)
 
         self.ppt.pprint_parameters(parameters)
 
