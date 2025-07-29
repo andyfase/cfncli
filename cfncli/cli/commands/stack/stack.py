@@ -5,6 +5,7 @@ from .delete.delete import delete
 from .deploy.deploy import deploy
 from .describe.describe import describe
 from .sync.sync import sync
+from .changeset.changeset import changeset
 from .tail.tail import tail
 from .update.update import update
 
@@ -19,6 +20,7 @@ def cli(ctx):
 cli.add_command(deploy)
 cli.add_command(update)
 cli.add_command(sync)
+cli.add_command(changeset)
 cli.add_command(tail)
 cli.add_command(describe)
 cli.add_command(cancel)

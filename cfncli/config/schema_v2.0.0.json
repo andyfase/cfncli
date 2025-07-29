@@ -28,7 +28,7 @@
           "type": "object"
         },
         "DisableRollback": {
-          "type": "string"
+          "type": "boolean"
         },
         "RollbackConfiguration": {
           "type": "object",
@@ -139,6 +139,14 @@
             "properties": {
               "Account": {
                 "type": "string"
+              },
+              "Tags": {
+                "type": "object",
+                "patternProperties": {
+                  ".*": {
+                    "type": "string"
+                  }
+                }
               }
             }
           }

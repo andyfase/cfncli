@@ -56,7 +56,7 @@ class Boto3DeploymentContext(StackDeploymentContext):
 
     def make_boto3_parameters(self):
         self._parameters = make_boto3_parameters(
-            self._parameters, self.metadata['Package'])
+            self._parameters, self.metadata['Package'], self._deployment.stage_config)
 
     def run_packaging(self):
         """Package templates and resources and upload to artifact bucket"""

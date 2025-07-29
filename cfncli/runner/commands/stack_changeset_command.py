@@ -10,16 +10,12 @@ from .command import Command
 from .utils import update_termination_protection
 
 
-class StackSyncOptions(namedtuple('StackSyncOptions',
-                                  ['no_wait',
-                                   'confirm',
-                                   'use_previous_template',
-                                   'disable_rollback',
+class StackChangesetOptions(namedtuple('StackChangesetOptions',
+                                   ['use_previous_template',
                                    'disable_tail_events'])):
     pass
 
-
-class StackSyncCommand(Command):
+class StackChangesetCommand(Command):
 
     def run(self, stack_context):
         # stack contexts
@@ -31,7 +27,7 @@ class StackSyncCommand(Command):
         self.ppt.pprint_stack_name(
             stack_context.stack_key,
             parameters['StackName'],
-            'Syncing stack '
+            'Generating Changeset for stack '
         )
         self.ppt.pprint_session(session)
 
@@ -41,10 +37,6 @@ class StackSyncCommand(Command):
             parameters['UsePreviousTemplate'] = True
         else:
             stack_context.run_packaging()
-
-        # overwrite using cli parameters
-        if self.options.disable_rollback:
-            parameters['DisableRollback'] = self.options.disable_rollback
 
         # create cfn client
         client = session.client('cloudformation')
@@ -79,52 +71,17 @@ class StackSyncCommand(Command):
 
         result = self.describe_change_set(client, changeset_name, parameters)
         self.ppt.pprint_changeset(result)
-
-        # termination protection should be set after the creation of stack
-        # or changeset
-        update_termination_protection(session,
-                                      termination_protection,
-                                      parameters['StackName'],
-                                      self.ppt)
-
+        
         # check whether changeset is executable
         if result['Status'] not in ('AVAILABLE', 'CREATE_COMPLETE'):
-            self.ppt.secho('ChangeSet not executable.', fg='red')
+            self.ppt.secho('ChangeSet creation failed.', fg='red')
             return
-
-        if self.options.confirm:
-            if self.options.no_wait:
-                return 
-            if not self.ppt.confirm('Do you want to execute ChangeSet?'):
-                return
-
-        client_request_token = 'awscfncli-sync-{}'.format(uuid.uuid1())
-        self.ppt.secho('Executing ChangeSet...')
-        client.execute_change_set(
-            ChangeSetName=changeset_name,
-            StackName=parameters['StackName'],
-            ClientRequestToken=client_request_token,
-            DisableRollback=parameters.get('DisableRollback', False)
-        )
-
-        cfn = session.resource('cloudformation')
-        stack = cfn.Stack(parameters['StackName'])
-        if self.options.no_wait:
-            self.ppt.secho('ChangeSet execution started.')
-        else:
-            if is_new_stack:
-                self.ppt.wait_until_deploy_complete(session, stack, self.options.disable_tail_events)
-            else:
-                self.ppt.wait_until_update_complete(session, stack, self.options.disable_tail_events)
-            self.ppt.secho('ChangeSet execution complete.', fg='green')
+        self.ppt.secho('ChangeSet creation complete.', fg='green')
 
     @backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10,
                           giveup=is_not_rate_limited_exception)
     def create_change_set(self, client, parameters):
-        # remove DisableRollback for creation of changeset only
-        changeset_parameters = parameters.copy()
-        changeset_parameters.pop('DisableRollback')
-        return client.create_change_set(**changeset_parameters)
+        return client.create_change_set(**parameters)
 
     @backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10,
                           giveup=is_not_rate_limited_exception)
