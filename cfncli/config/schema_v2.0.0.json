@@ -139,6 +139,14 @@
             "properties": {
               "Account": {
                 "type": "string"
+              },
+              "Tags": {
+                "type": "object",
+                "patternProperties": {
+                  ".*": {
+                    "type": "string"
+                  }
+                }
               }
             }
           }
