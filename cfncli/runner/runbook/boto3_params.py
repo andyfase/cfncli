@@ -15,7 +15,7 @@ def normalize_value(v):
         return v
 
 
-def make_boto3_parameters(parameters, is_packaging):
+def make_boto3_parameters(parameters, is_packaging, stage_config):
     # inject parameters
     StackName = parameters['StackName']
 
@@ -72,8 +72,10 @@ def make_boto3_parameters(parameters, is_packaging):
             )
         )
 
-    # Normalize tag config
-    Tags = parameters['Tags']
+    # Normalize tag config - use stage tags first and override with stack tags
+    Tags = stage_config.get('Tags', {})
+    if parameters.get('Tags', {}):
+        Tags.update(parameters['Tags'])
     normalized_tags = None
     if Tags and isinstance(Tags, dict):
         normalized_tags = list(
