@@ -5,7 +5,7 @@ import os
 from setuptools import setup, find_packages
 
 __author__ = 'andyfase'
-__date__ = '04-Dec-2023'
+__date__ = '29-July-2025'
 
 # here = os.path.abspath(os.path.dirname(__file__))
 
@@ -28,7 +28,7 @@ setup(
     name='cfncli',
 
     # Version and description
-    version='0.1.0',
+    version='0.2.1',
     description='CloudFormation CLI Wrapper',
     long_description=long_description,
     long_description_content_type='text/markdown',
