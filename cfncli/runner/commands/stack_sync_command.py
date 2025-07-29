@@ -14,6 +14,7 @@ class StackSyncOptions(namedtuple('StackSyncOptions',
                                   ['no_wait',
                                    'confirm',
                                    'use_previous_template',
+                                   'disable_rollback',
                                    'disable_tail_events'])):
     pass
 
@@ -40,6 +41,10 @@ class StackSyncCommand(Command):
             parameters['UsePreviousTemplate'] = True
         else:
             stack_context.run_packaging()
+
+        # overwrite using cli parameters
+        if self.options.disable_rollback:
+            parameters['DisableRollback'] = self.options.disable_rollback
 
         # create cfn client
         client = session.client('cloudformation')
@@ -98,7 +103,8 @@ class StackSyncCommand(Command):
         client.execute_change_set(
             ChangeSetName=changeset_name,
             StackName=parameters['StackName'],
-            ClientRequestToken=client_request_token
+            ClientRequestToken=client_request_token,
+            DisableRollback=parameters.get('DisableRollback', False)
         )
 
         cfn = session.resource('cloudformation')
@@ -115,7 +121,10 @@ class StackSyncCommand(Command):
     @backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10,
                           giveup=is_not_rate_limited_exception)
     def create_change_set(self, client, parameters):
-        return client.create_change_set(**parameters)
+        # remove DisableRollback for creation of changeset only
+        changeset_parameters = parameters.copy()
+        changeset_parameters.pop('DisableRollback')
+        return client.create_change_set(**changeset_parameters)
 
     @backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10,
                           giveup=is_not_rate_limited_exception)

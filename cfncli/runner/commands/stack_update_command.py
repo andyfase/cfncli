@@ -9,6 +9,7 @@ from .utils import update_termination_protection, \
 class StackUpdateOptions(namedtuple('StackUpdateOptions',
                                     ['no_wait',
                                      'use_previous_template',
+                                     'disable_rollback',
                                      'ignore_no_update',
                                      'override_policy'])):
     pass
@@ -42,7 +43,10 @@ class StackUpdateCommand(Command):
             # packaging if necessary
             stack_context.run_packaging()
 
-        parameters.pop('DisableRollback', None)
+        # overwrite using cli parameters
+        if self.options.disable_rollback:
+            parameters['DisableRollback'] = self.options.disable_rollback
+
         parameters.pop('OnFailure', None)
         termination_protection = parameters.pop('EnableTerminationProtection',
                                                 None)

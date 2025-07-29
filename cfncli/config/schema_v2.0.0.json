@@ -28,7 +28,7 @@
           "type": "object"
         },
         "DisableRollback": {
-          "type": "string"
+          "type": "boolean"
         },
         "RollbackConfiguration": {
           "type": "object",
