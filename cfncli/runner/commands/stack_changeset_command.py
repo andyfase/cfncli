@@ -89,6 +89,7 @@ class StackChangesetCommand(Command):
         return client.describe_change_set(
             ChangeSetName=changeset_name,
             StackName=parameters['StackName'],
+            IncludePropertyValues=True
         )
 
     @backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10,

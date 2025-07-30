@@ -13,14 +13,14 @@ long_description = open('README.md').read()
 
 install_requires = [
     'backoff>2.2',
-    'boto3>1.29',
-    'botocore>1.32',
+    'boto3>1.39',
+    'botocore>1.39',
     'click>8',
     'click-completion>0.5',
     'colorama>0.4',
     'jsonschema>4',
     'pyyaml>6',
-    's3transfer>=0.7'
+    's3transfer>=0.13'
 ]
 
 setup(
@@ -28,7 +28,7 @@ setup(
     name='cfncli',
 
     # Version and description
-    version='0.2.2',
+    version='0.3.0',
     description='CloudFormation CLI Wrapper',
     long_description=long_description,
     long_description_content_type='text/markdown',
