@@ -15,6 +15,21 @@ from .events import start_tail_stack_events_daemon
 from .pager import custom_paginator
 
 
+def echo_list(key, list_styles_pairs, indent=0, sep=': '):
+    key = ' ' * indent + key + sep
+    click.secho(key, bold=False, nl=False)
+    
+    pairs = [(list_styles_pairs[i], list_styles_pairs[i + 1]) 
+             for i in range(0, len(list_styles_pairs), 2) 
+             if i + 1 < len(list_styles_pairs)]
+    
+    for i, (value, style) in enumerate(pairs):
+        is_last = i == len(pairs) - 1
+        if style:
+            click.secho(value, nl=is_last, **style)
+        else:
+            click.secho(value, nl=is_last)
+
 def echo_pair(key, value=None, indent=0,
               value_style=None, key_style=None,
               sep=': '):
@@ -234,10 +249,11 @@ class StackPrettyPrinter(object):
             change_scope = change['ResourceChange'].get('Scope', None)
             change_details = {}
             for detail in change['ResourceChange'].get('Details', None):
-                if detail['Target'].get('Name', None):
-                    if detail['Target']['Name'] not in change_details or detail[
+                if detail['Target'].get('Path', None):
+                    name = detail['Target'].get('Name', detail['Target']['Path'])
+                    if name not in change_details or detail[
                         'Evaluation'] == 'Static':
-                        change_details[detail['Target']['Name']] = detail
+                        change_details[name] = detail
 
             echo_pair('{} ({})'.format(logical_id, res_type), indent=2)
             echo_pair('Action', action,
@@ -260,12 +276,18 @@ class StackPrettyPrinter(object):
                               value_style=
                               CHANGESET_RESOURCE_REPLACEMENT_TO_COLOR[
                                   v['Target']['RequiresRecreation']], indent=8)
+                    if v['Target'].get('Attribute', None):
+                        echo_pair('Attribute Change Type', v['Target']['Attribute'], indent=8)
                     if v.get('CausingEntity', None):
-                        echo_pair('Causing Entity', v['CausingEntity'],
-                                  indent=8)
-                    self.pair = echo_pair('Change Source', v['ChangeSource'],
-                                          indent=8)
-
+                        echo_pair('Causing Entity', v['CausingEntity'], indent=8)
+                    if v.get('ChangeSource', None):
+                        echo_pair('Change Source', v['ChangeSource'], indent=8)
+                    if v['Target'].get('AfterValue', None):
+                        echo_list('Value Change', [
+                          v['Target'].get('BeforeValue', 'No Value'), dict(fg=[76,159,158]),
+                          ' -> ', None,
+                           v['Target']['AfterValue'], dict(fg=[208,240,192]),
+                        ], indent=8)
     def pprint_stack_drift(self, drift):
         detection_status = drift['DetectionStatus']
         drift_status = drift['StackDriftStatus']

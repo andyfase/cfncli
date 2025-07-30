@@ -4,6 +4,16 @@ This lists all features added since the original fork or the code from [https://
 
 ##
 
+30/07/2025 - v0.3.X
+
+- Modified Color schema to offical traffic lights colours
+- Added ability to see resource values changes in changeset production (requires boto3 / botocore version bump)
+
+29/07/2025 - v0.2.X
+
+- Added distinct `changeset` command to just produce changeset and exit
+- Added `DisableRollback` option to stack sync and update (already existed in deploy)
+
 27/11/2023
 - Added Stage `Config` section. See Stage `Configuration` in the main [./README.md](README.md)
 
