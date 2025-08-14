@@ -4,6 +4,10 @@ This lists all features added since the original fork or the code from [https://
 
 ##
 
+14/08/2025 - v0.3.2
+
+ - Add `RoleARN` parameter to Stage config to allow any stacks within stage to use the same CloudFormation deployment role.
+
 30/07/2025 - v0.3.X
 
 - Modified Color schema to offical traffic lights colours

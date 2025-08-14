@@ -140,6 +140,9 @@
               "Account": {
                 "type": "string"
               },
+              "RoleARN": {
+                "type": "string"
+              },
               "Tags": {
                 "type": "object",
                 "patternProperties": {
