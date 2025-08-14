@@ -85,6 +85,11 @@ def make_boto3_parameters(parameters, is_packaging, stage_config):
                 sorted(six.iteritems(Tags)))
             )
         )
+    
+    # Set Stack role based on stage configuration (if exists) if not defined at stack level 
+    role_arn = parameters.get('RoleARN', None)
+    if role_arn is None and stage_config.get('RoleARN'):
+        role_arn = stage_config['RoleARN']
 
     normalized_config = dict(
         StackName=StackName,
@@ -96,7 +101,7 @@ def make_boto3_parameters(parameters, is_packaging, stage_config):
         NotificationARNs=parameters['NotificationARNs'],
         Capabilities=parameters['Capabilities'],
         ResourceTypes=parameters['ResourceTypes'],
-        RoleARN=parameters['RoleARN'],
+        RoleARN=role_arn,
         OnFailure=parameters['OnFailure'],
         StackPolicyBody=StackPolicyBody,
         StackPolicyURL=StackPolicyURL,
