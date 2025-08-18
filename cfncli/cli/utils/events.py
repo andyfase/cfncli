@@ -9,14 +9,10 @@ from .colormaps import STACK_STATUS_TO_COLOR
 
 print_mutex = threading.Lock()
 
-def tail_stack_events(session,
-                      stack,
-                      latest_events=1,
-                      event_limit=10000,
-                      time_limit=3600,
-                      check_interval=5,
-                      indent=0,
-                      prefix='XX'):
+
+def tail_stack_events(
+    session, stack, latest_events=1, event_limit=10000, time_limit=3600, check_interval=5, indent=0, prefix="XX"
+):
     """Tail stack events and print them"""
     then = time.time()
 
@@ -59,13 +55,14 @@ def tail_stack_events(session,
                         continue
 
             # tail sub stack events
-            if e.resource_type == 'AWS::CloudFormation::Stack' and \
-                    e.physical_resource_id and \
-                    e.physical_resource_id not in visited_stacks:
+            if (
+                e.resource_type == "AWS::CloudFormation::Stack"
+                and e.physical_resource_id
+                and e.physical_resource_id not in visited_stacks
+            ):
                 visited_stacks.add(e.physical_resource_id)
 
-                cfn = session.resource('cloudformation',
-                                       region_name=stack.meta.client.meta.region_name)
+                cfn = session.resource("cloudformation", region_name=stack.meta.client.meta.region_name)
                 sub_stack = cfn.Stack(e.physical_resource_id)
 
                 start_tail_stack_events_daemon(
@@ -74,28 +71,27 @@ def tail_stack_events(session,
                     latest_events=latest_events,
                     check_interval=check_interval + 1,
                     indent=indent + 2,
-                    prefix=e.logical_resource_id)
-            
+                    prefix=e.logical_resource_id,
+                )
+
             # print the event - as we have multiple prints on same line we use a mutex to ensure we dont
             # print half before another thread (used for another sub-stack) starts printing
             with print_mutex:
                 if indent > 0:
-                    click.echo(' ' * indent, nl=False)
-                    click.secho('[%s] ' % prefix, bold=True, nl=False)
+                    click.echo(" " * indent, nl=False)
+                    click.secho("[%s] " % prefix, bold=True, nl=False)
 
-                click.echo(e.timestamp.strftime('%x %X'), nl=False)
-                click.echo(' - ', nl=False)
-                click.secho(e.resource_status, nl=False,
-                            **STACK_STATUS_TO_COLOR[e.resource_status])
-                click.echo(' - %s(%s)' % (e.logical_resource_id, e.resource_type),
-                        nl=False)
+                click.echo(e.timestamp.strftime("%x %X"), nl=False)
+                click.echo(" - ", nl=False)
+                click.secho(e.resource_status, nl=False, **STACK_STATUS_TO_COLOR[e.resource_status])
+                click.echo(" - %s(%s)" % (e.logical_resource_id, e.resource_type), nl=False)
 
                 if e.resource_status_reason:
-                    click.echo(' - %s' % e.resource_status_reason)
+                    click.echo(" - %s" % e.resource_status_reason)
                 elif e.physical_resource_id:
-                    click.echo(' - %s' % e.physical_resource_id)
+                    click.echo(" - %s" % e.physical_resource_id)
                 else:
-                    click.echo('')
+                    click.echo("")
 
         else:
             first_run = False
@@ -103,14 +99,9 @@ def tail_stack_events(session,
         time.sleep(check_interval)
 
 
-def start_tail_stack_events_daemon(session,
-                                   stack,
-                                   latest_events=1,
-                                   event_limit=10000,
-                                   time_limit=3600,
-                                   check_interval=5,
-                                   indent=0,
-                                   prefix=None):
+def start_tail_stack_events_daemon(
+    session, stack, latest_events=1, event_limit=10000, time_limit=3600, check_interval=5, indent=0, prefix=None
+):
     """Start tailing stack events"""
 
     # TODO: Now this causes AWS throttling boto3 call if the tracking stack
@@ -118,10 +109,9 @@ def start_tail_stack_events_daemon(session,
     #       Should implement a barrier on how many querys are being sent
     #       concurrently.
 
-    thread = threading.Thread(target=tail_stack_events,
-                              args=(session,
-                                    stack, latest_events, event_limit,
-                                    time_limit, check_interval,
-                                    indent, prefix))
+    thread = threading.Thread(
+        target=tail_stack_events,
+        args=(session, stack, latest_events, event_limit, time_limit, check_interval, indent, prefix),
+    )
     thread.daemon = True
     thread.start()

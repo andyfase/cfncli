@@ -6,16 +6,15 @@ import os
 import jsonschema
 import six
 
-from .deployment import StackKey, StackDeployment, StackMetadata, StackProfile, \
-    StackParameters, Deployment
+from .deployment import StackKey, StackDeployment, StackMetadata, StackProfile, StackParameters, Deployment
 from .schema import load_schema
 from .template import find_references
 
 CANNED_STACK_POLICIES = {
-    'ALLOW_ALL': '{"Statement":[{"Effect":"Allow","Action":"Update:*","Principal":"*","Resource":"*"}]}',
-    'ALLOW_MODIFY': '{"Statement":[{"Effect":"Allow","Action":["Update:Modify"],"Principal":"*","Resource":"*"}]}',
-    'DENY_DELETE': '{"Statement":[{"Effect":"Allow","NotAction":"Update:Delete","Principal":"*","Resource":"*"}]}',
-    'DENY_ALL': '{"Statement":[{"Effect":"Deny","Action":"Update:*","Principal":"*","Resource":"*"}]}',
+    "ALLOW_ALL": '{"Statement":[{"Effect":"Allow","Action":"Update:*","Principal":"*","Resource":"*"}]}',
+    "ALLOW_MODIFY": '{"Statement":[{"Effect":"Allow","Action":["Update:Modify"],"Principal":"*","Resource":"*"}]}',
+    "DENY_DELETE": '{"Statement":[{"Effect":"Allow","NotAction":"Update:Delete","Principal":"*","Resource":"*"}]}',
+    "DENY_ALL": '{"Statement":[{"Effect":"Deny","Action":"Update:*","Principal":"*","Resource":"*"}]}',
 }
 
 
@@ -31,7 +30,7 @@ def load_format(version):
     elif version == 1 or version is None:
         return FormatV1
     else:
-        raise FormatError('Unspported config version {}'.format(version))
+        raise FormatError("Unspported config version {}".format(version))
 
 
 class ConfigFormat(object):
@@ -45,7 +44,7 @@ class ConfigFormat(object):
 
 
 class FormatV1(ConfigFormat):
-    VERSION = '1.0.0'
+    VERSION = "1.0.0"
 
     def __init__(self, **context):
         self._context = context
@@ -59,12 +58,9 @@ class FormatV1(ConfigFormat):
 
 
 class FormatV2(ConfigFormat):
-    VERSION = '2.0.0'
+    VERSION = "2.0.0"
 
-    STAGE_CONFIG = dict(
-        Order=(six.integer_types, None),
-        Config=(dict, {})
-    )
+    STAGE_CONFIG = dict(Order=(six.integer_types, None), Config=(dict, {}))
 
     STACK_CONFIG = dict(
         Order=(six.integer_types, None),
@@ -86,10 +82,10 @@ class FormatV2(ConfigFormat):
         StackPolicy=(six.string_types, None),
         Tags=(dict, None),
         ClientRequestToken=(six.string_types, None),
-        EnableTerminationProtection=(bool, None)
+        EnableTerminationProtection=(bool, None),
     )
 
-    def __init__(self, basedir='.'):
+    def __init__(self, basedir="."):
         self._basedir = basedir
 
     def validate(self, config):
@@ -97,32 +93,29 @@ class FormatV2(ConfigFormat):
         jsonschema.validate(config, schema)
 
         if have_parameter_reference_pattern(config):
-            raise jsonschema.SchemaError(
-                'Do not support parameter reference in config version <= 2')
+            raise jsonschema.SchemaError("Do not support parameter reference in config version <= 2")
 
     def parse(self, config):
         deployment = Deployment()
 
-        blueprints = config.get('Blueprints', dict())
+        blueprints = config.get("Blueprints", dict())
 
-        stages = config.get('Stages', dict())
+        stages = config.get("Stages", dict())
         for stage_key, stacks in stages.items():
-            stage_config = stacks.pop('Config', {})
-            stage_config.update({'Order': stacks.pop('Order', 0)})
+            stage_config = stacks.pop("Config", {})
+            stage_config.update({"Order": stacks.pop("Order", 0)})
             for stack_key, stack_config in stacks.items():
                 base = dict()
-                blueprint_id = stack_config.get('Extends')
+                blueprint_id = stack_config.get("Extends")
                 if blueprint_id:
                     blueprint = blueprints.get(blueprint_id)
                     if not blueprint:
-                        raise FormatError(
-                            'Blueprint "%s" not found' % blueprint_id)
+                        raise FormatError('Blueprint "%s" not found' % blueprint_id)
                     base = copy.deepcopy(blueprint)
 
                 self._extends(base, stack_config)
 
-                stack = self._build_stack(
-                    stage_key, stack_key, stage_config, base)
+                stack = self._build_stack(stage_key, stack_key, stage_config, base)
 
                 deployment.add_stack(stage_key, stack_key, stack)
 
@@ -136,7 +129,7 @@ class FormatV2(ConfigFormat):
                 continue
 
             # overwrite Capabilities parameter
-            if key == 'Capabilities':
+            if key == "Capabilities":
                 config[key] = copy.deepcopy(extends[key])
             # append list
             elif typ is list:
@@ -158,40 +151,35 @@ class FormatV2(ConfigFormat):
 
     def _build_stack(self, stage_key, stack_key, stage_config, stack_config):
         # add default order
-        stage_order = stage_config.get('Order', 0)
-        stack_order = stack_config.get('Order', 0)
-        stack_config['Order'] = (stage_order, stack_order)
+        stage_order = stage_config.get("Order", 0)
+        stack_order = stack_config.get("Order", 0)
+        stack_config["Order"] = (stage_order, stack_order)
 
         # add default name
-        if 'StackName' not in stack_config:
-            stack_config['StackName'] = stack_key
+        if "StackName" not in stack_config:
+            stack_config["StackName"] = stack_key
 
         # Make relate template path
-        template = stack_config.get('Template')
-        if template and \
-                not (template.startswith('https') and template.startswith(
-                    'http')):
-            template_path = os.path.realpath(
-                os.path.join(self._basedir, template))
+        template = stack_config.get("Template")
+        if template and not (template.startswith("https") and template.startswith("http")):
+            template_path = os.path.realpath(os.path.join(self._basedir, template))
             if not os.path.exists(template_path):
-                raise FormatError('File Not Found %s' % template_path)
-            stack_config['Template'] = template_path
+                raise FormatError("File Not Found %s" % template_path)
+            stack_config["Template"] = template_path
 
-        stack_policy = stack_config.get('StackPolicy')
+        stack_policy = stack_config.get("StackPolicy")
         if stack_policy and stack_policy not in CANNED_STACK_POLICIES:
-            stack_policy_path = os.path.realpath(
-                os.path.join(self._basedir, stack_policy))
+            stack_policy_path = os.path.realpath(os.path.join(self._basedir, stack_policy))
             if not os.path.exists(stack_policy_path):
-                raise FormatError('File Not Found %s' % stack_policy_path)
-            stack_config['StackPolicy'] = stack_policy_path
+                raise FormatError("File Not Found %s" % stack_policy_path)
+            stack_config["StackPolicy"] = stack_policy_path
 
         key = StackKey(StageKey=stage_key, StackKey=stack_key)
         stack_profile = StackProfile.from_dict(**stack_config)
         stack_parameters = StackParameters.from_dict(**stack_config)
         stack_metadata = StackMetadata.from_dict(**stack_config)
 
-        stack = StackDeployment(
-            key, stack_metadata, stack_profile, stack_parameters, stage_config)
+        stack = StackDeployment(key, stack_metadata, stack_profile, stack_parameters, stage_config)
 
         return stack
 
@@ -202,7 +190,7 @@ def have_parameter_reference_pattern(config):
 
 
 class FormatV3(FormatV2):
-    VERSION = '3.0.0'
+    VERSION = "3.0.0"
 
     def validate(self, config):
         schema = load_schema(str(FormatV2.VERSION))  # use same schema as v2

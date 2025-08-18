@@ -13,8 +13,7 @@ from ...config import ConfigError
 class Boto3DeploymentContext(StackDeploymentContext):
     def __init__(self, profile, artifact_store, deployment, pretty_printer):
         self._boto3_profile = Boto3Profile(
-            profile_name=deployment.profile.Profile,
-            region_name=deployment.profile.Region
+            profile_name=deployment.profile.Profile, region_name=deployment.profile.Region
         )
         self._boto3_profile.update(profile)
         self._session = None
@@ -56,7 +55,8 @@ class Boto3DeploymentContext(StackDeploymentContext):
 
     def make_boto3_parameters(self):
         self._parameters = make_boto3_parameters(
-            self._parameters, self.metadata['Package'], self._deployment.stage_config)
+            self._parameters, self.metadata["Package"], self._deployment.stage_config
+        )
 
     def run_packaging(self):
         """Package templates and resources and upload to artifact bucket"""
@@ -65,15 +65,12 @@ class Boto3DeploymentContext(StackDeploymentContext):
         if not package:
             return
 
-        template_path = self.parameters.get('TemplateURL', None)
+        template_path = self.parameters.get("TemplateURL", None)
 
         if not os.path.exists(template_path):
-            raise ConfigError(
-                "Can'not find %s. Package is supported for local template only" %
-                (template_path))
+            raise ConfigError("Can'not find %s. Package is supported for local template only" % (template_path))
 
-        artifact_store = self._artifact_store if self._artifact_store else \
-            self.metadata["ArtifactStore"]
+        artifact_store = self._artifact_store if self._artifact_store else self.metadata["ArtifactStore"]
 
         template_body, template_url = package_template(
             self._ppt,
@@ -81,13 +78,13 @@ class Boto3DeploymentContext(StackDeploymentContext):
             template_path,
             bucket_region=self.session.region_name,
             bucket_name=artifact_store,
-            prefix=self.parameters['StackName']
+            prefix=self.parameters["StackName"],
         )
 
         if template_url is not None:
             # packaged template is too large, use S3 pre-signed url
-            self.parameters['TemplateURL'] = template_url
+            self.parameters["TemplateURL"] = template_url
         else:
             # packaged template is passed with request body
-            self.parameters['TemplateBody'] = template_body
-            self.parameters.pop('TemplateURL')
+            self.parameters["TemplateBody"] = template_body
+            self.parameters.pop("TemplateURL")

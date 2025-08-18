@@ -5,6 +5,7 @@ ContextBuilder - build context from given options
 
 Context - click context object,
 """
+
 import os
 import threading
 from collections import namedtuple
@@ -14,17 +15,19 @@ from cfncli.runner import Boto3Profile, Boto3RunBook, StackSelector
 from .utils.pprint import StackPrettyPrinter
 
 
-class Options(namedtuple(
-    'Options',
-    [
-        'config_filename',
-        'stack_selector',
-        'profile_name',
-        'region_name',
-        'artifact_store',
-        'verbosity',
-    ]
-)):
+class Options(
+    namedtuple(
+        "Options",
+        [
+            "config_filename",
+            "stack_selector",
+            "profile_name",
+            "region_name",
+            "artifact_store",
+            "verbosity",
+        ],
+    )
+):
     pass
 
 
@@ -49,14 +52,15 @@ class Context:
     # Manage config parsing, transforming deployment process.
     """
 
-    def __init__(self,
-                 config_filename: str,
-                 artifact_store: str,
-                 pretty_printer: StackPrettyPrinter,
-                 stack_selector: StackSelector,
-                 boto3_profile: Boto3Profile,
-                 builder,
-                 ):
+    def __init__(
+        self,
+        config_filename: str,
+        artifact_store: str,
+        pretty_printer: StackPrettyPrinter,
+        stack_selector: StackSelector,
+        boto3_profile: Boto3Profile,
+        builder,
+    ):
         # simple
         self._config_filename: str = config_filename
         self._artifact_store: str = artifact_store
@@ -112,11 +116,7 @@ class Context:
         with self.__lock:
             if self._command_runner is None:
                 self._command_runner = self.__builder.build_runner(
-                    self.boto3_profile,
-                    self._artifact_store,
-                    self.deployments,
-                    self.stack_selector,
-                    self.ppt
+                    self.boto3_profile, self._artifact_store, self.deployments, self.stack_selector, self.ppt
                 )
         return self._command_runner
 
@@ -129,8 +129,7 @@ class DefaultContextBuilder(ContextBuilder):
 
         stack_selector = StackSelector(self._opt.stack_selector)
 
-        boto3_profile = Boto3Profile(profile_name=self._opt.profile_name,
-                                     region_name=self._opt.region_name)
+        boto3_profile = Boto3Profile(profile_name=self._opt.profile_name, region_name=self._opt.region_name)
 
         pretty_printer = StackPrettyPrinter(verbosity=self._opt.verbosity)
 
@@ -140,7 +139,8 @@ class DefaultContextBuilder(ContextBuilder):
             boto3_profile=boto3_profile,
             pretty_printer=pretty_printer,
             artifact_store=self._opt.artifact_store,
-            builder=self)
+            builder=self,
+        )
 
         return context
 
@@ -152,10 +152,4 @@ class DefaultContextBuilder(ContextBuilder):
     @staticmethod
     def build_runner(boto3_profile, artifact_store, deployments, stack_selector, pretty_printer):
         """Build command runner from options."""
-        return Boto3RunBook(
-            boto3_profile,
-            artifact_store,
-            deployments,
-            stack_selector,
-            pretty_printer
-        )
+        return Boto3RunBook(boto3_profile, artifact_store, deployments, stack_selector, pretty_printer)

@@ -4,8 +4,7 @@ import click
 
 from cfncli.cli.context import Context
 from cfncli.cli.utils.deco import command_exception_handler
-from cfncli.runner.commands.drift_diff_command import DriftDiffOptions, \
-    DriftDiffCommand
+from cfncli.runner.commands.drift_diff_command import DriftDiffOptions, DriftDiffCommand
 
 
 @click.command()
@@ -15,12 +14,8 @@ def diff(ctx):
     """Show stack resource drifts."""
     assert isinstance(ctx.obj, Context)
 
-    options = DriftDiffOptions(
-    )
+    options = DriftDiffOptions()
 
-    command = DriftDiffCommand(
-        pretty_printer=ctx.obj.ppt,
-        options=options
-    )
+    command = DriftDiffCommand(pretty_printer=ctx.obj.ppt, options=options)
 
     ctx.obj.runner.run(command)

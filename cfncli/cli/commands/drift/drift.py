@@ -13,4 +13,3 @@ def cli(ctx):
 
 cli.add_command(detect)
 cli.add_command(diff)
-

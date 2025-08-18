@@ -8,17 +8,19 @@ import click
 
 logger = logging.getLogger(__name__)
 
-COMMAND_PACKAGE_MAPPING = OrderedDict([
-    ("generate", "cfncli.cli.commands.generate"),
-    ("status", "cfncli.cli.commands.status"),
-    ("validate", "cfncli.cli.commands.validate"),
-    ("stack", "cfncli.cli.commands.stack"),
-    ("drift", "cfncli.cli.commands.drift"),
-])
+COMMAND_PACKAGE_MAPPING = OrderedDict(
+    [
+        ("generate", "cfncli.cli.commands.generate"),
+        ("status", "cfncli.cli.commands.status"),
+        ("validate", "cfncli.cli.commands.validate"),
+        ("stack", "cfncli.cli.commands.stack"),
+        ("drift", "cfncli.cli.commands.drift"),
+    ]
+)
 
 
 class MultiCommand(click.MultiCommand):
-    """ Dynamic load commands from packages mapping"""
+    """Dynamic load commands from packages mapping"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -31,7 +33,7 @@ class MultiCommand(click.MultiCommand):
         try:
             pkg_name = self._commands[cmd_name]
         except KeyError:
-            logging.error(logger.error(f'Invalid command {cmd_name}'))
+            logging.error(logger.error(f"Invalid command {cmd_name}"))
             return
 
         try:
