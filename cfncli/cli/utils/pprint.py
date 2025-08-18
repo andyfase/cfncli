@@ -73,6 +73,7 @@ class StackPrettyPrinter(object):
 
     def __init__(self, verbosity=0):
         self.verbosity = verbosity
+        self.nested_changesets = {}
 
     def secho(self, text, nl=True, err=False, color=None, **styles):
         click.secho(text, nl=nl, err=err, color=color, **styles)
@@ -228,17 +229,16 @@ class StackPrettyPrinter(object):
                 except botocore.exceptions.ClientError as e:
                     pass
 
-    def pprint_changeset(self, result):
-
+    def pprint_changeset(self, result, indent=0):
         status = result['Status']
         status_reason = result.get('StatusReason', None)
 
         echo_pair('ChangeSet Status', status,
-                  value_style=CHANGESET_STATUS_TO_COLOR[status])
+                  value_style=CHANGESET_STATUS_TO_COLOR[status], indent=indent)
         if status_reason:
-            echo_pair('Status Reason', status_reason)
+            echo_pair('Status Reason', status_reason, indent=indent)
 
-        echo_pair('Resource Changes')
+        echo_pair('Resource Changes', indent=indent)
         for change in result['Changes']:
             logical_id = change['ResourceChange']['LogicalResourceId']
             res_type = change['ResourceChange']['ResourceType']
@@ -255,39 +255,44 @@ class StackPrettyPrinter(object):
                         'Evaluation'] == 'Static':
                         change_details[name] = detail
 
-            echo_pair('{} ({})'.format(logical_id, res_type), indent=2)
+            echo_pair('{} ({})'.format(logical_id, res_type), indent=2+indent)
             echo_pair('Action', action,
-                      value_style=CHANGESET_ACTION_TO_COLOR[action], indent=4)
+                      value_style=CHANGESET_ACTION_TO_COLOR[action], indent=4+indent)
             if replacement:
                 echo_pair('Replacement', replacement,
                           value_style=CHANGESET_REPLACEMENT_TO_COLOR[
                               replacement],
-                          indent=4)
+                          indent=4+indent)
             if change_res_id:
-                echo_pair('Physical Resource', change_res_id, indent=4)
+                echo_pair('Physical Resource', change_res_id, indent=4+indent)
             if change_scope:
-                echo_pair('Change Scope', ','.join(change_scope), indent=4)
+                echo_pair('Change Scope', ','.join(change_scope), indent=4+indent)
             if len(change_details):
-                echo_pair('Changed Properties', '', indent=4)
+                echo_pair('Changed Properties', '', indent=4+indent)
                 for k, v in change_details.items():
-                    echo_pair(k, indent=6)
+                    echo_pair(k, indent=6+indent)
                     echo_pair('Requires Recreation',
                               v['Target']['RequiresRecreation'],
                               value_style=
                               CHANGESET_RESOURCE_REPLACEMENT_TO_COLOR[
-                                  v['Target']['RequiresRecreation']], indent=8)
+                                  v['Target']['RequiresRecreation']], indent=8+indent)
                     if v['Target'].get('Attribute', None):
-                        echo_pair('Attribute Change Type', v['Target']['Attribute'], indent=8)
+                        echo_pair('Attribute Change Type', v['Target']['Attribute'], indent=8+indent)
                     if v.get('CausingEntity', None):
-                        echo_pair('Causing Entity', v['CausingEntity'], indent=8)
+                        echo_pair('Causing Entity', v['CausingEntity'], indent=8+indent)
                     if v.get('ChangeSource', None):
-                        echo_pair('Change Source', v['ChangeSource'], indent=8)
+                        echo_pair('Change Source', v['ChangeSource'], indent=8+indent)
                     if v['Target'].get('AfterValue', None):
                         echo_list('Value Change', [
                           v['Target'].get('BeforeValue', 'No Value'), dict(fg=[76,159,158]),
                           ' -> ', None,
                            v['Target']['AfterValue'], dict(fg=[208,240,192]),
-                        ], indent=8)
+                        ], indent=8+indent)
+            if res_type == 'AWS::CloudFormation::Stack' and self.nested_changesets.get(logical_id, None):
+                echo_pair('Changeset for', logical_id, value_style=CHANGESET_ACTION_TO_COLOR[action], indent=4+indent)
+                self.pprint_changeset(self.nested_changesets[logical_id], indent + 6)
+
+
     def pprint_stack_drift(self, drift):
         detection_status = drift['DetectionStatus']
         drift_status = drift['StackDriftStatus']
@@ -387,3 +392,18 @@ class StackPrettyPrinter(object):
             click.secho('ChangeSet create failed.', fg='red')
         else:
             click.secho('ChangeSet create complete.', fg='green')
+
+    @backoff.on_exception(backoff.expo, botocore.exceptions.WaiterError, max_tries=10,
+                          giveup=is_not_rate_limited_exception)
+    def fetch_nested_changesets(self, client, result):
+        for change in result['Changes']:
+            resource_type = change.get('ResourceChange', {}).get('ResourceType', '')
+            logical_id = change.get('ResourceChange', {}).get('LogicalResourceId', '')
+            if (logical_id and resource_type == 'AWS::CloudFormation::Stack'):
+                changeset_id = change.get('ResourceChange', {}).get('ChangeSetId', '')
+                if changeset_id:
+                    self.nested_changesets[logical_id] = client.describe_change_set(
+                        ChangeSetName=changeset_id,
+                        IncludePropertyValues=True)
+
+

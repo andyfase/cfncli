@@ -8,6 +8,7 @@ from cfncli.cli.utils.common import is_not_rate_limited_exception, is_rate_limit
 from cfncli.cli.utils.pprint import echo_pair
 from .command import Command
 from .utils import update_termination_protection
+from cfncli.cli.utils.colormaps import RED, AMBER, GREEN
 
 
 class StackSyncOptions(namedtuple('StackSyncOptions',
@@ -15,7 +16,9 @@ class StackSyncOptions(namedtuple('StackSyncOptions',
                                    'confirm',
                                    'use_previous_template',
                                    'disable_rollback',
-                                   'disable_tail_events'])):
+                                   'disable_tail_events',
+                                   'disable_nested'
+                                   ])):
     pass
 
 
@@ -56,6 +59,14 @@ class StackSyncCommand(Command):
         # get changeset type: CREATE or UPDATE
         changeset_type, is_new_stack = self.check_changeset_type(client,
                                                                  parameters)
+        
+
+        # set nested based on input AND only if not new stack
+        if is_new_stack:
+            self.ppt.secho('Disabling nested changsets for initial creation.', fg=AMBER)
+            parameters['IncludeNestedStacks'] = False
+        else:    
+            parameters['IncludeNestedStacks'] = False if self.options.disable_nested else True
 
         # prepare stack parameters
         parameters['ChangeSetName'] = changeset_name
@@ -78,6 +89,8 @@ class StackSyncCommand(Command):
         self.ppt.wait_until_changset_complete(client, changeset_id)
 
         result = self.describe_change_set(client, changeset_name, parameters)
+        if parameters['IncludeNestedStacks']:
+            self.ppt.fetch_nested_changesets(client, result)
         self.ppt.pprint_changeset(result)
 
         # termination protection should be set after the creation of stack
@@ -89,7 +102,7 @@ class StackSyncCommand(Command):
 
         # check whether changeset is executable
         if result['Status'] not in ('AVAILABLE', 'CREATE_COMPLETE'):
-            self.ppt.secho('ChangeSet not executable.', fg='red')
+            self.ppt.secho('ChangeSet not executable.', fg=RED)
             return
 
         if self.options.confirm:
@@ -116,14 +129,14 @@ class StackSyncCommand(Command):
                 self.ppt.wait_until_deploy_complete(session, stack, self.options.disable_tail_events)
             else:
                 self.ppt.wait_until_update_complete(session, stack, self.options.disable_tail_events)
-            self.ppt.secho('ChangeSet execution complete.', fg='green')
+            self.ppt.secho('ChangeSet execution complete.', fg=GREEN)
 
     @backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10,
                           giveup=is_not_rate_limited_exception)
     def create_change_set(self, client, parameters):
         # remove DisableRollback for creation of changeset only
         changeset_parameters = parameters.copy()
-        changeset_parameters.pop('DisableRollback')
+        changeset_parameters.pop('DisableRollback', None)
         return client.create_change_set(**changeset_parameters)
 
     @backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10,
@@ -132,6 +145,7 @@ class StackSyncCommand(Command):
         return client.describe_change_set(
             ChangeSetName=changeset_name,
             StackName=parameters['StackName'],
+            IncludePropertyValues=True
         )
 
     @backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10,

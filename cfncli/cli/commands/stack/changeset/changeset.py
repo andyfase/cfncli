@@ -13,9 +13,11 @@ from cfncli.runner.commands.stack_changeset_command import StackChangesetOptions
                    'stack that you are updating.')
 @click.option('--disable-tail-events', is_flag=True, default=False,
               help='Disable tailing of cloudformation events')
+@click.option('--disable-nested', is_flag=True, default=False,
+              help='Disable creation of nested changesets')
 @click.pass_context
 @command_exception_handler
-def changeset(ctx, use_previous_template, disable_tail_events):
+def changeset(ctx, use_previous_template, disable_tail_events, disable_nested):
     """Create a ChangeSet
 
     `Combines "aws cloudformation package" and "aws cloudformation create-change-set" command
@@ -26,7 +28,8 @@ def changeset(ctx, use_previous_template, disable_tail_events):
 
     options = StackChangesetOptions(
         use_previous_template=use_previous_template,
-        disable_tail_events=disable_tail_events
+        disable_tail_events=disable_tail_events,
+        disable_nested=disable_nested
     )
 
     command = StackChangesetCommand(
