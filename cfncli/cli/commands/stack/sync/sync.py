@@ -23,9 +23,11 @@ from cfncli.runner.commands.stack_sync_command import StackSyncOptions, \
                    'in the stack configuration file.')
 @click.option('--disable-tail-events', is_flag=True, default=False,
               help='Disable tailing of cloudformation events')
+@click.option('--disable-nested', is_flag=True, default=False,
+              help='Disable creation of nested changesets')
 @click.pass_context
 @command_exception_handler
-def sync(ctx, no_wait, confirm, use_previous_template, disable_rollback, disable_tail_events):
+def sync(ctx, no_wait, confirm, use_previous_template, disable_rollback, disable_tail_events, disable_nested):
     """Create and execute ChangeSets (SAM)
 
     Combines "aws cloudformation package" and "aws cloudformation deploy" command
@@ -39,7 +41,8 @@ def sync(ctx, no_wait, confirm, use_previous_template, disable_rollback, disable
         confirm=confirm,
         use_previous_template=use_previous_template,
         disable_rollback=disable_rollback,
-        disable_tail_events=disable_tail_events
+        disable_tail_events=disable_tail_events,
+        disable_nested=disable_nested
     )
 
     command = StackSyncCommand(

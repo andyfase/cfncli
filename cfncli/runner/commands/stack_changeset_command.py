@@ -8,11 +8,14 @@ from cfncli.cli.utils.common import is_not_rate_limited_exception, is_rate_limit
 from cfncli.cli.utils.pprint import echo_pair
 from .command import Command
 from .utils import update_termination_protection
+from cfncli.cli.utils.colormaps import RED, AMBER, GREEN
 
 
 class StackChangesetOptions(namedtuple('StackChangesetOptions',
                                    ['use_previous_template',
-                                   'disable_tail_events'])):
+                                   'disable_tail_events',
+                                   'disable_nested'
+                                   ])):
     pass
 
 class StackChangesetCommand(Command):
@@ -49,6 +52,13 @@ class StackChangesetCommand(Command):
         changeset_type, is_new_stack = self.check_changeset_type(client,
                                                                  parameters)
 
+        # set nested based on input AND only if not new stack
+        if is_new_stack:
+            self.ppt.secho('Disabling nested changsets for initial creation.', fg=AMBER)
+            parameters['IncludeNestedStacks'] = False
+        else:    
+            parameters['IncludeNestedStacks'] = False if self.options.disable_nested else True
+
         # prepare stack parameters
         parameters['ChangeSetName'] = changeset_name
         parameters['ChangeSetType'] = changeset_type
@@ -70,13 +80,15 @@ class StackChangesetCommand(Command):
         self.ppt.wait_until_changset_complete(client, changeset_id)
 
         result = self.describe_change_set(client, changeset_name, parameters)
+        if parameters['IncludeNestedStacks']:
+            self.ppt.fetch_nested_changesets(client, result)
         self.ppt.pprint_changeset(result)
         
         # check whether changeset is executable
         if result['Status'] not in ('AVAILABLE', 'CREATE_COMPLETE'):
-            self.ppt.secho('ChangeSet creation failed.', fg='red')
+            self.ppt.secho('ChangeSet creation failed.', fg=RED)
             return
-        self.ppt.secho('ChangeSet creation complete.', fg='green')
+        self.ppt.secho('ChangeSet creation complete.', fg=GREEN)
 
     @backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10,
                           giveup=is_not_rate_limited_exception)
@@ -89,7 +101,7 @@ class StackChangesetCommand(Command):
         return client.describe_change_set(
             ChangeSetName=changeset_name,
             StackName=parameters['StackName'],
-            IncludePropertyValues=True
+            IncludePropertyValues=True,
         )
 
     @backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10,
