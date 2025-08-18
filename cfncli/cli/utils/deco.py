@@ -14,16 +14,17 @@ def command_exception_handler(f):
     def wrapper(ctx, *args, **kwargs):
         try:
             return f(ctx, *args, **kwargs)
-        except (botocore.exceptions.ClientError,
-                botocore.exceptions.BotoCoreError,
-                ) as e:
+        except (
+            botocore.exceptions.ClientError,
+            botocore.exceptions.BotoCoreError,
+        ) as e:
             if ctx.obj.verbosity > 0:
-                click.secho(traceback.format_exc(), fg='red')
+                click.secho(traceback.format_exc(), fg="red")
             else:
-                click.secho(str(e), fg='red')
+                click.secho(str(e), fg="red")
             raise click.Abort
         except ConfigError as e:
-            click.secho(str(e), fg='red')
+            click.secho(str(e), fg="red")
             if ctx.obj.verbosity > 0:
                 traceback.print_exc()
             raise click.Abort

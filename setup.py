@@ -20,7 +20,8 @@ install_requires = [
     'colorama>0.4',
     'jsonschema>4',
     'pyyaml>6',
-    's3transfer>=0.13'
+    's3transfer>=0.13',
+    'black>=25.1'
 ]
 
 setup(

@@ -7,15 +7,13 @@ from .deployment import StackKey, StackDeployment
 from .formats import CANNED_STACK_POLICIES
 
 
-with open(os.path.join(os.path.dirname(__file__),
-                       'annotated-sample-config.yaml')) as fp:
+with open(os.path.join(os.path.dirname(__file__), "annotated-sample-config.yaml")) as fp:
     ANNOTATED_SAMPLE_CONFIG = fp.read()
 
-with open(os.path.join(os.path.dirname(__file__),
-                       'sample-config.yaml')) as fp:
+with open(os.path.join(os.path.dirname(__file__), "sample-config.yaml")) as fp:
     SAMPLE_CONFIG = fp.read()
 
-DEFAULT_CONFIG_FILE_NAMES = ['cfn-cli.yaml', 'cfn-cli.yml']
+DEFAULT_CONFIG_FILE_NAMES = ["cfn-cli.yaml", "cfn-cli.yml"]
 
 
 def find_default_config(config_filename: Optional[str] = None) -> Optional[str]:

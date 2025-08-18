@@ -13,43 +13,67 @@ CONTEXT_BUILDER = DefaultContextBuilder
 VERBOSITY_LOGLEVEL_MAPPING = [logging.WARNING, logging.INFO, logging.DEBUG]
 
 import click_completion
+
 # XXX: Monkey patch dynamic completion
-from . monkeypatch_clickcompletion import monkey_patch
+from .monkeypatch_clickcompletion import monkey_patch
+
 monkey_patch()
 click_completion.init()
 
 
 @click.command(cls=MultiCommand)
 @click.version_option(version=__version__)
-@click.option('--install-completion', is_flag=True, callback=install_callback,
-              expose_value=False,
-              help='Automatically install completion for the current shell. Make sure '
-                   'to have psutil installed.')
-@click.option('-f', '--file',
-              type=click.Path(exists=False, dir_okay=True),
-              default=None,
-              help='Specify an alternate stack configuration file, default is '
-                   'cfn-cli.yml.')
-@click.option('-s', '--stack', shell_complete=stack_auto_complete,
-              type=click.STRING, default='*',
-              help='Select stacks to operate on, defined by STAGE_NAME.STACK_NAME, '
-                   'nix glob is supported to select multiple stacks. Default value is '
-                   '"*", which means all stacks in all stages.')
-@click.option('-p', '--profile', shell_complete=profile_auto_complete,
-              type=click.STRING, default=None,
-              help='Override AWS profile specified in the config file.  Warning: '
-                   'Don\'t use this option on stacks in different accounts.')
-@click.option('-r', '--region',
-              type=click.STRING, default=None,
-              help='Override AWS region specified in the config.  Warning: Don\'t use '
-                   'this option on stacks in different regions.')
-@click.option('-a', '--artifact-store',
-              type=click.STRING, default='',
-              help='Override artifact store specified in the config.  Artifact store is'
-                   'the s3 bucket used to store packaged template resource.  Warning: '
-                   'Don\'t use this option on stacks in different accounts & regions.')
-@click.option('-v', '--verbose', count=True,
-              help='Be more verbose, can be specified multiple times.')
+@click.option(
+    "--install-completion",
+    is_flag=True,
+    callback=install_callback,
+    expose_value=False,
+    help="Automatically install completion for the current shell. Make sure " "to have psutil installed.",
+)
+@click.option(
+    "-f",
+    "--file",
+    type=click.Path(exists=False, dir_okay=True),
+    default=None,
+    help="Specify an alternate stack configuration file, default is " "cfn-cli.yml.",
+)
+@click.option(
+    "-s",
+    "--stack",
+    shell_complete=stack_auto_complete,
+    type=click.STRING,
+    default="*",
+    help="Select stacks to operate on, defined by STAGE_NAME.STACK_NAME, "
+    "nix glob is supported to select multiple stacks. Default value is "
+    '"*", which means all stacks in all stages.',
+)
+@click.option(
+    "-p",
+    "--profile",
+    shell_complete=profile_auto_complete,
+    type=click.STRING,
+    default=None,
+    help="Override AWS profile specified in the config file.  Warning: "
+    "Don't use this option on stacks in different accounts.",
+)
+@click.option(
+    "-r",
+    "--region",
+    type=click.STRING,
+    default=None,
+    help="Override AWS region specified in the config.  Warning: Don't use "
+    "this option on stacks in different regions.",
+)
+@click.option(
+    "-a",
+    "--artifact-store",
+    type=click.STRING,
+    default="",
+    help="Override artifact store specified in the config.  Artifact store is"
+    "the s3 bucket used to store packaged template resource.  Warning: "
+    "Don't use this option on stacks in different accounts & regions.",
+)
+@click.option("-v", "--verbose", count=True, help="Be more verbose, can be specified multiple times.")
 @click.pass_context
 def cli(ctx, file, stack, profile, region, artifact_store, verbose):
     """AWS CloudFormation CLI - The missing CLI for CloudFormation.
@@ -83,7 +107,8 @@ def cli(ctx, file, stack, profile, region, artifact_store, verbose):
     """
 
     # Setup global logging level
-    if verbose >= 2: verbose = 2  # cap at 2
+    if verbose >= 2:
+        verbose = 2  # cap at 2
 
     logger = logging.getLogger()
     logger.setLevel(VERBOSITY_LOGLEVEL_MAPPING[verbose])

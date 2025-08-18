@@ -7,7 +7,7 @@ import string
 
 
 class _Template(string.Template):
-    PARAMETER_LABEL = r'[_a-z]+[_a-z0-9-]*'
+    PARAMETER_LABEL = r"[_a-z]+[_a-z0-9-]*"
 
     pattern = r"""
             %(delim)s(?:
@@ -17,10 +17,9 @@ class _Template(string.Template):
               (?P<invalid>)              # Other ill-formed delimiter exprs
             )
             """ % dict(
-        delim=re.escape('$'),
-        id=r'a^',  # Match Nothing, only match braced tag
-        bid=r'(%(label)s\.%(label)s\.%(label)s)' % dict(
-            label=PARAMETER_LABEL)
+        delim=re.escape("$"),
+        id=r"a^",  # Match Nothing, only match braced tag
+        bid=r"(%(label)s\.%(label)s\.%(label)s)" % dict(label=PARAMETER_LABEL),
     )
 
 

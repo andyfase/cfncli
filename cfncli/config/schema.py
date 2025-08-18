@@ -9,9 +9,6 @@ def get_schema_path():
 
 
 def load_schema(version):
-    filename = os.path.join(
-        get_schema_path(), 'schema_v{0}.json'.format(version))
-    with open(filename, 'r') as fp:
+    filename = os.path.join(get_schema_path(), "schema_v{0}.json".format(version))
+    with open(filename, "r") as fp:
         return json.load(fp)
-
-

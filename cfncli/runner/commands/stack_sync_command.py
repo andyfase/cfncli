@@ -11,14 +11,12 @@ from .utils import update_termination_protection
 from cfncli.cli.utils.colormaps import RED, AMBER, GREEN
 
 
-class StackSyncOptions(namedtuple('StackSyncOptions',
-                                  ['no_wait',
-                                   'confirm',
-                                   'use_previous_template',
-                                   'disable_rollback',
-                                   'disable_tail_events',
-                                   'disable_nested'
-                                   ])):
+class StackSyncOptions(
+    namedtuple(
+        "StackSyncOptions",
+        ["no_wait", "confirm", "use_previous_template", "disable_rollback", "disable_tail_events", "disable_nested"],
+    )
+):
     pass
 
 
@@ -31,130 +29,120 @@ class StackSyncCommand(Command):
         metadata = stack_context.metadata
 
         # print stack qualified name
-        self.ppt.pprint_stack_name(
-            stack_context.stack_key,
-            parameters['StackName'],
-            'Syncing stack '
-        )
+        self.ppt.pprint_stack_name(stack_context.stack_key, parameters["StackName"], "Syncing stack ")
         self.ppt.pprint_session(session)
 
         if self.options.use_previous_template:
-            parameters.pop('TemplateBody', None)
-            parameters.pop('TemplateURL', None)
-            parameters['UsePreviousTemplate'] = True
+            parameters.pop("TemplateBody", None)
+            parameters.pop("TemplateURL", None)
+            parameters["UsePreviousTemplate"] = True
         else:
             stack_context.run_packaging()
 
         # overwrite using cli parameters
         if self.options.disable_rollback:
-            parameters['DisableRollback'] = self.options.disable_rollback
+            parameters["DisableRollback"] = self.options.disable_rollback
 
         # create cfn client
-        client = session.client('cloudformation')
+        client = session.client("cloudformation")
 
         # generate a unique changeset name
-        changeset_name = '%s-%s' % \
-                         (parameters['StackName'], str(uuid.uuid1()))
+        changeset_name = "%s-%s" % (parameters["StackName"], str(uuid.uuid1()))
 
         # get changeset type: CREATE or UPDATE
-        changeset_type, is_new_stack = self.check_changeset_type(client,
-                                                                 parameters)
-        
+        changeset_type, is_new_stack = self.check_changeset_type(client, parameters)
 
         # set nested based on input AND only if not new stack
         if is_new_stack:
-            self.ppt.secho('Disabling nested changsets for initial creation.', fg=AMBER)
-            parameters['IncludeNestedStacks'] = False
-        else:    
-            parameters['IncludeNestedStacks'] = False if self.options.disable_nested else True
+            self.ppt.secho("Disabling nested changsets for initial creation.", fg=AMBER)
+            parameters["IncludeNestedStacks"] = False
+        else:
+            parameters["IncludeNestedStacks"] = False if self.options.disable_nested else True
 
         # prepare stack parameters
-        parameters['ChangeSetName'] = changeset_name
-        parameters['ChangeSetType'] = changeset_type
-        parameters.pop('StackPolicyBody', None)
-        parameters.pop('StackPolicyURL', None)
-        termination_protection = parameters.pop(
-            'EnableTerminationProtection', None)
+        parameters["ChangeSetName"] = changeset_name
+        parameters["ChangeSetType"] = changeset_type
+        parameters.pop("StackPolicyBody", None)
+        parameters.pop("StackPolicyURL", None)
+        termination_protection = parameters.pop("EnableTerminationProtection", None)
 
         self.ppt.pprint_parameters(parameters)
 
         # create changeset
-        echo_pair('ChangeSet Name', changeset_name)
-        echo_pair('ChangeSet Type', changeset_type)
+        echo_pair("ChangeSet Name", changeset_name)
+        echo_pair("ChangeSet Type", changeset_type)
 
         result = self.create_change_set(client, parameters)
-        changeset_id = result['Id']
-        echo_pair('ChangeSet ARN', changeset_id)
+        changeset_id = result["Id"]
+        echo_pair("ChangeSet ARN", changeset_id)
 
         self.ppt.wait_until_changset_complete(client, changeset_id)
 
         result = self.describe_change_set(client, changeset_name, parameters)
-        if parameters['IncludeNestedStacks']:
+        if parameters["IncludeNestedStacks"]:
             self.ppt.fetch_nested_changesets(client, result)
         self.ppt.pprint_changeset(result)
 
         # termination protection should be set after the creation of stack
         # or changeset
-        update_termination_protection(session,
-                                      termination_protection,
-                                      parameters['StackName'],
-                                      self.ppt)
+        update_termination_protection(session, termination_protection, parameters["StackName"], self.ppt)
 
         # check whether changeset is executable
-        if result['Status'] not in ('AVAILABLE', 'CREATE_COMPLETE'):
-            self.ppt.secho('ChangeSet not executable.', fg=RED)
+        if result["Status"] not in ("AVAILABLE", "CREATE_COMPLETE"):
+            self.ppt.secho("ChangeSet not executable.", fg=RED)
             return
 
         if self.options.confirm:
             if self.options.no_wait:
-                return 
-            if not self.ppt.confirm('Do you want to execute ChangeSet?'):
+                return
+            if not self.ppt.confirm("Do you want to execute ChangeSet?"):
                 return
 
-        client_request_token = 'awscfncli-sync-{}'.format(uuid.uuid1())
-        self.ppt.secho('Executing ChangeSet...')
+        client_request_token = "awscfncli-sync-{}".format(uuid.uuid1())
+        self.ppt.secho("Executing ChangeSet...")
         client.execute_change_set(
             ChangeSetName=changeset_name,
-            StackName=parameters['StackName'],
+            StackName=parameters["StackName"],
             ClientRequestToken=client_request_token,
-            DisableRollback=parameters.get('DisableRollback', False)
+            DisableRollback=parameters.get("DisableRollback", False),
         )
 
-        cfn = session.resource('cloudformation')
-        stack = cfn.Stack(parameters['StackName'])
+        cfn = session.resource("cloudformation")
+        stack = cfn.Stack(parameters["StackName"])
         if self.options.no_wait:
-            self.ppt.secho('ChangeSet execution started.')
+            self.ppt.secho("ChangeSet execution started.")
         else:
             if is_new_stack:
                 self.ppt.wait_until_deploy_complete(session, stack, self.options.disable_tail_events)
             else:
                 self.ppt.wait_until_update_complete(session, stack, self.options.disable_tail_events)
-            self.ppt.secho('ChangeSet execution complete.', fg=GREEN)
+            self.ppt.secho("ChangeSet execution complete.", fg=GREEN)
 
-    @backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10,
-                          giveup=is_not_rate_limited_exception)
+    @backoff.on_exception(
+        backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception
+    )
     def create_change_set(self, client, parameters):
         # remove DisableRollback for creation of changeset only
         changeset_parameters = parameters.copy()
-        changeset_parameters.pop('DisableRollback', None)
+        changeset_parameters.pop("DisableRollback", None)
         return client.create_change_set(**changeset_parameters)
 
-    @backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10,
-                          giveup=is_not_rate_limited_exception)
+    @backoff.on_exception(
+        backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception
+    )
     def describe_change_set(self, client, changeset_name, parameters):
         return client.describe_change_set(
-            ChangeSetName=changeset_name,
-            StackName=parameters['StackName'],
-            IncludePropertyValues=True
+            ChangeSetName=changeset_name, StackName=parameters["StackName"], IncludePropertyValues=True
         )
 
-    @backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10,
-                          giveup=is_not_rate_limited_exception)
+    @backoff.on_exception(
+        backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception
+    )
     def check_changeset_type(self, client, parameters):
         try:
             # check whether stack is already created.
-            status = client.describe_stacks(StackName=parameters['StackName'])
-            stack_status = status['Stacks'][0]['StackStatus']
+            status = client.describe_stacks(StackName=parameters["StackName"])
+            stack_status = status["Stacks"][0]["StackStatus"]
         except botocore.exceptions.ClientError as e:
 
             if is_rate_limited_exception(e):
@@ -162,14 +150,14 @@ class StackSyncCommand(Command):
                 raise
             # stack not yet created
             is_new_stack = True
-            changeset_type = 'CREATE'
+            changeset_type = "CREATE"
         else:
-            if stack_status == 'REVIEW_IN_PROGRESS':
+            if stack_status == "REVIEW_IN_PROGRESS":
                 # first ChangeSet execution failed, create "new stack" changeset again
                 is_new_stack = True
-                changeset_type = 'CREATE'
+                changeset_type = "CREATE"
             else:
                 # updating an existing stack
                 is_new_stack = False
-                changeset_type = 'UPDATE'
+                changeset_type = "UPDATE"
         return changeset_type, is_new_stack

@@ -33,5 +33,4 @@ class Boto3Profile(object):
             return self.session_cache[session_key]
 
     def __repr__(self):
-        return '{}({}/{})'.format(self.__class__.__name__, self.profile_name,
-                                  self.region_name)
+        return "{}({}/{})".format(self.__class__.__name__, self.profile_name, self.region_name)

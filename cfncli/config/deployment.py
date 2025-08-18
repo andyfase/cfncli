@@ -12,21 +12,11 @@ def _extends(base, **kwargs):
 
 
 class StackDefaults(object):
-    STACK_KEY = dict(
-        StageKey=None,
-        StackKey=None
-    )
+    STACK_KEY = dict(StageKey=None, StackKey=None)
 
-    STACK_METADATA = dict(
-        Order=None,
-        Package=None,
-        ArtifactStore=None
-    )
+    STACK_METADATA = dict(Order=None, Package=None, ArtifactStore=None)
 
-    STACK_PROFILE = dict(
-        Region=None,
-        Profile=None
-    )
+    STACK_PROFILE = dict(Region=None, Profile=None)
 
     STACK_PARAMETERS = dict(
         StackName=None,
@@ -43,15 +33,15 @@ class StackDefaults(object):
         StackPolicy=None,
         Tags=None,
         ClientRequestToken=None,
-        EnableTerminationProtection=None
+        EnableTerminationProtection=None,
     )
 
 
-class StackKey(namedtuple('StackKey', sorted(StackDefaults.STACK_KEY))):
+class StackKey(namedtuple("StackKey", sorted(StackDefaults.STACK_KEY))):
 
     @property
     def qualified_name(self):
-        return '.'.join([self.StageKey, self.StackKey])
+        return ".".join([self.StageKey, self.StackKey])
 
     @staticmethod
     def from_dict(**params):
@@ -60,8 +50,7 @@ class StackKey(namedtuple('StackKey', sorted(StackDefaults.STACK_KEY))):
         return StackKey(**result)
 
 
-class StackMetadata(
-    namedtuple('StackMetadata', sorted(StackDefaults.STACK_METADATA))):
+class StackMetadata(namedtuple("StackMetadata", sorted(StackDefaults.STACK_METADATA))):
     @staticmethod
     def from_dict(**params):
         result = copy.deepcopy(StackDefaults.STACK_METADATA)
@@ -69,8 +58,7 @@ class StackMetadata(
         return StackMetadata(**result)
 
 
-class StackProfile(
-    namedtuple('StackMetadata', sorted(StackDefaults.STACK_PROFILE))):
+class StackProfile(namedtuple("StackMetadata", sorted(StackDefaults.STACK_PROFILE))):
     @staticmethod
     def from_dict(**params):
         result = copy.deepcopy(StackDefaults.STACK_PROFILE)
@@ -78,8 +66,7 @@ class StackProfile(
         return StackProfile(**result)
 
 
-class StackParameters(
-    namedtuple('StackParameters', sorted(StackDefaults.STACK_PARAMETERS))):
+class StackParameters(namedtuple("StackParameters", sorted(StackDefaults.STACK_PARAMETERS))):
     @staticmethod
     def from_dict(**params):
         result = copy.deepcopy(StackDefaults.STACK_PARAMETERS)
@@ -94,8 +81,7 @@ class StackParameters(
         return substitute_references(self._asdict(), **args)
 
 
-class StackDeployment(
-    namedtuple('StackDeployment', 'stack_key, metadata, profile, parameters, stage_config')):
+class StackDeployment(namedtuple("StackDeployment", "stack_key, metadata, profile, parameters, stage_config")):
     pass
 
 
@@ -115,13 +101,11 @@ class Deployment(object):
     def get_stacks(self, stage_key):
         return list(k1 for (k1, k2) in self._index if k1 == stage_key)
 
-    def query_stacks(self, stage_pattern='*', stack_pattern='*'):
-        """Find all stack config matching stage/stack patterns
-        """
+    def query_stacks(self, stage_pattern="*", stack_pattern="*"):
+        """Find all stack config matching stage/stack patterns"""
         result = list()
-        for (k1, k2) in self._index:
-            if fnmatch.fnmatchcase(k1, stage_pattern) \
-                    and fnmatch.fnmatchcase(k2, stack_pattern):
+        for k1, k2 in self._index:
+            if fnmatch.fnmatchcase(k1, stage_pattern) and fnmatch.fnmatchcase(k2, stack_pattern):
                 result.append(self._index[(k1, k2)])
 
         result.sort(key=lambda stack: stack.metadata.Order)

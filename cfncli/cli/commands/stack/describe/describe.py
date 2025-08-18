@@ -2,17 +2,15 @@ import click
 
 from cfncli.cli.context import Context
 from cfncli.cli.utils.deco import command_exception_handler
-from cfncli.runner.commands.stack_status_command import StackStatusOptions, \
-    StackStatusCommand
+from cfncli.runner.commands.stack_status_command import StackStatusOptions, StackStatusCommand
 
 
 # TODO: Deprecate this
 
+
 @click.command()
-@click.option('--stack-resources', '-r', is_flag=True, default=True,
-              help='Display stack resources.')
-@click.option('--stack-exports', '-e', is_flag=True, default=True,
-              help='Display stack exports.')
+@click.option("--stack-resources", "-r", is_flag=True, default=True, help="Display stack resources.")
+@click.option("--stack-exports", "-e", is_flag=True, default=True, help="Display stack exports.")
 @click.pass_context
 @command_exception_handler
 def describe(ctx, stack_resources, stack_exports):
@@ -20,7 +18,7 @@ def describe(ctx, stack_resources, stack_exports):
 
     assert isinstance(ctx.obj, Context)
 
-    ctx.obj.ppt.secho('Deprecated, use "status" command instead!', fg='red')
+    ctx.obj.ppt.secho('Deprecated, use "status" command instead!', fg="red")
 
     options = StackStatusOptions(
         dry_run=False,
@@ -28,9 +26,6 @@ def describe(ctx, stack_resources, stack_exports):
         stack_exports=stack_exports,
     )
 
-    command = StackStatusCommand(
-        pretty_printer=ctx.obj.ppt,
-        options=options
-    )
+    command = StackStatusCommand(pretty_printer=ctx.obj.ppt, options=options)
 
     ctx.obj.runner.run(command)

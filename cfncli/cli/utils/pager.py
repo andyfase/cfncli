@@ -18,6 +18,6 @@ def custom_paginator(f, l, **kwargs):
             yield i
 
         try:
-            next_token = r['NextToken']
+            next_token = r["NextToken"]
         except KeyError:
             break
