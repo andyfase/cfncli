@@ -4,6 +4,10 @@ This lists all features added since the original fork or the code from [https://
 
 ##
 
+18/08/2025 - v0.3.3
+- Add support for nested changeset production and display.
+- Fix for nested stack event printing
+
 14/08/2025 - v0.3.2
 
  - Add `RoleARN` parameter to Stage config to allow any stacks within stage to use the same CloudFormation deployment role.

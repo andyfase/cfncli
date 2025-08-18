@@ -219,7 +219,7 @@ class StackPrettyPrinter(object):
                     pass
 
     def pprint_changeset(self, result, indent=0):
-        changeset_name = result.get('ChangeSetName', 'unknown')
+        changeset_name = result.get("ChangeSetName", "unknown")
         status = result["Status"]
         status_reason = result.get("StatusReason", None)
 
@@ -229,7 +229,7 @@ class StackPrettyPrinter(object):
 
         if not result.get("Changes", []):
             return
-        
+
         echo_pair("Resource Changes", indent=indent)
         for change in result["Changes"]:
             logical_id = change["ResourceChange"]["LogicalResourceId"]
@@ -287,9 +287,11 @@ class StackPrettyPrinter(object):
                             ],
                             indent=8 + indent,
                         )
-            if res_type == "AWS::CloudFormation::Stack" and self.nested_changesets.get(f'{changeset_name}-{logical_id}', None):
+            if res_type == "AWS::CloudFormation::Stack" and self.nested_changesets.get(
+                f"{changeset_name}-{logical_id}", None
+            ):
                 echo_pair("Changeset for", logical_id, value_style=CHANGESET_ACTION_TO_COLOR[action], indent=4 + indent)
-                self.pprint_changeset(self.nested_changesets[f'{changeset_name}-{logical_id}'], indent + 6)
+                self.pprint_changeset(self.nested_changesets[f"{changeset_name}-{logical_id}"], indent + 6)
 
     def pprint_stack_drift(self, drift):
         detection_status = drift["DetectionStatus"]
@@ -385,14 +387,14 @@ class StackPrettyPrinter(object):
         backoff.expo, botocore.exceptions.WaiterError, max_tries=10, giveup=is_not_rate_limited_exception
     )
     def fetch_nested_changesets(self, client, result):
-        changeset_name = result.get('ChangeSetName', 'unknown')
+        changeset_name = result.get("ChangeSetName", "unknown")
         for change in result["Changes"]:
             resource_type = change.get("ResourceChange", {}).get("ResourceType", "")
             logical_id = change.get("ResourceChange", {}).get("LogicalResourceId", "")
             if logical_id and resource_type == "AWS::CloudFormation::Stack":
                 changeset_id = change.get("ResourceChange", {}).get("ChangeSetId", "")
                 if changeset_id:
-                    _id = f'{changeset_name}-{logical_id}'
+                    _id = f"{changeset_name}-{logical_id}"
                     ## Note we store based on combination of changeset ID and logical ID - as logical ID can be re-used
                     self.nested_changesets[_id] = client.describe_change_set(
                         ChangeSetName=changeset_id, IncludePropertyValues=True
