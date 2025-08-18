@@ -7,6 +7,8 @@ import botocore.exceptions
 
 from .colormaps import STACK_STATUS_TO_COLOR
 
+print_mutex = threading.Lock()
+
 def tail_stack_events(session,
                       stack,
                       latest_events=1,
@@ -73,24 +75,27 @@ def tail_stack_events(session,
                     check_interval=check_interval + 1,
                     indent=indent + 2,
                     prefix=e.logical_resource_id)
-            # print the event
-            if indent > 0:
-                click.echo(' ' * indent, nl=False)
-                click.secho('[%s] ' % prefix, bold=True, nl=False)
+            
+            # print the event - as we have multiple prints on same line we use a mutex to ensure we dont
+            # print half before another thread (used for another sub-stack) starts printing
+            with print_mutex:
+                if indent > 0:
+                    click.echo(' ' * indent, nl=False)
+                    click.secho('[%s] ' % prefix, bold=True, nl=False)
 
-            click.echo(e.timestamp.strftime('%x %X'), nl=False)
-            click.echo(' - ', nl=False)
-            click.secho(e.resource_status, nl=False,
-                        **STACK_STATUS_TO_COLOR[e.resource_status])
-            click.echo(' - %s(%s)' % (e.logical_resource_id, e.resource_type),
-                       nl=False)
+                click.echo(e.timestamp.strftime('%x %X'), nl=False)
+                click.echo(' - ', nl=False)
+                click.secho(e.resource_status, nl=False,
+                            **STACK_STATUS_TO_COLOR[e.resource_status])
+                click.echo(' - %s(%s)' % (e.logical_resource_id, e.resource_type),
+                        nl=False)
 
-            if e.resource_status_reason:
-                click.echo(' - %s' % e.resource_status_reason)
-            elif e.physical_resource_id:
-                click.echo(' - %s' % e.physical_resource_id)
-            else:
-                click.echo('')
+                if e.resource_status_reason:
+                    click.echo(' - %s' % e.resource_status_reason)
+                elif e.physical_resource_id:
+                    click.echo(' - %s' % e.physical_resource_id)
+                else:
+                    click.echo('')
 
         else:
             first_run = False
