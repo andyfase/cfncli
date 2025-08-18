@@ -227,6 +227,9 @@ class StackPrettyPrinter(object):
         if status_reason:
             echo_pair("Status Reason", status_reason, indent=indent)
 
+        if not result.get("Changes", []):
+            return
+        
         echo_pair("Resource Changes", indent=indent)
         for change in result["Changes"]:
             logical_id = change["ResourceChange"]["LogicalResourceId"]
