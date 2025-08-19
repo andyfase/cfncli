@@ -11,9 +11,10 @@ from ...config import ConfigError
 
 
 class Boto3DeploymentContext(StackDeploymentContext):
-    def __init__(self, profile, artifact_store, deployment, pretty_printer):
+    def __init__(self, profile, artifact_store, deployment, pretty_printer, region_override=None):
         self._boto3_profile = Boto3Profile(
-            profile_name=deployment.profile.Profile, region_name=deployment.profile.Region
+            profile_name=deployment.profile.Profile,
+            region_name=region_override if region_override else deployment.profile.Region,
         )
         self._boto3_profile.update(profile)
         self._session = None

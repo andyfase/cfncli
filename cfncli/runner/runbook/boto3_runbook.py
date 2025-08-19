@@ -51,7 +51,9 @@ class Boto3RunBook(RunBook):
         whole_deployments = self._manager.query_stacks()
         whole_contexts = []
         for deployment in whole_deployments:
-            context = Boto3DeploymentContext(self._profile, self._artifact_store, deployment, self._ppt)
+            context = Boto3DeploymentContext(
+                self._profile, self._artifact_store, deployment, self._ppt, deployment.stage_config.get("Region", None)
+            )
             if deployment.stack_key.qualified_name in selected_stack_keys:
                 self._contexts.append(context)
             whole_contexts.append(context)
