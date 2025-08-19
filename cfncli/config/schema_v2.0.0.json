@@ -143,6 +143,9 @@
               "RoleARN": {
                 "type": "string"
               },
+              "Region": {
+                "type": "string"
+              },
               "Tags": {
                 "type": "object",
                 "patternProperties": {
