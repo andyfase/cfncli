@@ -102,6 +102,12 @@ class StackPrettyPrinter(object):
         click.secho(qualified_name, bold=True)
         echo_pair("StackName", stack_name)
 
+    def pprint_changeset_with_stack(self, operation, stack_name, changeset_arn):
+        click.secho(f"{operation} ", bold=False, nl=False)
+        click.secho(changeset_arn, bold=True, nl=False)
+        click.secho(" on stack ", bold=False, nl=False)
+        click.secho(stack_name, bold=True)
+
     def pprint_session(self, session, retrieve_identity=True):
         """Print boto3 session"""
         echo_pair("Profile", session.profile_name)
