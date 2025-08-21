@@ -42,8 +42,9 @@ class RunBook:
             stack_contexts = reversed(self.contexts)
         else:
             stack_contexts = self.contexts
-
+        results = {}
         for context in stack_contexts:
             self.pre_run(command, context)
-            command.run(context)
+            results[context.stack_key] = command.run(context)
             self.post_run(command, context)
+        return results

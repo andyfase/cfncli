@@ -56,7 +56,6 @@ class StackUpdateCommand(Command):
         # termination protection state should be updated no matter
         # stack's update succeeded or not
         update_termination_protection(session, termination_protection, parameters["StackName"], self.ppt)
-
         # calling boto3...
         stack = cfn.Stack(parameters["StackName"])
         try:
