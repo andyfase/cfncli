@@ -5,10 +5,15 @@ import backoff
 import botocore.exceptions
 
 from cfncli.cli.utils.deco import CfnCliException
-from cfncli.cli.utils.common import is_not_rate_limited_exception, is_rate_limited_exception
 from cfncli.cli.utils.pprint import echo_pair
 from .command import Command
-from .utils import update_termination_protection, is_changeset_does_not_exist_exception
+from .utils import (
+    update_termination_protection,
+    is_changeset_does_not_exist_exception,
+    describe_change_set,
+    check_changeset_type,
+    execute_change_set,
+)
 from cfncli.cli.utils.colormaps import RED, AMBER, GREEN
 from .stack_changeset_command import StackChangesetCommand
 
@@ -46,7 +51,7 @@ class StackExecuteChangesetCommand(Command):
 
         ## ensure stack status
         try:
-            result = self.describe_change_set(client, changeset_arn, parameters)
+            result = describe_change_set(client, changeset_arn=changeset_arn)
         except botocore.exceptions.ClientError as ex:
             if is_changeset_does_not_exist_exception(ex):
                 if self.options.ignore_no_exists:
@@ -57,7 +62,7 @@ class StackExecuteChangesetCommand(Command):
             else:
                 raise
 
-        changeset_type, is_new_stack = StackChangesetCommand.check_changeset_type(client, parameters)
+        changeset_type, _ = check_changeset_type(client, parameters["StackName"])
 
         # check if changeset is executable
         if result["Status"] not in ("AVAILABLE", "CREATE_COMPLETE"):
@@ -90,10 +95,13 @@ class StackExecuteChangesetCommand(Command):
         update_termination_protection(session, termination_protection, parameters["StackName"], self.ppt)
 
         client_request_token = "awscfncli-sync-{}".format(uuid.uuid1())
-        client.execute_change_set(
-            ChangeSetName=changeset_arn,
-            ClientRequestToken=client_request_token,
-            DisableRollback=parameters.get("DisableRollback", False),
+        execute_change_set(
+            client,
+            {
+                "ChangeSetName": changeset_arn,
+                "ClientRequestToken": client_request_token,
+                "DisableRollback": parameters.get("DisableRollback", False),
+            },
         )
 
         cfn = session.resource("cloudformation")
@@ -104,12 +112,3 @@ class StackExecuteChangesetCommand(Command):
         else:
             self.ppt.wait_until_update_complete(session, stack, self.options.disable_tail_events)
         self.ppt.secho("ChangeSet execution complete.", fg=GREEN)
-
-    @backoff.on_exception(
-        backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception
-    )
-    def describe_change_set(self, client, changeset_arn, parameters):
-        return client.describe_change_set(
-            ChangeSetName=changeset_arn,
-            IncludePropertyValues=True,
-        )
