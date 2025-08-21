@@ -5,6 +5,7 @@ import backoff
 import botocore.exceptions
 
 from cfncli.cli.utils.common import is_not_rate_limited_exception, is_rate_limited_exception
+from cfncli.cli.utils.deco import CfnCliException
 from cfncli.cli.utils.pprint import echo_pair
 from .command import Command
 from .utils import update_termination_protection
@@ -12,7 +13,9 @@ from cfncli.cli.utils.colormaps import CHANGESET_STATUS_TO_COLOR, RED, AMBER, GR
 
 
 class StackChangesetOptions(
-    namedtuple("StackChangesetOptions", ["use_previous_template", "disable_tail_events", "disable_nested"])
+    namedtuple(
+        "StackChangesetOptions", ["use_previous_template", "disable_tail_events", "ignore_no_update", "disable_nested"]
+    )
 ):
     pass
 
@@ -40,7 +43,7 @@ class StackChangesetCommand(Command):
         client = session.client("cloudformation")
 
         # get changeset type: CREATE or UPDATE
-        changeset_type, is_new_stack = self.check_changeset_type(client, parameters)
+        changeset_type, is_new_stack = StackChangesetCommand.check_changeset_type(client, parameters)
 
         # set nested based on input AND only if not new stack
         if is_new_stack:
@@ -56,12 +59,8 @@ class StackChangesetCommand(Command):
         parameters.pop("DisableRollback", None)
         termination_protection = parameters.pop("EnableTerminationProtection", None)
 
-        ## Retry only if IncludeNestedStacks is True and the changeset fails
-        retry = True
-        while retry:
-            if not parameters.get("IncludeNestedStacks", True):
-                retry = False
-
+        result = {}
+        while True:  ## return in loop on succes / fail if not retry requred
             # generate a unique changeset name
             parameters["ChangeSetName"] = "%s-%s" % (parameters["StackName"], str(uuid.uuid1()))
 
@@ -86,24 +85,31 @@ class StackChangesetCommand(Command):
                     key_style=CHANGESET_STATUS_TO_COLOR["FAILED"],
                     value_style=CHANGESET_STATUS_TO_COLOR["FAILED"],
                 )
+                ## dont retry if the failure is due to no changes
+                if "didn't contain changes" in result.get("StatusReason", ""):
+                    if self.options.ignore_no_update:
+                        self.ppt.secho(
+                            f"ChangeSet for {stack_context.stack_key} contains no updates, skipping...", fg=RED
+                        )
+                        return False, result
+                    else:
+                        raise CfnCliException(
+                            f"Changeset for {stack_context.stack_key} contains no updates, use -i if this is expected"
+                        )
                 self.ppt.secho("Will RETRY WITHOUT nested changeset support", fg=RED)
                 parameters["IncludeNestedStacks"] = False
                 continue
 
-            retry = False
-
             ## check for any other not good status
             if result["Status"] not in ("AVAILABLE", "CREATE_COMPLETE"):
-                self.ppt.secho("ChangeSet creation failed.", fg=RED)
-                continue
+                raise CfnCliException(f"ChangeSet creation failed. {result['StatusReason']}")
 
             # fetch nested changesets if needed then pretty print
             if parameters["IncludeNestedStacks"]:
                 self.ppt.fetch_nested_changesets(client, result)
             self.ppt.pprint_changeset(result)
             self.ppt.secho("ChangeSet creation complete.", fg=GREEN)
-
-            return parameters["ChangeSetName"], result
+            return (True, result)
 
     @backoff.on_exception(
         backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception
@@ -124,7 +130,8 @@ class StackChangesetCommand(Command):
     @backoff.on_exception(
         backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception
     )
-    def check_changeset_type(self, client, parameters):
+    @staticmethod
+    def check_changeset_type(client, parameters):
         try:
             # check whether stack is already created.
             status = client.describe_stacks(StackName=parameters["StackName"])
