@@ -7,6 +7,10 @@ import click
 from cfncli.config import ConfigError
 
 
+class CfnCliException(Exception):
+    pass
+
+
 def command_exception_handler(f):
     """Capture and pretty print exceptions."""
 
@@ -14,10 +18,7 @@ def command_exception_handler(f):
     def wrapper(ctx, *args, **kwargs):
         try:
             return f(ctx, *args, **kwargs)
-        except (
-            botocore.exceptions.ClientError,
-            botocore.exceptions.BotoCoreError,
-        ) as e:
+        except (botocore.exceptions.ClientError, botocore.exceptions.BotoCoreError, CfnCliException) as e:
             if ctx.obj.verbosity > 0:
                 click.secho(traceback.format_exc(), fg="red")
             else:

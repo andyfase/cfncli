@@ -10,6 +10,13 @@ from cfncli.runner.commands.stack_sync_command import StackSyncOptions, StackSyn
 @click.option("--no-wait", "-w", is_flag=True, default=False, help="Exit immediately after ChangeSet is created.")
 @click.option("--confirm", is_flag=True, default=False, help="Review changes before execute the ChangeSet")
 @click.option(
+    "--ignore-no-update",
+    "-i",
+    is_flag=True,
+    default=False,
+    help="Ignore error when there are no updates to be performed.",
+)
+@click.option(
     "--use-previous-template",
     is_flag=True,
     default=False,
@@ -28,7 +35,16 @@ from cfncli.runner.commands.stack_sync_command import StackSyncOptions, StackSyn
 @click.option("--disable-nested", is_flag=True, default=False, help="Disable creation of nested changesets")
 @click.pass_context
 @command_exception_handler
-def sync(ctx, no_wait, confirm, use_previous_template, disable_rollback, disable_tail_events, disable_nested):
+def sync(
+    ctx,
+    no_wait,
+    confirm,
+    ignore_no_update,
+    use_previous_template,
+    disable_rollback,
+    disable_tail_events,
+    disable_nested,
+):
     """Create and execute ChangeSets (SAM)
 
     Combines "aws cloudformation package" and "aws cloudformation deploy" command
@@ -44,6 +60,7 @@ def sync(ctx, no_wait, confirm, use_previous_template, disable_rollback, disable
         disable_rollback=disable_rollback,
         disable_tail_events=disable_tail_events,
         disable_nested=disable_nested,
+        ignore_no_update=ignore_no_update,
     )
 
     command = StackSyncCommand(pretty_printer=ctx.obj.ppt, options=options)
