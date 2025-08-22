@@ -5,6 +5,7 @@ import os
 
 import jsonschema
 import six
+from deepmerge import conservative_merger
 
 from .deployment import StackKey, StackDeployment, StackMetadata, StackProfile, StackParameters, Deployment
 from .schema import load_schema
@@ -99,10 +100,17 @@ class FormatV2(ConfigFormat):
         deployment = Deployment()
 
         blueprints = config.get("Blueprints", dict())
-
         stages = config.get("Stages", dict())
-        for stage_key, stacks in stages.items():
+        for stage_key, stage_stacks in stages.items():
+            stacks = copy.deepcopy(stage_stacks)
             stage_config = stacks.pop("Config", {})
+
+            stage_extend = stages.get(stage_config.get('Extends', ""), {})
+            if stage_extend:
+                stage_extend_config = stage_extend.pop('Config', {})
+                conservative_merger.merge(stage_config, stage_extend_config)
+                conservative_merger.merge(stacks,stage_extend)
+
             stage_config.update({"Order": stacks.pop("Order", 0)})
             for stack_key, stack_config in stacks.items():
                 base = dict()
@@ -114,7 +122,7 @@ class FormatV2(ConfigFormat):
                     base = copy.deepcopy(blueprint)
 
                 self._extends(base, stack_config)
-
+                
                 stack = self._build_stack(stage_key, stack_key, stage_config, base)
 
                 deployment.add_stack(stage_key, stack_key, stack)
