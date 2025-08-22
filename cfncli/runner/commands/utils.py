@@ -1,4 +1,6 @@
 import botocore.exceptions
+import backoff
+from cfncli.cli.utils.common import is_not_rate_limited_exception, is_rate_limited_exception
 
 
 def update_termination_protection(session, termination_protection, stack_name, ppt):
@@ -59,3 +61,74 @@ def is_stack_already_exists_exception(ex):
     Exception class is dynamiclly generated in botocore.
     """
     return ex.__class__.__name__ == "AlreadyExistsException"
+
+
+###
+### Helper functions taken from main classes so they can be re-used and all have backoff set
+###
+
+
+@backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception)
+def create_change_set(client, parameters):
+    # remove DisableRollback for creation of changeset only
+    changeset_parameters = parameters.copy()
+    changeset_parameters.pop("DisableRollback", None)
+    return client.create_change_set(**changeset_parameters)
+
+
+@backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception)
+def execute_change_set(client, parameters):
+    return client.execute_change_set(**parameters)
+
+
+@backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception)
+def create_stack(client, parameters):
+    return client.execute_change_set(**parameters)
+
+
+@backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception)
+def delete_stack(client, parameters):
+    return client.execute_change_set(**parameters)
+
+
+@backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception)
+def update_stack(client, parameters):
+    return client.execute_change_set(**parameters)
+
+
+@backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception)
+def describe_change_set(client, changeset_name=None, stack_name=None, changeset_arn=None):
+    if stack_name and changeset_name:
+        return client.describe_change_set(
+            ChangeSetName=changeset_name, StackName=stack_name, IncludePropertyValues=True
+        )
+    elif changeset_arn:
+        return client.describe_change_set(ChangeSetName=changeset_arn, IncludePropertyValues=True)
+    else:
+        raise Exception("invalid parameters to describe_change_set")
+
+
+@backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception)
+def check_changeset_type(client, stack_name):
+    try:
+        # check whether stack is already created.
+        status = client.describe_stacks(StackName=stack_name)
+        stack_status = status["Stacks"][0]["StackStatus"]
+    except botocore.exceptions.ClientError as e:
+
+        if is_rate_limited_exception(e):
+            # stack might exist but we got Throttling error, retry is needed so rerasing exception
+            raise
+        # stack not yet created
+        is_new_stack = True
+        changeset_type = "CREATE"
+    else:
+        if stack_status == "REVIEW_IN_PROGRESS":
+            # first ChangeSet execution failed, create "new stack" changeset again
+            is_new_stack = True
+            changeset_type = "CREATE"
+        else:
+            # updating an existing stack
+            is_new_stack = False
+            changeset_type = "UPDATE"
+    return changeset_type, is_new_stack

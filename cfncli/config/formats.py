@@ -5,6 +5,7 @@ import os
 
 import jsonschema
 import six
+from deepmerge import conservative_merger
 
 from .deployment import StackKey, StackDeployment, StackMetadata, StackProfile, StackParameters, Deployment
 from .schema import load_schema
@@ -99,11 +100,19 @@ class FormatV2(ConfigFormat):
         deployment = Deployment()
 
         blueprints = config.get("Blueprints", dict())
-
         stages = config.get("Stages", dict())
-        for stage_key, stacks in stages.items():
+        for stage_key, stage_stacks in stages.items():
+            stacks = copy.deepcopy(stage_stacks)
             stage_config = stacks.pop("Config", {})
-            stage_config.update({"Order": stacks.pop("Order", 0)})
+
+            stage_extend = stages.get(stage_config.get('Extends', ""), {})
+            if stage_extend:
+                stage_extend_config = stage_extend.pop('Config', {})
+                conservative_merger.merge(stage_config, stage_extend_config)
+                conservative_merger.merge(stacks,stage_extend)
+
+            if not stage_config.get('Order', None):
+                stage_config['Order'] = 999
             for stack_key, stack_config in stacks.items():
                 base = dict()
                 blueprint_id = stack_config.get("Extends")
@@ -113,41 +122,13 @@ class FormatV2(ConfigFormat):
                         raise FormatError('Blueprint "%s" not found' % blueprint_id)
                     base = copy.deepcopy(blueprint)
 
-                self._extends(base, stack_config)
-
-                stack = self._build_stack(stage_key, stack_key, stage_config, base)
+                
+                conservative_merger.merge(stack_config, base)
+                stack = self._build_stack(stage_key, stack_key, stage_config, stack_config)
 
                 deployment.add_stack(stage_key, stack_key, stack)
 
         return deployment
-
-    def _extends(self, config, extends):
-        for key, (typ, default) in self.STACK_CONFIG.items():
-
-            # skip unknown parameters
-            if key not in extends:
-                continue
-
-            # overwrite Capabilities parameter
-            if key == "Capabilities":
-                config[key] = copy.deepcopy(extends[key])
-            # append list
-            elif typ is list:
-                if key not in config:
-                    config[key] = list(extends[key])
-                else:
-                    config[key].extend(extends[key])
-            # update dict
-            elif typ is dict:
-                if key not in config:
-                    config[key] = dict(extends[key])
-                else:
-                    config[key].update(extends[key])
-            # copy everything else
-            else:
-                config[key] = copy.deepcopy(extends[key])
-
-        return config
 
     def _build_stack(self, stage_key, stack_key, stage_config, stack_config):
         # add default order

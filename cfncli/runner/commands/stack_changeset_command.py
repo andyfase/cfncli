@@ -8,7 +8,7 @@ from cfncli.cli.utils.common import is_not_rate_limited_exception, is_rate_limit
 from cfncli.cli.utils.deco import CfnCliException
 from cfncli.cli.utils.pprint import echo_pair
 from .command import Command
-from .utils import update_termination_protection
+from .utils import update_termination_protection, check_changeset_type, create_change_set, describe_change_set
 from cfncli.cli.utils.colormaps import CHANGESET_STATUS_TO_COLOR, RED, AMBER, GREEN
 
 
@@ -43,7 +43,7 @@ class StackChangesetCommand(Command):
         client = session.client("cloudformation")
 
         # get changeset type: CREATE or UPDATE
-        changeset_type, is_new_stack = StackChangesetCommand.check_changeset_type(client, parameters)
+        changeset_type, is_new_stack = check_changeset_type(client, parameters["StackName"])
 
         # set nested based on input AND only if not new stack
         if is_new_stack:
@@ -70,12 +70,12 @@ class StackChangesetCommand(Command):
             self.ppt.pprint_parameters(parameters)
 
             # create changeset
-            result = self.create_change_set(client, parameters)
+            result = create_change_set(client, parameters)
             changeset_id = result["Id"]
             echo_pair("ChangeSet ARN", changeset_id)
 
             self.ppt.wait_until_changset_complete(client, changeset_id)
-            result = self.describe_change_set(client, parameters["ChangeSetName"], parameters)
+            result = describe_change_set(client, changeset_arn=changeset_id)
 
             ## check explicity for FAILED with nested stacks
             if result["Status"] == "FAILED" and parameters.get("IncludeNestedStacks", False):
@@ -110,47 +110,3 @@ class StackChangesetCommand(Command):
             self.ppt.pprint_changeset(result)
             self.ppt.secho("ChangeSet creation complete.", fg=GREEN)
             return (True, result)
-
-    @backoff.on_exception(
-        backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception
-    )
-    def create_change_set(self, client, parameters):
-        return client.create_change_set(**parameters)
-
-    @backoff.on_exception(
-        backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception
-    )
-    def describe_change_set(self, client, changeset_name, parameters):
-        return client.describe_change_set(
-            ChangeSetName=changeset_name,
-            StackName=parameters["StackName"],
-            IncludePropertyValues=True,
-        )
-
-    @backoff.on_exception(
-        backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception
-    )
-    @staticmethod
-    def check_changeset_type(client, parameters):
-        try:
-            # check whether stack is already created.
-            status = client.describe_stacks(StackName=parameters["StackName"])
-            stack_status = status["Stacks"][0]["StackStatus"]
-        except botocore.exceptions.ClientError as e:
-
-            if is_rate_limited_exception(e):
-                # stack might exist but we got Throttling error, retry is needed so rerasing exception
-                raise
-            # stack not yet created
-            is_new_stack = True
-            changeset_type = "CREATE"
-        else:
-            if stack_status == "REVIEW_IN_PROGRESS":
-                # first ChangeSet execution failed, create "new stack" changeset again
-                is_new_stack = True
-                changeset_type = "CREATE"
-            else:
-                # updating an existing stack
-                is_new_stack = False
-                changeset_type = "UPDATE"
-        return changeset_type, is_new_stack

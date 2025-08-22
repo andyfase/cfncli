@@ -21,7 +21,8 @@ install_requires = [
     'jsonschema>4',
     'pyyaml>6',
     's3transfer>=0.13',
-    'black>=25.1'
+    'black>=25.1',
+    'deepmerge>=2.0'
 ]
 
 setup(

@@ -19,6 +19,7 @@ from .colormaps import (
 from .common import is_rate_limited_exception, is_not_rate_limited_exception
 from .events import start_tail_stack_events_daemon
 from .pager import custom_paginator
+from cfncli.runner.commands.utils import describe_change_set
 
 
 def echo_list(key, list_styles_pairs, indent=0, sep=": "):
@@ -402,8 +403,6 @@ class StackPrettyPrinter(object):
                 if changeset_id:
                     _id = f"{changeset_name}-{logical_id}"
                     ## Note we store based on combination of changeset ID and logical ID - as logical ID can be re-used
-                    self.nested_changesets[_id] = client.describe_change_set(
-                        ChangeSetName=changeset_id, IncludePropertyValues=True
-                    )
+                    self.nested_changesets[_id] = describe_change_set(client, changeset_arn=changeset_id)
                     ## resursive to catch sub-stacks that themselves have sub-stacks
                     self.fetch_nested_changesets(client, self.nested_changesets[_id])
