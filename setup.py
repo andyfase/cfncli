@@ -30,7 +30,7 @@ setup(
     name='cfncli',
 
     # Version and description
-    version='0.3.3',
+    version='0.4.0',
     description='CloudFormation CLI Wrapper',
     long_description=long_description,
     long_description_content_type='text/markdown',

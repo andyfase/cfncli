@@ -105,14 +105,14 @@ class FormatV2(ConfigFormat):
             stacks = copy.deepcopy(stage_stacks)
             stage_config = stacks.pop("Config", {})
 
-            stage_extend = stages.get(stage_config.get('Extends', ""), {})
+            stage_extend = stages.get(stage_config.get("Extends", ""), {})
             if stage_extend:
-                stage_extend_config = stage_extend.pop('Config', {})
+                stage_extend_config = stage_extend.pop("Config", {})
                 conservative_merger.merge(stage_config, stage_extend_config)
-                conservative_merger.merge(stacks,stage_extend)
+                conservative_merger.merge(stacks, stage_extend)
 
-            if not stage_config.get('Order', None):
-                stage_config['Order'] = 999
+            if not stage_config.get("Order", None):
+                stage_config["Order"] = 999
             for stack_key, stack_config in stacks.items():
                 base = dict()
                 blueprint_id = stack_config.get("Extends")
@@ -122,7 +122,6 @@ class FormatV2(ConfigFormat):
                         raise FormatError('Blueprint "%s" not found' % blueprint_id)
                     base = copy.deepcopy(blueprint)
 
-                
                 conservative_merger.merge(stack_config, base)
                 stack = self._build_stack(stage_key, stack_key, stage_config, stack_config)
 

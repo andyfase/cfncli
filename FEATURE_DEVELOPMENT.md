@@ -4,6 +4,12 @@ This lists all features added since the original fork or the code from [https://
 
 ##
 
+18/08/2025 - v0.4.0
+- Breaking change for changesets - now offering "changeset create" and "changeset execute" options
+- Changeset creation can now be optionally saved to disk via `--output` flag
+- Changeset executuion via `--input` flag 
+- Support ability to extend Stage from another Stage (useful for DR or duplicate deployment regions)
+
 18/08/2025 - v0.3.3
 - Add support for nested changeset production and display.
 - Fix for nested stack event printing
