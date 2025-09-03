@@ -163,11 +163,14 @@ class StackPrettyPrinter(object):
             value_style={"fg": "red"} if stack.enable_termination_protection else None,
         )
 
-        drift_status = stack.drift_information["StackDriftStatus"]
-        drift_timestamp = stack.drift_information.get("LastCheckTimestamp")
-        echo_pair("Drift Status", drift_status, value_style=DRIFT_STATUS_TO_COLOR[drift_status])
-        if drift_timestamp:
-            echo_pair("Lasted Checked", drift_timestamp)
+        if stack.drift_information:
+            drift_status = stack.drift_information["StackDriftStatus"]
+            drift_timestamp = stack.drift_information.get("LastCheckTimestamp")
+            echo_pair("Drift Status", drift_status, value_style=DRIFT_STATUS_TO_COLOR[drift_status])
+            if drift_timestamp:
+                echo_pair("Lasted Checked", drift_timestamp)
+        else:
+            echo_pair("Drift Status", "NOT_CHECKED")
 
     def pprint_stack_parameters(self, stack):
         if stack.parameters:
