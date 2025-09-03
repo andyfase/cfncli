@@ -26,7 +26,8 @@ def cli_runner():
 def test_drift_detect_command(cli_runner):
     with patch.object(Context, "runner") as mock_command_runner:
         result = cli_runner.invoke(
-            cli, "-f cfn-cli.yaml -s Develop.Table drift detect " "--no-wait",
+            cli,
+            "-f cfn-cli.yaml -s Develop.Table drift detect " "--no-wait",
         )
         assert result.exit_code == 0
 

@@ -45,8 +45,7 @@ def test_stack_delete_command(cli_runner):
     with patch.object(Context, "runner") as mock_command_runner:
         result = cli_runner.invoke(
             cli,
-            "-f cfn-cli.yaml -s Develop.Table stack delete "
-            "--no-wait --ignore-missing",
+            "-f cfn-cli.yaml -s Develop.Table stack delete " "--no-wait --ignore-missing",
         )
         assert result.exit_code == 0
 
@@ -109,7 +108,7 @@ def test_stack_sync_command(cli_runner):
             cli,
             "-f cfn-cli.yaml -s Develop.Table stack sync "
             "--no-wait --confirm --use-previous-template "
-            "--disable-tail-events"
+            "--disable-tail-events",
         )
 
         assert result.exit_code == 0

@@ -15,13 +15,11 @@ import json
 
 SPEC = json.load(open("spec.json"))
 
+
 def resource(name):
     """
     Returns resource types that match `name`, working right-to-left
     E.g. S3::Bucket will match AWS::S3::Bucket
     """
 
-    return [
-        key for key in SPEC["ResourceTypes"].keys()
-        if key.endswith(name)
-    ]
+    return [key for key in SPEC["ResourceTypes"].keys() if key.endswith(name)]

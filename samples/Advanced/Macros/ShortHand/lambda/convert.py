@@ -20,6 +20,7 @@ import re
 
 SUB_RE = re.compile(r"\$\{(?!!)")
 
+
 def handle_value(value):
     if SUB_RE.match(value):
         return {
@@ -27,6 +28,7 @@ def handle_value(value):
         }
 
     return value
+
 
 def unroll_props(rolled):
     props = {}
@@ -45,25 +47,16 @@ def unroll_props(rolled):
 
     return props
 
+
 def parse_name(name):
     parts = name.split()
 
-    ident = [
-        part
-        for part in parts
-        if "=" not in part
-    ]
+    ident = [part for part in parts if "=" not in part]
 
-    props = unroll_props({
-        key: value
-        for key, value in [
-            part.split("=")
-            for part
-            in parts if "=" in part
-        ]
-    })
+    props = unroll_props({key: value for key, value in [part.split("=") for part in parts if "=" in part]})
 
     return ident, props
+
 
 def convert(value):
     if isinstance(value, str):
@@ -79,6 +72,7 @@ def convert(value):
                 yield ident, props
     else:
         raise Exception("Bad format at: {}".format(value))
+
 
 def convert_template(template):
     resources = {}
