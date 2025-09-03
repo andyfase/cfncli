@@ -45,6 +45,10 @@ Install from PyPi
 pip3 install cfncli
 ```
 
+## Development
+
+See [DEVELOPMENT.md](./DEVELOPMENT.md) for build instructions and development workflow.
+
 ## Usage
 
 ### Quickstart

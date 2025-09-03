@@ -1,68 +1,46 @@
-# Simplify build management
+.PHONY: clean build install dev-install upload test format lint setup help
 
-.PHONY: target env update build deploy lint test format
+help:
+	@echo "Available targets:"
+	@echo "  setup       - Install development dependencies"
+	@echo "  clean       - Remove build artifacts"
+	@echo "  build       - Build source and wheel distributions"
+	@echo "  install     - Install package"
+	@echo "  dev-install - Install package in development mode"
+	@echo "  upload      - Upload to PyPI"
+	@echo "  test        - Run tests"
+	@echo "  format      - Format code with black"
+	@echo "  lint        - Lint code"
 
-all: target
+setup:
+	pip install -r requirements-dev.txt
 
-target:
-	$(info ${HELP_MESSAGE})
-	@exit 0
+clean:
+	rm -rf build/
+	rm -rf dist/
+	rm -rf *.egg-info/
+	find . -type d -name __pycache__ -exec rm -rf {} +
+	find . -type f -name "*.pyc" -delete
 
-env:
-	pipenv install --dev
-	pipenv requirements --dev > requirements-dev.txt
-	pipenv requirements > requirements.txt
-
-update:
-	pipenv update --dev
-
-build:
-	python3 setup.py build
+build: clean
+	@python -c "import build" 2>/dev/null || pip install build
+	python -m build
 
 install:
-	pip install -r requirements-dev.txt
 	pip install .
 
-deploy: build
-	twine upload --verbose dist/*
+dev-install:
+	pip install -e .
+
+upload: build
+	@python -c "import twine" 2>/dev/null || pip install twine
+	python -m twine upload dist/*
+
+test:
+	python -m pytest
+
+format:
+	python -m black .
 
 lint:
-	#black --check cfncli/* tests/*
-	bandit -r cfncli -c bandit
-	flake8 --format=pylint
-	pylint cfncli
-
-test: build
-	pytest -v tests/unit tests/int
-
-#format:
-	#black cfncli/* tests/*
-
-
-define HELP_MESSAGE
-
-env
-  Boostrap enviroment.
-
-update
-  Update pipenv environment.
-
-build:
-  Build dist package.
-
-lint
-  Run code quality checks.
-
-test
-  Run unittests.
-
-format
-  Format python code using Black.
-
-build
-  Build python package.
-
-deploy
-  Upload python package to pypi.
-
-endef
+	python -m flake8 .
