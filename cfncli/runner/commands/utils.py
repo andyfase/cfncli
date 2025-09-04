@@ -83,17 +83,17 @@ def execute_change_set(client, parameters):
 
 @backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception)
 def create_stack(client, parameters):
-    return client.execute_change_set(**parameters)
+    return client.create_stack(**parameters)
 
 
 @backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception)
 def delete_stack(client, parameters):
-    return client.execute_change_set(**parameters)
+    return client.delete_stack(**parameters)
 
 
 @backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception)
 def update_stack(client, parameters):
-    return client.execute_change_set(**parameters)
+    return client.update_stack(**parameters)
 
 
 @backoff.on_exception(backoff.expo, botocore.exceptions.ClientError, max_tries=10, giveup=is_not_rate_limited_exception)
@@ -115,20 +115,12 @@ def check_changeset_type(client, stack_name):
         status = client.describe_stacks(StackName=stack_name)
         stack_status = status["Stacks"][0]["StackStatus"]
     except botocore.exceptions.ClientError as e:
-
-        if is_rate_limited_exception(e):
-            # stack might exist but we got Throttling error, retry is needed so rerasing exception
-            raise
-        # stack not yet created
-        is_new_stack = True
-        changeset_type = "CREATE"
-    else:
-        if stack_status == "REVIEW_IN_PROGRESS":
-            # first ChangeSet execution failed, create "new stack" changeset again
-            is_new_stack = True
-            changeset_type = "CREATE"
-        else:
-            # updating an existing stack
-            is_new_stack = False
-            changeset_type = "UPDATE"
-    return changeset_type, is_new_stack
+        if is_stack_does_not_exist_exception(e):
+            return "CREATE", True
+        raise
+    if len(status['Stacks']) < 1:
+        return "CREATE", True ## Should never get here as exception handles not existant stack
+    stack_status = status["Stacks"][0]["StackStatus"]
+    if stack_status == "REVIEW_IN_PROGRESS":
+        return "CREATE", True
+    return "UPDATE", False

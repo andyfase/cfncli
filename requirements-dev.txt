@@ -2,4 +2,6 @@ build
 twine
 pytest
 flake8
+moto[cloudformation,s3,sts]
+pytest-cov
 black
