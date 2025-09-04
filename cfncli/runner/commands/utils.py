@@ -118,8 +118,8 @@ def check_changeset_type(client, stack_name):
         if is_stack_does_not_exist_exception(e):
             return "CREATE", True
         raise
-    if len(status['Stacks']) < 1:
-        return "CREATE", True ## Should never get here as exception handles not existant stack
+    if len(status["Stacks"]) < 1:
+        return "CREATE", True  ## Should never get here as exception handles not existant stack
     stack_status = status["Stacks"][0]["StackStatus"]
     if stack_status == "REVIEW_IN_PROGRESS":
         return "CREATE", True
