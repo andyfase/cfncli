@@ -163,11 +163,14 @@ class StackPrettyPrinter(object):
             value_style={"fg": "red"} if stack.enable_termination_protection else None,
         )
 
-        drift_status = stack.drift_information["StackDriftStatus"]
-        drift_timestamp = stack.drift_information.get("LastCheckTimestamp")
-        echo_pair("Drift Status", drift_status, value_style=DRIFT_STATUS_TO_COLOR[drift_status])
-        if drift_timestamp:
-            echo_pair("Lasted Checked", drift_timestamp)
+        if stack.drift_information:
+            drift_status = stack.drift_information["StackDriftStatus"]
+            drift_timestamp = stack.drift_information.get("LastCheckTimestamp")
+            echo_pair("Drift Status", drift_status, value_style=DRIFT_STATUS_TO_COLOR[drift_status])
+            if drift_timestamp:
+                echo_pair("Lasted Checked", drift_timestamp)
+        else:
+            echo_pair("Drift Status", "NOT_CHECKED")
 
     def pprint_stack_parameters(self, stack):
         if stack.parameters:
@@ -199,8 +202,6 @@ class StackPrettyPrinter(object):
             res_type = res.resource_type
             status = res.resource_status
             status_reason = res.resource_status_reason
-            drift_status = res.drift_information.get("StackResourceDriftStatus")
-            drift_timestamp = res.drift_information.get("LastCheckTimestamp", None)
             last_updated = res.last_updated_timestamp
 
             echo_pair("{} ({})".format(logical_id, res_type), indent=2)
@@ -209,9 +210,10 @@ class StackPrettyPrinter(object):
             echo_pair("Status", status, value_style=STACK_STATUS_TO_COLOR[status], indent=4)
             if status_reason:
                 echo_pair("Reason", status_reason, indent=6)
-            echo_pair("Drift Status", drift_status, value_style=DRIFT_STATUS_TO_COLOR[drift_status], indent=4)
-            if drift_timestamp:
-                echo_pair("Lasted Checked", drift_timestamp, indent=6)
+            if res.drift_information:
+                drift_status = res.drift_information.get("StackResourceDriftStatus", "NOT_CHECKED")
+                echo_pair("Drift Status", drift_status, value_style=DRIFT_STATUS_TO_COLOR[drift_status], indent=4)
+                echo_pair("Lasted Checked", res.drift_information.get("LastCheckTimestamp", "unknown"), indent=6)
 
     def pprint_stack_exports(self, stack, session):
         client = session.client("cloudformation")
@@ -246,7 +248,7 @@ class StackPrettyPrinter(object):
             change_res_id = change["ResourceChange"].get("PhysicalResourceId", None)
             change_scope = change["ResourceChange"].get("Scope", None)
             change_details = {}
-            for detail in change["ResourceChange"].get("Details", None):
+            for detail in change["ResourceChange"].get("Details", []):
                 if detail["Target"].get("Path", None):
                     name = detail["Target"].get("Name", detail["Target"]["Path"])
                     if name not in change_details or detail["Evaluation"] == "Static":
