@@ -249,7 +249,7 @@ class StackPrettyPrinter(object):
             change_res_id = change["ResourceChange"].get("PhysicalResourceId", None)
             change_scope = change["ResourceChange"].get("Scope", None)
             change_details = {}
-            for detail in change["ResourceChange"].get("Details", None):
+            for detail in change["ResourceChange"].get("Details", []):
                 if detail["Target"].get("Path", None):
                     name = detail["Target"].get("Name", detail["Target"]["Path"])
                     if name not in change_details or detail["Evaluation"] == "Static":

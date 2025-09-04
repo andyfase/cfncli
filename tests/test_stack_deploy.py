@@ -18,13 +18,12 @@ def test_stack_deploy_success(cli_runner, temp_config_file):
         result = cli_runner.invoke(cli, [
             "-f", "cfn-cli.yaml",
             "-s", "Test.TestStack",
-            "stack", "deploy",
-            "--no-wait"
+            "stack", "deploy"
         ])
         
         assert result.exit_code == 0
         assert "Deploying stack" in result.output
-        assert "Stack deployment started" in result.output
+        assert "Stack deployment complete" in result.output
     finally:
         os.chdir(original_cwd)
 

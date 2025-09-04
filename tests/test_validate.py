@@ -5,6 +5,7 @@ from cfncli.cli.main import cli
 import os
 
 
+@mock_aws
 def test_validate_template(cli_runner, temp_config_file):
     """Test template validation."""
     tmpdir, config_path, template_path = temp_config_file

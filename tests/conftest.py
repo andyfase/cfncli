@@ -46,7 +46,7 @@ def cli_runner():
 
 @pytest.fixture
 def sample_config():
-    """Sample cfn-cli configuration."""
+    """Initial cfn-cli configuration."""
     return """
 Version: 3
 
@@ -58,7 +58,6 @@ Stages:
       Parameters:
         BucketName: test-bucket
 """
-
 
 @pytest.fixture
 def sample_template():
@@ -79,6 +78,25 @@ Outputs:
     Value: !Ref TestBucket
 """
 
+@pytest.fixture
+def sample_template_changed():
+    """Sample CloudFormation template."""
+    return """
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Test template
+Parameters:
+  BucketName:
+    Type: String
+Resources:
+  TestBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "${BucketName}-Foo"
+Outputs:
+  BucketName:
+    Value: !Ref TestBucket
+"""
+
 
 @pytest.fixture
 def temp_config_file(sample_config, sample_template):
@@ -92,5 +110,20 @@ def temp_config_file(sample_config, sample_template):
         
         with open(template_path, "w") as f:
             f.write(sample_template)
+        
+        yield tmpdir, config_path, template_path
+
+@pytest.fixture
+def temp_config_file_changed(sample_config, sample_template_changed):
+    """Create temporary config and template files."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        config_path = os.path.join(tmpdir, "cfn-cli.yaml")
+        template_path = os.path.join(tmpdir, "test-template.yaml")
+        
+        with open(config_path, "w") as f:
+            f.write(sample_config)
+        
+        with open(template_path, "w") as f:
+            f.write(sample_template_changed)
         
         yield tmpdir, config_path, template_path

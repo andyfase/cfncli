@@ -4,7 +4,7 @@ from moto import mock_aws
 from cfncli.cli.main import cli
 import os
 
-
+@mock_aws
 def test_status_existing_stack(cli_runner, temp_config_file, cfn_client):
     """Test status command for existing stack."""
     tmpdir, config_path, template_path = temp_config_file
@@ -34,7 +34,7 @@ def test_status_existing_stack(cli_runner, temp_config_file, cfn_client):
     finally:
         os.chdir(original_cwd)
 
-
+@mock_aws
 def test_status_with_resources(cli_runner, temp_config_file, cfn_client, monkeypatch):
     """Test status command with resources flag."""
     tmpdir, config_path, template_path = temp_config_file
@@ -75,6 +75,7 @@ def test_status_with_resources(cli_runner, temp_config_file, cfn_client, monkeyp
         os.chdir(original_cwd)
 
 
+@mock_aws
 def test_status_nonexistent_stack(cli_runner, temp_config_file):
     """Test status command for non-existent stack."""
     tmpdir, config_path, template_path = temp_config_file
@@ -88,6 +89,7 @@ def test_status_nonexistent_stack(cli_runner, temp_config_file):
             "-s", "Test.TestStack",
             "status"
         ])
+        
         
         assert result.exit_code == 0
         assert "STACK_NOT_FOUND" in result.output

@@ -4,7 +4,7 @@ from moto import mock_aws
 from cfncli.cli.main import cli
 import os
 
-
+@mock_aws
 def test_stack_delete_success(cli_runner, temp_config_file, cfn_client):
     """Test successful stack deletion."""
     tmpdir, config_path, template_path = temp_config_file
@@ -36,6 +36,7 @@ def test_stack_delete_success(cli_runner, temp_config_file, cfn_client):
         os.chdir(original_cwd)
 
 
+@mock_aws
 def test_stack_delete_ignore_missing(cli_runner, temp_config_file):
     """Test stack deletion with ignore missing option."""
     tmpdir, config_path, template_path = temp_config_file
