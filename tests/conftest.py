@@ -60,6 +60,21 @@ Stages:
 """
 
 @pytest.fixture
+def sample_config_changed():
+    """Initial cfn-cli configuration."""
+    return """
+Version: 3
+
+Stages:
+  Test:
+    TestStack:
+      Template: test-template.yaml
+      Region: us-east-1
+      Parameters:
+        BucketName: test-bucket-changed
+"""
+
+@pytest.fixture
 def sample_template():
     """Sample CloudFormation template."""
     return """
@@ -114,14 +129,14 @@ def temp_config_file(sample_config, sample_template):
         yield tmpdir, config_path, template_path
 
 @pytest.fixture
-def temp_config_file_changed(sample_config, sample_template_changed):
+def temp_config_file_changed(sample_config_changed, sample_template_changed):
     """Create temporary config and template files."""
     with tempfile.TemporaryDirectory() as tmpdir:
         config_path = os.path.join(tmpdir, "cfn-cli.yaml")
         template_path = os.path.join(tmpdir, "test-template.yaml")
         
         with open(config_path, "w") as f:
-            f.write(sample_config)
+            f.write(sample_config_changed)
         
         with open(template_path, "w") as f:
             f.write(sample_template_changed)

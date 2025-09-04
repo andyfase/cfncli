@@ -21,6 +21,6 @@ def test_validate_template(cli_runner, temp_config_file):
         ])
         
         assert result.exit_code == 0
-        assert "Validating template for stack" in result.output
+        assert "Validation complete" in result.output
     finally:
         os.chdir(original_cwd)

@@ -20,7 +20,6 @@ def test_stack_deploy_success(cli_runner, temp_config_file):
             "-s", "Test.TestStack",
             "stack", "deploy"
         ])
-        
         assert result.exit_code == 0
         assert "Deploying stack" in result.output
         assert "Stack deployment complete" in result.output

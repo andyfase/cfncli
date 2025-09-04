@@ -4,66 +4,64 @@ from moto import mock_aws
 from cfncli.cli.main import cli
 import os
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 @mock_aws
-def test_stack_update_success(cli_runner, temp_config_file, cfn_client):
+def test_stack_update_success(cli_runner, temp_config_file, temp_config_file_changed):
     """Test successful stack update."""
-    tmpdir, config_path, template_path = temp_config_file
-    
-    # Create initial stack
-    with open(template_path, 'r') as f:
-        template_body = f.read()
-    
-    cfn_client.create_stack(
-        StackName="TestStack",
-        TemplateBody=template_body,
-        Parameters=[{"ParameterKey": "BucketName", "ParameterValue": "test-bucket"}]
-    )
-    
+    tmpdir, _config_path, _template_path = temp_config_file
+    tmpdir_changed, _config_path_changed, _template_path_changed = temp_config_file_changed
     original_cwd = os.getcwd()
-    os.chdir(tmpdir)
     
     try:
+        # Create initial stack
+        os.chdir(tmpdir)
+        result = cli_runner.invoke(cli, [
+            "-f", "cfn-cli.yaml",
+            "-s", "Test.TestStack",
+            "stack", "deploy"
+        ])
+        assert result.exit_code == 0
+    
+        os.chdir(tmpdir_changed)
         result = cli_runner.invoke(cli, [
             "-f", "cfn-cli.yaml",
             "-s", "Test.TestStack",
             "stack", "update",
-            "--no-wait"
         ])
-        
         assert result.exit_code == 0
-        assert "Updating stack" in result.output
+        assert "Stack update complete" in result.output
     finally:
         os.chdir(original_cwd)
 
 
 @mock_aws
-def test_stack_update_use_previous_template(cli_runner, temp_config_file, cfn_client):
+def test_stack_update_use_previous_template(cli_runner, temp_config_file, temp_config_file_changed):
     """Test stack update with previous template."""
-    tmpdir, config_path, template_path = temp_config_file
-    
-    # Create initial stack
-    with open(template_path, 'r') as f:
-        template_body = f.read()
-    
-    cfn_client.create_stack(
-        StackName="TestStack",
-        TemplateBody=template_body,
-        Parameters=[{"ParameterKey": "BucketName", "ParameterValue": "test-bucket"}]
-    )
-    
+    tmpdir, _config_path, _template_path = temp_config_file
+    tmpdir_changed, _config_path_changed, _template_path_changed = temp_config_file_changed
     original_cwd = os.getcwd()
-    os.chdir(tmpdir)
     
     try:
+        # Create initial stack
+        os.chdir(tmpdir)
+        result = cli_runner.invoke(cli, [
+            "-f", "cfn-cli.yaml",
+            "-s", "Test.TestStack",
+            "stack", "deploy"
+        ])
+        assert result.exit_code == 0
+    
+        os.chdir(tmpdir_changed)
         result = cli_runner.invoke(cli, [
             "-f", "cfn-cli.yaml",
             "-s", "Test.TestStack",
             "stack", "update",
-            "--use-previous-template",
-            "--no-wait"
-        ])
-        
+            "--use-previous-template"
+        ])      
         assert result.exit_code == 0
+        assert "Stack update complete" in result.output
     finally:
         os.chdir(original_cwd)
