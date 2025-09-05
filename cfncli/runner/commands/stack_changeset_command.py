@@ -8,7 +8,13 @@ from cfncli.cli.utils.common import is_not_rate_limited_exception, is_rate_limit
 from cfncli.cli.utils.deco import CfnCliException
 from cfncli.cli.utils.pprint import echo_pair
 from .command import Command
-from .utils import update_termination_protection, check_changeset_type, create_change_set, describe_change_set
+from .utils import (
+    update_termination_protection,
+    check_changeset_type,
+    create_change_set,
+    describe_change_set,
+    is_changeset_no_changes,
+)
 from cfncli.cli.utils.colormaps import CHANGESET_STATUS_TO_COLOR, RED, AMBER, GREEN
 
 
@@ -70,7 +76,20 @@ class StackChangesetCommand(Command):
             self.ppt.pprint_parameters(parameters)
 
             # create changeset
-            result = create_change_set(client, parameters)
+            try:
+                result = create_change_set(client, parameters)
+            except Exception as e:
+                if is_changeset_no_changes(e):
+                    if self.options.ignore_no_update:
+                        self.ppt.secho(
+                            f"ChangeSet for {stack_context.stack_key} contains no updates, skipping...", fg=RED
+                        )
+                        return False, result
+                    else:
+                        raise CfnCliException(
+                            f"Changeset for {stack_context.stack_key} contains no updates, use -i if this is expected"
+                        )
+                raise e
             changeset_id = result["Id"]
             echo_pair("ChangeSet ARN", changeset_id)
 

@@ -5,24 +5,21 @@ from cfncli.cli.main import cli
 import os
 
 @mock_aws
-def test_status_existing_stack(cli_runner, temp_config_file, cfn_client):
+def test_status_existing_stack(cli_runner, get_config_single):
     """Test status command for existing stack."""
-    tmpdir, config_path, template_path = temp_config_file
-    
-    # Create stack first
-    with open(template_path, 'r') as f:
-        template_body = f.read()
-    
-    cfn_client.create_stack(
-        StackName="TestStack",
-        TemplateBody=template_body,
-        Parameters=[{"ParameterKey": "BucketName", "ParameterValue": "test-bucket"}]
-    )
-    
+    tmpdir = get_config_single
     original_cwd = os.getcwd()
-    os.chdir(tmpdir)
-    
+
     try:
+        os.chdir(tmpdir)
+        # Create initial stack
+        result = cli_runner.invoke(cli, [
+            "-f", "cfn-cli.yaml",
+            "-s", "Test.TestStack",
+            "stack", "deploy"
+        ])
+        assert result.exit_code == 0
+
         result = cli_runner.invoke(cli, [
             "-f", "cfn-cli.yaml",
             "-s", "Test.TestStack",
@@ -35,33 +32,21 @@ def test_status_existing_stack(cli_runner, temp_config_file, cfn_client):
         os.chdir(original_cwd)
 
 @mock_aws
-def test_status_with_resources(cli_runner, temp_config_file, cfn_client, monkeypatch):
+def test_status_with_resources(cli_runner, get_config_single):
     """Test status command with resources flag."""
-    tmpdir, config_path, template_path = temp_config_file
-    
-    # Create stack first
-    with open(template_path, 'r') as f:
-        template_body = f.read()
-    
-    cfn_client.create_stack(
-        StackName="TestStack",
-        TemplateBody=template_body,
-        Parameters=[{"ParameterKey": "BucketName", "ParameterValue": "test-bucket"}]
-    )
-    
-    # Mock resource_summaries.all() to prevent hanging with moto
-    def mock_resource_summaries_all(self):
-        # Return empty list to avoid hanging iteration
-        return []
-    
-    # Patch the resource_summaries.all method
-    import boto3.resources.collection
-    monkeypatch.setattr(boto3.resources.collection.ResourceCollection, "all", mock_resource_summaries_all)
-    
+    tmpdir = get_config_single
     original_cwd = os.getcwd()
-    os.chdir(tmpdir)
-    
+
     try:
+        os.chdir(tmpdir)
+        # Create initial stack
+        result = cli_runner.invoke(cli, [
+            "-f", "cfn-cli.yaml",
+            "-s", "Test.TestStack",
+            "stack", "deploy"
+        ])
+        assert result.exit_code == 0
+
         result = cli_runner.invoke(cli, [
             "-f", "cfn-cli.yaml",
             "-s", "Test.TestStack",
@@ -76,21 +61,19 @@ def test_status_with_resources(cli_runner, temp_config_file, cfn_client, monkeyp
 
 
 @mock_aws
-def test_status_nonexistent_stack(cli_runner, temp_config_file):
+def test_status_nonexistent_stack(cli_runner, get_config_single):
     """Test status command for non-existent stack."""
-    tmpdir, config_path, template_path = temp_config_file
-    
+    tmpdir = get_config_single    
     original_cwd = os.getcwd()
-    os.chdir(tmpdir)
-    
+
     try:
+        os.chdir(tmpdir)
         result = cli_runner.invoke(cli, [
             "-f", "cfn-cli.yaml",
             "-s", "Test.TestStack",
             "status"
         ])
-        
-        
+
         assert result.exit_code == 0
         assert "STACK_NOT_FOUND" in result.output
     finally:

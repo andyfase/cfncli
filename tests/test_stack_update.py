@@ -9,10 +9,9 @@ logger = logging.getLogger(__name__)
 
 
 @mock_aws
-def test_stack_update_success(cli_runner, temp_config_file, temp_config_file_changed):
+def test_stack_update_success(cli_runner, get_config_single):
     """Test successful stack update."""
-    tmpdir, _config_path, _template_path = temp_config_file
-    tmpdir_changed, _config_path_changed, _template_path_changed = temp_config_file_changed
+    tmpdir = get_config_single
     original_cwd = os.getcwd()
     
     try:
@@ -25,10 +24,9 @@ def test_stack_update_success(cli_runner, temp_config_file, temp_config_file_cha
         ])
         assert result.exit_code == 0
     
-        os.chdir(tmpdir_changed)
         result = cli_runner.invoke(cli, [
             "-f", "cfn-cli.yaml",
-            "-s", "Test.TestStack",
+            "-s", "Test.TestStackChanged",
             "stack", "update",
         ])
         assert result.exit_code == 0
@@ -38,10 +36,9 @@ def test_stack_update_success(cli_runner, temp_config_file, temp_config_file_cha
 
 
 @mock_aws
-def test_stack_update_use_previous_template(cli_runner, temp_config_file, temp_config_file_changed):
+def test_stack_update_use_previous_template(cli_runner, get_config_single):
     """Test stack update with previous template."""
-    tmpdir, _config_path, _template_path = temp_config_file
-    tmpdir_changed, _config_path_changed, _template_path_changed = temp_config_file_changed
+    tmpdir = get_config_single
     original_cwd = os.getcwd()
     
     try:
@@ -54,10 +51,9 @@ def test_stack_update_use_previous_template(cli_runner, temp_config_file, temp_c
         ])
         assert result.exit_code == 0
     
-        os.chdir(tmpdir_changed)
         result = cli_runner.invoke(cli, [
             "-f", "cfn-cli.yaml",
-            "-s", "Test.TestStack",
+            "-s", "Test.TestStackChanged",
             "stack", "update",
             "--use-previous-template"
         ])      

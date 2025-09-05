@@ -3,16 +3,15 @@ import pytest
 from moto import mock_aws
 from cfncli.cli.main import cli
 import os
-from .test_stack_deploy import test_stack_deploy_success
 
 import logging
 logger = logging.getLogger(__name__)
 
 
 @mock_aws
-def test_changeset_create_new_stack(cli_runner, temp_config_file):
+def test_changeset_create_new_stack(cli_runner, get_config_single):
     """Test changeset creation for new stack."""
-    tmpdir, config_path, template_path = temp_config_file
+    tmpdir = get_config_single
     
     original_cwd = os.getcwd()
     os.chdir(tmpdir)
@@ -32,10 +31,9 @@ def test_changeset_create_new_stack(cli_runner, temp_config_file):
 
 
 @mock_aws
-def test_changeset_create_existing_stack(cli_runner, temp_config_file, temp_config_file_changed):
+def test_changeset_create_existing_stack(cli_runner, get_config_single):
     """Test changeset creation for existing stack with parameter change."""
-    tmpdir, _config_path, _template_path = temp_config_file
-    tmpdir_changed, _config_path_changed, _template_path_changed = temp_config_file_changed
+    tmpdir =  get_config_single
     original_cwd = os.getcwd()
     
     try:
@@ -49,10 +47,9 @@ def test_changeset_create_existing_stack(cli_runner, temp_config_file, temp_conf
         assert result.exit_code == 0
         
         # Create changeset with changed parameters
-        os.chdir(tmpdir_changed)
         result = cli_runner.invoke(cli, [
             "-f", "cfn-cli.yaml",
-            "-s", "Test.TestStack",
+            "-s", "Test.TestStackChanged",
             "stack", "changeset", "create"
         ])
 
@@ -61,11 +58,70 @@ def test_changeset_create_existing_stack(cli_runner, temp_config_file, temp_conf
     finally:
         os.chdir(original_cwd)
 
+# nolog_caplog - used to prevent pytest inferering with logging from click on error cases
+@mock_aws
+def test_changeset_create_fails_no_change(cli_runner, get_config_single, nolog_caplog):
+    """Test changeset creation for existing stack with parameter change."""
+    tmpdir = get_config_single
+    original_cwd = os.getcwd()
+    
+    try:
+        # Create initial stack
+        os.chdir(tmpdir)
+        result = cli_runner.invoke(cli, [
+            "-f", "cfn-cli.yaml",
+            "-s", "Test.TestStack",
+            "stack", "deploy"
+        ])
+        assert result.exit_code == 0
+        
+        # Create changeset with changed parameters
+        result = cli_runner.invoke(cli, [
+            "-f", "cfn-cli.yaml",
+            "-s", "Test.TestStack",
+            "stack", "changeset", "create"
+        ], catch_exceptions=False)
+
+        assert result.exit_code == 1
+        logger.error(result.stdout)
+        assert "contains no updates" in result.stdout
+    finally:
+        os.chdir(original_cwd)
+
+# nolog_caplog - used to prevent pytest inferering with logging from click on error cases
+@mock_aws
+def test_changeset_create_fails_no_change_skip(cli_runner, get_config_single, nolog_caplog):
+    """Test changeset creation for existing stack with parameter change."""
+    tmpdir =  get_config_single
+    original_cwd = os.getcwd()
+    
+    try:
+        # Create initial stack
+        os.chdir(tmpdir)
+        result = cli_runner.invoke(cli, [
+            "-f", "cfn-cli.yaml",
+            "-s", "Test.TestStack",
+            "stack", "deploy"
+        ])
+        assert result.exit_code == 0
+        
+        # Create changeset with changed parameters
+        result = cli_runner.invoke(cli, [
+            "-f", "cfn-cli.yaml",
+            "-s", "Test.TestStack",
+            "stack", "changeset", "create", "-i"
+        ])
+
+        assert result.exit_code == 0
+        assert "contains no updates" in result.stdout
+    finally:
+        os.chdir(original_cwd)
+
 
 @mock_aws
-def test_changeset_create_disable_nested(cli_runner, temp_config_file):
+def test_changeset_create_disable_nested(cli_runner, get_config_single):
     """Test changeset creation with nested disabled."""
-    tmpdir, config_path, template_path = temp_config_file
+    tmpdir = get_config_single
     
     original_cwd = os.getcwd()
     os.chdir(tmpdir)
@@ -73,11 +129,85 @@ def test_changeset_create_disable_nested(cli_runner, temp_config_file):
     try:
         result = cli_runner.invoke(cli, [
             "-f", "cfn-cli.yaml",
-            "-s", "Test.TestStack",
+            "-s", "Test.TestStackChanged",
             "stack", "changeset", "create",
             "--disable-nested"
         ])
         
         assert result.exit_code == 0
+    finally:
+        os.chdir(original_cwd)
+
+@mock_aws
+def test_exec_changeset(cli_runner, get_config_single):
+    """Test changeset creation for existing stack with parameter change."""
+    tmpdir =  get_config_single
+    original_cwd = os.getcwd()
+    
+    try:
+        # Create initial stack
+        os.chdir(tmpdir)
+        result = cli_runner.invoke(cli, [
+            "-f", "cfn-cli.yaml",
+            "-s", "Test.TestStack",
+            "stack", "deploy"
+        ])
+        assert result.exit_code == 0
+        
+        # Create changeset with changed parameters
+        result = cli_runner.invoke(cli, [
+            "-f", "cfn-cli.yaml",
+            "-s", "Test.TestStackChanged",
+            "stack", "changeset", "create", "--store"
+        ])
+
+        assert result.exit_code == 0
+        assert "ChangeSet creation complete" in result.output
+
+        result = cli_runner.invoke(cli, [
+            "-f", "cfn-cli.yaml",
+            "-s", "Test.TestStackChanged",
+            "stack", "changeset", "exec"
+        ])
+
+        assert result.exit_code == 0
+        assert "ChangeSet execution complete" in result.output
+    finally:
+        os.chdir(original_cwd)
+
+@mock_aws
+def test_exec_changeset_no_store(cli_runner, get_config_single):
+    """Test changeset creation for existing stack with parameter change."""
+    tmpdir =  get_config_single
+    original_cwd = os.getcwd()
+    
+    try:
+        # Create initial stack
+        os.chdir(tmpdir)
+        result = cli_runner.invoke(cli, [
+            "-f", "cfn-cli.yaml",
+            "-s", "Test.TestStack",
+            "stack", "deploy"
+        ])
+        assert result.exit_code == 0
+        
+        # Create changeset with changed parameters
+        result = cli_runner.invoke(cli, [
+            "-f", "cfn-cli.yaml",
+            "-s", "Test.TestStackChanged",
+            "stack", "changeset", "create"
+        ])
+
+        assert result.exit_code == 0
+        assert "ChangeSet creation complete" in result.output
+
+        result = cli_runner.invoke(cli, [
+            "-f", "cfn-cli.yaml",
+            "-s", "Test.TestStackChanged",
+            "stack", "changeset", "exec"
+        ])
+
+        # assert result.exit_code == 1
+        assert "ChangeSet file .cfn-cli-changesets does not exist" in result.output
     finally:
         os.chdir(original_cwd)

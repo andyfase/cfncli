@@ -5,7 +5,23 @@ from moto import mock_aws
 from click.testing import CliRunner
 import tempfile
 import os
+import pathlib
+import shutil
+import logging
+import unittest
 
+config_file_name = 'cfn-cli.yaml'
+config_path = os.path.join(pathlib.Path(__file__).parent.resolve(), 'resources', 'config')
+template_path = os.path.join(pathlib.Path(__file__).parent.resolve(), 'resources', 'templates')
+
+@pytest.fixture
+def nolog_caplog(caplog: pytest.LogCaptureFixture):
+    root = logging.getLogger()
+
+    with unittest.mock.patch.object(root, 'disabled', new=False),\
+        unittest.mock.patch.object(root, 'handlers', new=[]), \
+        unittest.mock.patch.object(root, 'level', new=logging.NOTSET):
+        yield caplog
 
 @pytest.fixture
 def aws_credentials():
@@ -43,102 +59,25 @@ def cli_runner():
     """Click CLI runner."""
     return CliRunner()
 
+def read_file(dir, filename):
+    with open(os.path.join(dir, filename)) as f:
+        return f.read()
+    
+def write_file(dir, filename, content):
+    with open(os.path.join(dir, filename), 'w') as f:
+        return f.write(content)
 
 @pytest.fixture
-def sample_config():
-    """Initial cfn-cli configuration."""
-    return """
-Version: 3
+def config_single():
+    return read_file(config_path, 'single.yaml')
 
-Stages:
-  Test:
-    TestStack:
-      Template: test-template.yaml
-      Region: us-east-1
-      Parameters:
-        BucketName: test-bucket
-"""
 
+#
+# one fixture for each type of config, all templates copied across
+#
 @pytest.fixture
-def sample_config_changed():
-    """Initial cfn-cli configuration."""
-    return """
-Version: 3
-
-Stages:
-  Test:
-    TestStack:
-      Template: test-template.yaml
-      Region: us-east-1
-      Parameters:
-        BucketName: test-bucket-changed
-"""
-
-@pytest.fixture
-def sample_template():
-    """Sample CloudFormation template."""
-    return """
-AWSTemplateFormatVersion: '2010-09-09'
-Description: Test template
-Parameters:
-  BucketName:
-    Type: String
-Resources:
-  TestBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Ref BucketName
-Outputs:
-  BucketName:
-    Value: !Ref TestBucket
-"""
-
-@pytest.fixture
-def sample_template_changed():
-    """Sample CloudFormation template."""
-    return """
-AWSTemplateFormatVersion: '2010-09-09'
-Description: Test template
-Parameters:
-  BucketName:
-    Type: String
-Resources:
-  TestBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub "${BucketName}-Foo"
-Outputs:
-  BucketName:
-    Value: !Ref TestBucket
-"""
-
-
-@pytest.fixture
-def temp_config_file(sample_config, sample_template):
-    """Create temporary config and template files."""
+def get_config_single(config_single):
     with tempfile.TemporaryDirectory() as tmpdir:
-        config_path = os.path.join(tmpdir, "cfn-cli.yaml")
-        template_path = os.path.join(tmpdir, "test-template.yaml")
-        
-        with open(config_path, "w") as f:
-            f.write(sample_config)
-        
-        with open(template_path, "w") as f:
-            f.write(sample_template)
-        
-        yield tmpdir, config_path, template_path
-
-@pytest.fixture
-def temp_config_file_changed(sample_config_changed, sample_template_changed):
-    """Create temporary config and template files."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        config_path = os.path.join(tmpdir, "cfn-cli.yaml")
-        template_path = os.path.join(tmpdir, "test-template.yaml")
-        
-        with open(config_path, "w") as f:
-            f.write(sample_config_changed)
-        
-        with open(template_path, "w") as f:
-            f.write(sample_template_changed)
-        
-        yield tmpdir, config_path, template_path
+        write_file(tmpdir, config_file_name, config_single)
+        shutil.copytree(template_path, tmpdir, dirs_exist_ok=True)      
+        yield tmpdir
