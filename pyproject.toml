@@ -49,6 +49,16 @@ exclude = ["tests*"]
 [tool.setuptools.package-data]
 "cfncli.config" = ["*.json", "*.yaml"]
 
+[tool.coverage.run]
+relative_files = true
+source = ["cfncli"]
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+[tool.coverage.html]
+directory = "htmlcov"
+
 [tool.black]
 line-length = 120
 skip-string-normalization = false

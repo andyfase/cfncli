@@ -1,0 +1,13 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Test template
+Parameters:
+  BucketName:
+    Type: String
+Resources:
+  TestBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+Outputs:
+  BucketName:
+    Value: !Ref TestBucket
