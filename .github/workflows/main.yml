@@ -57,6 +57,5 @@ jobs:
     
     - name: Coverage comment
       uses: py-cov-action/python-coverage-comment-action@v3
-      if: github.event_name == 'pull_request'
       with:
         GITHUB_TOKEN: ${{ github.token }}
