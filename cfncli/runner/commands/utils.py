@@ -44,6 +44,18 @@ def is_changeset_does_not_exist_exception(ex):
         return False
 
 
+def is_changeset_no_changes(ex):
+    """Check whether given exception is "stack does not exist",
+    botocore doesn't throw a distinct exception class in this case.
+    """
+    if isinstance(ex, botocore.exceptions.ClientError):
+        error = ex.response.get("Error", {})
+        error_message = error.get("Message", "Unknown")
+        return "No updates are to be performed" in error_message
+    else:
+        return False
+
+
 def is_no_updates_being_performed_exception(ex):
     """Check whether given exception is "no update to be performed"
     botocore doesn't throw a distinct exception class in this case.

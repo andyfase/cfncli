@@ -1,0 +1,31 @@
+Version: 3
+
+Blueprints:
+  bucket:
+    Order: 1
+    Template: ./bucket.yaml
+    StackPolicy: ALLOW_ALL
+    Capabilities: [CAPABILITY_IAM]
+    Package:  false
+    # EnableTerminationProtection: false # Not supported in Moto
+
+Stages:
+  Test:
+    Config:
+      Account: "123456789012"
+      Region: ca-central-1
+      Tags:
+        tag1: tag1
+        tag2: tag2
+    TestStack:
+      Order: 1
+      Extends: bucket
+      StackName: test-bucket
+      Parameters:
+        BucketName: test    
+    TestStackChanged:
+      Order: 1
+      Extends: bucket
+      StackName: test-bucket
+      Parameters:
+        BucketName: changed

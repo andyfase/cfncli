@@ -4,42 +4,42 @@ from moto import mock_aws
 from cfncli.cli.main import cli
 import os
 
+import logging
+logger = logging.getLogger(__name__)
+
 @mock_aws
-def test_stack_delete_success(cli_runner, temp_config_file, cfn_client):
+def test_stack_delete_success(cli_runner, get_config_single):
     """Test successful stack deletion."""
-    tmpdir, config_path, template_path = temp_config_file
-    
-    # Create stack first
-    with open(template_path, 'r') as f:
-        template_body = f.read()
-    
-    cfn_client.create_stack(
-        StackName="TestStack",
-        TemplateBody=template_body,
-        Parameters=[{"ParameterKey": "BucketName", "ParameterValue": "test-bucket"}]
-    )
+    tmpdir = get_config_single
+
     
     original_cwd = os.getcwd()
-    os.chdir(tmpdir)
-    
     try:
+        os.chdir(tmpdir)
+        # Create initial stack
         result = cli_runner.invoke(cli, [
             "-f", "cfn-cli.yaml",
             "-s", "Test.TestStack",
-            "stack", "delete",
-            "--no-wait"
+            "stack", "deploy"
+        ])
+        assert result.exit_code == 0
+
+        result = cli_runner.invoke(cli, [
+            "-f", "cfn-cli.yaml",
+            "-s", "Test.TestStack",
+            "stack", "delete"
         ])
         
         assert result.exit_code == 0
-        assert "Deleting stack" in result.output
+        assert "Stack delete complete" in result.output
     finally:
         os.chdir(original_cwd)
 
 
 @mock_aws
-def test_stack_delete_ignore_missing(cli_runner, temp_config_file):
+def test_stack_delete_ignore_missing(cli_runner, get_config_single):
     """Test stack deletion with ignore missing option."""
-    tmpdir, config_path, template_path = temp_config_file
+    tmpdir = get_config_single
     
     original_cwd = os.getcwd()
     os.chdir(tmpdir)

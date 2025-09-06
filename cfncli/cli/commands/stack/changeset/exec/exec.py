@@ -3,6 +3,7 @@ import click
 import json
 import os
 from cfncli.cli.utils.colormaps import RED
+from cfncli.cli.utils.deco import CfnCliException
 
 from cfncli.cli.context import Context
 from cfncli.cli.utils.deco import command_exception_handler
@@ -46,11 +47,9 @@ def exec(ctx, disable_tail_events, disable_rollback, input, ignore_no_exists):
 
     ## check changeset file exists otherwise error and exit
     if not os.path.exists(input) or not os.path.isfile(input):
-        click.secho(
+        raise CfnCliException(
             f"ChangeSet file {input} does not exist - ensure to create changesets with '--store' parameter before running this command.",
-            fg=RED,
         )
-        return
 
     with open(input) as f:
         changesets = json.load(f)

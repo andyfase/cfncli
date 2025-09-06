@@ -19,7 +19,7 @@ from .colormaps import (
 from .common import is_rate_limited_exception, is_not_rate_limited_exception
 from .events import start_tail_stack_events_daemon
 from .pager import custom_paginator
-from cfncli.runner.commands.utils import describe_change_set
+from cfncli.runner.commands.utils import describe_change_set, is_stack_does_not_exist_exception
 
 
 def echo_list(key, list_styles_pairs, indent=0, sep=": "):
@@ -362,6 +362,14 @@ class StackPrettyPrinter(object):
         backoff.expo, botocore.exceptions.WaiterError, max_tries=10, giveup=is_not_rate_limited_exception
     )
     def wait_until_delete_complete(self, session, stack):
+        ## test to ensure stack still exists before we wait and tail
+        try:
+            stack.load()
+        except botocore.exceptions.ClientError as e:
+            if not is_stack_does_not_exist_exception(e):
+                click.echo(str(e))
+            return
+
         start_tail_stack_events_daemon(session, stack)
 
         waiter = session.client("cloudformation").get_waiter("stack_delete_complete")

@@ -6,9 +6,9 @@ import os
 
 
 @mock_aws
-def test_validate_template(cli_runner, temp_config_file):
+def test_validate_template(cli_runner, get_config_single):
     """Test template validation."""
-    tmpdir, config_path, template_path = temp_config_file
+    tmpdir = get_config_single
     
     original_cwd = os.getcwd()
     os.chdir(tmpdir)

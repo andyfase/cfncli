@@ -6,9 +6,9 @@ import os
 
 
 @mock_aws
-def test_stack_deploy_success(cli_runner, temp_config_file):
+def test_stack_deploy_success(cli_runner, get_config_single):
     """Test successful stack deployment."""
-    tmpdir, config_path, template_path = temp_config_file
+    tmpdir = get_config_single
     
     # Change to temp directory
     original_cwd = os.getcwd()
@@ -28,9 +28,9 @@ def test_stack_deploy_success(cli_runner, temp_config_file):
 
 
 @mock_aws
-def test_stack_deploy_with_options(cli_runner, temp_config_file):
+def test_stack_deploy_with_options(cli_runner, get_config_single):
     """Test stack deployment with various options."""
-    tmpdir, config_path, template_path = temp_config_file
+    tmpdir = get_config_single
     
     original_cwd = os.getcwd()
     os.chdir(tmpdir)
@@ -48,24 +48,15 @@ def test_stack_deploy_with_options(cli_runner, temp_config_file):
         
         assert result.exit_code == 0
         assert "Deploying stack" in result.output
+        assert "Stack deployment complete" not in result.output
     finally:
         os.chdir(original_cwd)
 
 
 @mock_aws
-def test_stack_deploy_ignore_existing(cli_runner, temp_config_file, cfn_client):
+def test_stack_deploy_ignore_existing(cli_runner, get_config_single):
     """Test stack deployment with ignore existing option."""
-    tmpdir, config_path, template_path = temp_config_file
-    
-    # Create stack first
-    with open(template_path, 'r') as f:
-        template_body = f.read()
-    
-    cfn_client.create_stack(
-        StackName="TestStack",
-        TemplateBody=template_body,
-        Parameters=[{"ParameterKey": "BucketName", "ParameterValue": "test-bucket"}]
-    )
+    tmpdir = get_config_single
     
     original_cwd = os.getcwd()
     os.chdir(tmpdir)
@@ -74,10 +65,18 @@ def test_stack_deploy_ignore_existing(cli_runner, temp_config_file, cfn_client):
         result = cli_runner.invoke(cli, [
             "-f", "cfn-cli.yaml",
             "-s", "Test.TestStack",
+            "stack", "deploy"
+        ])
+        assert result.exit_code == 0
+
+        result = cli_runner.invoke(cli, [
+            "-f", "cfn-cli.yaml",
+            "-s", "Test.TestStack",
             "stack", "deploy",
             "--ignore-existing"
         ])
         
         assert result.exit_code == 0
+        assert "already exists" in result.output
     finally:
         os.chdir(original_cwd)
