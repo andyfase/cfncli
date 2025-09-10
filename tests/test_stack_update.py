@@ -9,9 +9,10 @@ logger = logging.getLogger(__name__)
 
 
 @mock_aws
-def test_stack_update_success(cli_runner, get_config_single):
+@pytest.mark.parametrize('get_config', ['single.yaml'], indirect=['get_config'])
+def test_stack_update_success(cli_runner, get_config):
     """Test successful stack update."""
-    tmpdir = get_config_single
+    tmpdir = get_config
     original_cwd = os.getcwd()
     
     try:
@@ -36,9 +37,10 @@ def test_stack_update_success(cli_runner, get_config_single):
 
 
 @mock_aws
-def test_stack_update_use_previous_template(cli_runner, get_config_single):
+@pytest.mark.parametrize('get_config', ['single.yaml'], indirect=['get_config'])
+def test_stack_update_use_previous_template(cli_runner, get_config):
     """Test stack update with previous template."""
-    tmpdir = get_config_single
+    tmpdir = get_config
     original_cwd = os.getcwd()
     
     try:

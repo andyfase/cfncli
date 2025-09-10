@@ -8,9 +8,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 @mock_aws
-def test_stack_delete_success(cli_runner, get_config_single):
+@pytest.mark.parametrize('get_config', ['single.yaml'], indirect=['get_config'])
+def test_stack_delete_success(cli_runner, get_config):
     """Test successful stack deletion."""
-    tmpdir = get_config_single
+    tmpdir = get_config
 
     
     original_cwd = os.getcwd()
@@ -37,9 +38,10 @@ def test_stack_delete_success(cli_runner, get_config_single):
 
 
 @mock_aws
-def test_stack_delete_ignore_missing(cli_runner, get_config_single):
+@pytest.mark.parametrize('get_config', ['single.yaml'], indirect=['get_config'])
+def test_stack_delete_ignore_missing(cli_runner, get_config):
     """Test stack deletion with ignore missing option."""
-    tmpdir = get_config_single
+    tmpdir = get_config
     
     original_cwd = os.getcwd()
     os.chdir(tmpdir)

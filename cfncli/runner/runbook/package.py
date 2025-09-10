@@ -43,7 +43,6 @@ def package_template(ppt, session, template_path, bucket_region, bucket_name=Non
         ppt.secho("Using specified artifact bucket s3://{}".format(bucket_name))
 
     s3_client = session.client("s3")
-
     # create bucket if not exists
     try:
         s3_client.head_bucket(Bucket=bucket_name)
@@ -55,25 +54,26 @@ def package_template(ppt, session, template_path, bucket_region, bucket_name=Non
                 )
             else:
                 s3_client.create_bucket(Bucket=bucket_name)
-            ## add default bucket policy forcing SSL use
-            s3_client.put_bucket_policy(
-                Bucket=bucket_name,
-                Policy=json.dumps(
-                    {
-                        "Version": "2012-10-17",
-                        "Statement": [
-                            {
-                                "Sid": "RestrictToTLSRequestsOnly",
-                                "Action": "s3:*",
-                                "Effect": "Deny",
-                                "Resource": [f"arn:aws:s3:::{bucket_name}", f"arn:aws:s3:::{bucket_name}/*"],
-                                "Condition": {"Bool": {"aws:SecureTransport": "false"}},
-                                "Principal": "*",
-                            }
-                        ],
-                    }
-                ),
-            )
+            ## add default bucket policy forcing SSL use (skip during testing as Moto doesnt work over HTTPS)
+            if not os.environ.get('PYTEST_RUNNER', 'false').lower() == 'true':
+                s3_client.put_bucket_policy(
+                    Bucket=bucket_name,
+                    Policy=json.dumps(
+                        {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Sid": "RestrictToTLSRequestsOnly",
+                                    "Action": "s3:*",
+                                    "Effect": "Deny",
+                                    "Resource": [f"arn:aws:s3:::{bucket_name}", f"arn:aws:s3:::{bucket_name}/*"],
+                                    "Condition": {"Bool": {"aws:SecureTransport": "false"}},
+                                    "Principal": "*",
+                                }
+                            ],
+                        }
+                    ),
+                )
             ppt.secho("Created artifact bucket {}".format(bucket_name))
         else:
             raise e

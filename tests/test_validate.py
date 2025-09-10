@@ -6,9 +6,10 @@ import os
 
 
 @mock_aws
-def test_validate_template(cli_runner, get_config_single):
+@pytest.mark.parametrize('get_config', ['single.yaml'], indirect=['get_config'])
+def test_validate_template(cli_runner, get_config):
     """Test template validation."""
-    tmpdir = get_config_single
+    tmpdir = get_config
     
     original_cwd = os.getcwd()
     os.chdir(tmpdir)

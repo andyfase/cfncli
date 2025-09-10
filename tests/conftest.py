@@ -13,6 +13,7 @@ import unittest
 config_file_name = 'cfn-cli.yaml'
 config_path = os.path.join(pathlib.Path(__file__).parent.resolve(), 'resources', 'config')
 template_path = os.path.join(pathlib.Path(__file__).parent.resolve(), 'resources', 'templates')
+artifact_path = os.path.join(pathlib.Path(__file__).parent.resolve(), 'resources', 'artifacts')
 
 @pytest.fixture
 def nolog_caplog(caplog: pytest.LogCaptureFixture):
@@ -30,28 +31,13 @@ def aws_credentials():
     os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
     os.environ["AWS_SECURITY_TOKEN"] = "testing"
     os.environ["AWS_SESSION_TOKEN"] = "testing"
-    os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
-
-
-@pytest.fixture
-def cfn_client(aws_credentials):
-    """Mock CloudFormation client."""
-    with mock_aws():
-        yield boto3.client("cloudformation", region_name="us-east-1")
-
+    os.environ["AWS_DEFAULT_REGION"] = "ca-central-1"
 
 @pytest.fixture
-def s3_client(aws_credentials):
-    """Mock S3 client."""
-    with mock_aws():
-        yield boto3.client("s3", region_name="us-east-1")
-
-
-@pytest.fixture
-def sts_client(aws_credentials):
-    """Mock STS client."""
-    with mock_aws():
-        yield boto3.client("sts", region_name="us-east-1")
+def setenv_test_runner():
+    """Code has places where logic is skipped for MOTO."""
+    os.environ['PYTEST_RUNNER'] = 'true'
+    return True
 
 
 @pytest.fixture
@@ -67,17 +53,14 @@ def write_file(dir, filename, content):
     with open(os.path.join(dir, filename), 'w') as f:
         return f.write(content)
 
-@pytest.fixture
-def config_single():
-    return read_file(config_path, 'single.yaml')
+def read_config(filename):
+    return read_file(config_path, filename)
 
-
-#
-# one fixture for each type of config, all templates copied across
-#
 @pytest.fixture
-def get_config_single(config_single):
+def get_config(request):
+    config = read_config(request.param)
     with tempfile.TemporaryDirectory() as tmpdir:
-        write_file(tmpdir, config_file_name, config_single)
-        shutil.copytree(template_path, tmpdir, dirs_exist_ok=True)      
+        write_file(tmpdir, config_file_name, config)
+        shutil.copytree(template_path, tmpdir, dirs_exist_ok=True) 
+        shutil.copytree(artifact_path, tmpdir, dirs_exist_ok=True)      
         yield tmpdir

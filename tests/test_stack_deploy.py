@@ -6,9 +6,10 @@ import os
 
 
 @mock_aws
-def test_stack_deploy_success(cli_runner, get_config_single):
+@pytest.mark.parametrize('get_config', ['single.yaml'], indirect=['get_config'])
+def test_stack_deploy_success(cli_runner, get_config):
     """Test successful stack deployment."""
-    tmpdir = get_config_single
+    tmpdir = get_config
     
     # Change to temp directory
     original_cwd = os.getcwd()
@@ -28,9 +29,10 @@ def test_stack_deploy_success(cli_runner, get_config_single):
 
 
 @mock_aws
-def test_stack_deploy_with_options(cli_runner, get_config_single):
+@pytest.mark.parametrize('get_config', ['single.yaml'], indirect=['get_config'])
+def test_stack_deploy_with_options(cli_runner, get_config):
     """Test stack deployment with various options."""
-    tmpdir = get_config_single
+    tmpdir = get_config
     
     original_cwd = os.getcwd()
     os.chdir(tmpdir)
@@ -54,9 +56,10 @@ def test_stack_deploy_with_options(cli_runner, get_config_single):
 
 
 @mock_aws
-def test_stack_deploy_ignore_existing(cli_runner, get_config_single):
+@pytest.mark.parametrize('get_config', ['single.yaml'], indirect=['get_config'])
+def test_stack_deploy_ignore_existing(cli_runner, get_config):
     """Test stack deployment with ignore existing option."""
-    tmpdir = get_config_single
+    tmpdir = get_config
     
     original_cwd = os.getcwd()
     os.chdir(tmpdir)

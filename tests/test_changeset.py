@@ -9,10 +9,10 @@ logger = logging.getLogger(__name__)
 
 
 @mock_aws
-def test_changeset_create_new_stack(cli_runner, get_config_single):
+@pytest.mark.parametrize('get_config', ['single.yaml'], indirect=['get_config'])
+def test_changeset_create_new_stack(cli_runner, get_config):
     """Test changeset creation for new stack."""
-    tmpdir = get_config_single
-    
+    tmpdir = get_config
     original_cwd = os.getcwd()
     os.chdir(tmpdir)
     
@@ -31,9 +31,10 @@ def test_changeset_create_new_stack(cli_runner, get_config_single):
 
 
 @mock_aws
-def test_changeset_create_existing_stack(cli_runner, get_config_single):
+@pytest.mark.parametrize('get_config', ['single.yaml'], indirect=['get_config'])
+def test_changeset_create_existing_stack(cli_runner, get_config):
     """Test changeset creation for existing stack with parameter change."""
-    tmpdir =  get_config_single
+    tmpdir =  get_config
     original_cwd = os.getcwd()
     
     try:
@@ -60,9 +61,10 @@ def test_changeset_create_existing_stack(cli_runner, get_config_single):
 
 # nolog_caplog - used to prevent pytest inferering with logging from click on error cases
 @mock_aws
-def test_changeset_create_fails_no_change(cli_runner, get_config_single, nolog_caplog):
+@pytest.mark.parametrize('get_config', ['single.yaml'], indirect=['get_config'])
+def test_changeset_create_fails_no_change(cli_runner, get_config, nolog_caplog):
     """Test changeset creation for existing stack with parameter change."""
-    tmpdir = get_config_single
+    tmpdir = get_config
     original_cwd = os.getcwd()
     
     try:
@@ -90,9 +92,10 @@ def test_changeset_create_fails_no_change(cli_runner, get_config_single, nolog_c
 
 # nolog_caplog - used to prevent pytest inferering with logging from click on error cases
 @mock_aws
-def test_changeset_create_fails_no_change_skip(cli_runner, get_config_single, nolog_caplog):
+@pytest.mark.parametrize('get_config', ['single.yaml'], indirect=['get_config'])
+def test_changeset_create_fails_no_change_skip(cli_runner, get_config, nolog_caplog):
     """Test changeset creation for existing stack with parameter change."""
-    tmpdir =  get_config_single
+    tmpdir =  get_config
     original_cwd = os.getcwd()
     
     try:
@@ -119,9 +122,10 @@ def test_changeset_create_fails_no_change_skip(cli_runner, get_config_single, no
 
 
 @mock_aws
-def test_changeset_create_disable_nested(cli_runner, get_config_single):
+@pytest.mark.parametrize('get_config', ['single.yaml'], indirect=['get_config'])
+def test_changeset_create_disable_nested(cli_runner, get_config):
     """Test changeset creation with nested disabled."""
-    tmpdir = get_config_single
+    tmpdir = get_config
     
     original_cwd = os.getcwd()
     os.chdir(tmpdir)
@@ -139,9 +143,10 @@ def test_changeset_create_disable_nested(cli_runner, get_config_single):
         os.chdir(original_cwd)
 
 @mock_aws
-def test_exec_changeset(cli_runner, get_config_single):
+@pytest.mark.parametrize('get_config', ['single.yaml'], indirect=['get_config'])
+def test_exec_changeset(cli_runner, get_config):
     """Test changeset creation for existing stack with parameter change."""
-    tmpdir =  get_config_single
+    tmpdir =  get_config
     original_cwd = os.getcwd()
     
     try:
@@ -176,9 +181,10 @@ def test_exec_changeset(cli_runner, get_config_single):
         os.chdir(original_cwd)
 
 @mock_aws
-def test_exec_changeset_no_store(cli_runner, get_config_single):
+@pytest.mark.parametrize('get_config', ['single.yaml'], indirect=['get_config'])
+def test_exec_changeset_no_store(cli_runner, get_config):
     """Test changeset creation for existing stack with parameter change."""
-    tmpdir =  get_config_single
+    tmpdir =  get_config
     original_cwd = os.getcwd()
     
     try:
