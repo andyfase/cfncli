@@ -103,7 +103,7 @@ class FormatV2(ConfigFormat):
         stages = config.get("Stages", dict())
         for stage_key, stage_stacks in stages.items():
             stacks = copy.deepcopy(stage_stacks)
-            stage_config = stacks.pop("Config", {})
+            stage_config = stacks.get("Config", {})
 
             stage_extend = stages.get(stage_config.get("Extends", ""), {})
             if stage_extend:
@@ -114,6 +114,8 @@ class FormatV2(ConfigFormat):
             if not stage_config.get("Order", None):
                 stage_config["Order"] = 999
             for stack_key, stack_config in stacks.items():
+                if stack_key == 'Config':
+                    continue
                 base = dict()
                 blueprint_id = stack_config.get("Extends")
                 if blueprint_id:
@@ -124,7 +126,6 @@ class FormatV2(ConfigFormat):
 
                 conservative_merger.merge(stack_config, base)
                 stack = self._build_stack(stage_key, stack_key, stage_config, copy.deepcopy(stack_config))
-
                 deployment.add_stack(stage_key, stack_key, stack)
 
         return deployment
