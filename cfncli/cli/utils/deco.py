@@ -35,6 +35,5 @@ def command_exception_handler(f):
             if ctx.obj.verbosity > 0:
                 traceback.print_exc()
             raise click.Abort
-        
 
     return wrapper

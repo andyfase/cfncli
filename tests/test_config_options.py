@@ -9,6 +9,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 @pytest.mark.parametrize("get_config", ["config-options.yaml"], indirect=["get_config"])
 @mock_aws
 def test_invalid_account(cli_runner, get_config):
@@ -26,6 +27,7 @@ def test_invalid_account(cli_runner, get_config):
     finally:
         os.chdir(original_cwd)
 
+
 @pytest.mark.parametrize("get_config", ["config-options.yaml"], indirect=["get_config"])
 @mock_aws
 def test_region_override(cli_runner, get_config):
@@ -42,6 +44,7 @@ def test_region_override(cli_runner, get_config):
         assert "us-east-1" in result.output
     finally:
         os.chdir(original_cwd)
+
 
 @pytest.mark.parametrize("get_config", ["config-options.yaml"], indirect=["get_config"])
 @mock_aws
@@ -62,6 +65,7 @@ def test_stage_extend(cli_runner, get_config):
     finally:
         os.chdir(original_cwd)
 
+
 @pytest.mark.parametrize("get_config", ["config-options.yaml"], indirect=["get_config"])
 @mock_aws
 def test_stage_extend_merge(cli_runner, get_config):
@@ -80,4 +84,3 @@ def test_stage_extend_merge(cli_runner, get_config):
         assert "stack/different-bucket" in result.output
     finally:
         os.chdir(original_cwd)
-
