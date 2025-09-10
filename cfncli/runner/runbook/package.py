@@ -55,7 +55,7 @@ def package_template(ppt, session, template_path, bucket_region, bucket_name=Non
             else:
                 s3_client.create_bucket(Bucket=bucket_name)
             ## add default bucket policy forcing SSL use (skip during testing as Moto doesnt work over HTTPS)
-            if not os.environ.get('PYTEST_RUNNER', 'false').lower() == 'true':
+            if not os.environ.get("PYTEST_RUNNER", "false").lower() == "true":
                 s3_client.put_bucket_policy(
                     Bucket=bucket_name,
                     Policy=json.dumps(
