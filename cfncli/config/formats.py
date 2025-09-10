@@ -123,7 +123,7 @@ class FormatV2(ConfigFormat):
                     base = copy.deepcopy(blueprint)
 
                 conservative_merger.merge(stack_config, base)
-                stack = self._build_stack(stage_key, stack_key, stage_config, stack_config)
+                stack = self._build_stack(stage_key, stack_key, stage_config, copy.deepcopy(stack_config))
 
                 deployment.add_stack(stage_key, stack_key, stack)
 
