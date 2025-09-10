@@ -114,7 +114,7 @@ class FormatV2(ConfigFormat):
             if not stage_config.get("Order", None):
                 stage_config["Order"] = 999
             for stack_key, stack_config in stacks.items():
-                if stack_key == 'Config':
+                if stack_key == "Config":
                     continue
                 base = dict()
                 blueprint_id = stack_config.get("Extends")
