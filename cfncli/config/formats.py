@@ -107,7 +107,8 @@ class FormatV2(ConfigFormat):
 
             stage_extend = stages.get(stage_config.get("Extends", ""), {})
             if stage_extend:
-                stage_extend_config = stage_extend.pop("Config", {})
+                stage_config.pop("Extends", {})
+                stage_extend_config = stage_extend.get("Config", {})
                 conservative_merger.merge(stage_config, stage_extend_config)
                 conservative_merger.merge(stacks, stage_extend)
 
