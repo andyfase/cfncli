@@ -50,23 +50,23 @@
 | cfncli/cli/utils/\_\_init\_\_.py                                |        0 |        0 |    100% |           |
 | cfncli/cli/utils/colormaps.py                                   |       26 |        2 |     92% |     97-98 |
 | cfncli/cli/utils/common.py                                      |        7 |        1 |     86% |         8 |
-| cfncli/cli/utils/deco.py                                        |       23 |        6 |     74% | 23, 27-31 |
-| cfncli/cli/utils/events.py                                      |       54 |        7 |     87% |30, 47, 54-55, 81-82, 94 |
+| cfncli/cli/utils/deco.py                                        |       29 |        6 |     79% |24, 29-32, 36 |
+| cfncli/cli/utils/events.py                                      |       54 |        9 |     83% |30, 47, 63-68, 81-82, 94 |
 | cfncli/cli/utils/pager.py                                       |       12 |       11 |      8% |      8-23 |
 | cfncli/cli/utils/pprint.py                                      |      268 |      128 |     52% |26-40, 57, 94, 97, 126-128, 133-142, 157, 159, 167-171, 176-193, 212, 214-216, 219-228, 237, 252-255, 260, 267, 269, 271-287, 302-303, 306-314, 317-349, 370, 373-376, 395-399, 409-418 |
 | cfncli/config/\_\_init\_\_.py                                   |       23 |        6 |     74% | 26, 29-33 |
 | cfncli/config/config.py                                         |       28 |        3 |     89% | 27, 41-42 |
 | cfncli/config/deployment.py                                     |       63 |        6 |     90% |48-50, 98-99, 102 |
-| cfncli/config/formats.py                                        |      103 |       27 |     74% |29-34, 41, 44, 51, 54-55, 58, 93-97, 110-112, 122, 140, 147, 152-155, 168-169 |
+| cfncli/config/formats.py                                        |      106 |       24 |     77% |29-34, 41, 44, 51, 54-55, 58, 93-97, 125, 142, 149, 154-157, 170-171 |
 | cfncli/config/schema.py                                         |        8 |        0 |    100% |           |
 | cfncli/config/template.py                                       |       16 |        2 |     88% |     30-31 |
 | cfncli/ext\_customizations/\_\_init\_\_.py                      |        0 |        0 |    100% |           |
 | cfncli/ext\_customizations/cloudformation/\_\_init\_\_.py       |        0 |        0 |    100% |           |
-| cfncli/ext\_customizations/cloudformation/artifact\_exporter.py |      313 |      160 |     49% |43, 47-50, 54-58, 62, 66, 70, 75-95, 123-147, 151-152, 165-172, 176-187, 192-200, 204-207, 223, 226-255, 262-263, 277, 285-295, 433, 442-472, 535-552, 575-588, 597-606, 616-627, 637-657 |
+| cfncli/ext\_customizations/cloudformation/artifact\_exporter.py |      313 |       61 |     81% |48, 56, 91, 127, 134-135, 144-147, 192-200, 227, 232, 235-236, 248-250, 262-263, 433, 442-472, 535-552, 576, 599, 619-627, 640 |
 | cfncli/ext\_customizations/cloudformation/exceptions.py         |       22 |        3 |     86% |       5-7 |
-| cfncli/ext\_customizations/cloudformation/yamlhelper.py         |       40 |       26 |     35% |30-57, 61, 70-71, 80-81, 92-101, 106 |
+| cfncli/ext\_customizations/cloudformation/yamlhelper.py         |       40 |        3 |     92% |     49-55 |
 | cfncli/ext\_customizations/s3uploader/\_\_init\_\_.py           |        0 |        0 |    100% |           |
-| cfncli/ext\_customizations/s3uploader/s3uploader.py             |      103 |       74 |     28% |33-35, 51, 55-57, 60-70, 80-113, 129-134, 144-151, 154, 158-175, 182-187, 194-198, 204-210 |
+| cfncli/ext\_customizations/s3uploader/s3uploader.py             |      103 |       23 |     78% |33-35, 55-57, 85-86, 95-96, 99, 109-113, 132, 147, 182-187 |
 | cfncli/runner/\_\_init\_\_.py                                   |        2 |        0 |    100% |           |
 | cfncli/runner/commands/\_\_init\_\_.py                          |        0 |        0 |    100% |           |
 | cfncli/runner/commands/command.py                               |        9 |        1 |     89% |        13 |
@@ -82,14 +82,14 @@
 | cfncli/runner/commands/utils.py                                 |       76 |       25 |     67% |13-20, 32, 39-44, 56, 63-68, 98, 103, 108, 114, 120, 132, 134, 137 |
 | cfncli/runner/runbook/\_\_init\_\_.py                           |        2 |        0 |    100% |           |
 | cfncli/runner/runbook/base.py                                   |       35 |        5 |     86% |11, 15, 19, 23, 35 |
-| cfncli/runner/runbook/boto3\_context.py                         |       53 |        9 |     83% |     69-91 |
+| cfncli/runner/runbook/boto3\_context.py                         |       53 |        2 |     96% |    72, 87 |
 | cfncli/runner/runbook/boto3\_outputs.py                         |       35 |       25 |     29% |     14-53 |
-| cfncli/runner/runbook/boto3\_params.py                          |       52 |       17 |     67% |11, 13, 24, 27, 30-31, 43-56, 71, 81 |
+| cfncli/runner/runbook/boto3\_params.py                          |       52 |       15 |     71% |11, 13, 24, 27, 43-56, 71, 81 |
 | cfncli/runner/runbook/boto3\_profile.py                         |       22 |        3 |     86% |19, 21, 36 |
-| cfncli/runner/runbook/boto3\_runbook.py                         |       48 |        7 |     85% |24-28, 41-48 |
-| cfncli/runner/runbook/package.py                                |       89 |       61 |     31% |27, 32-121, 127, 130-147, 157-163, 182 |
+| cfncli/runner/runbook/boto3\_runbook.py                         |       47 |        5 |     89% |     24-28 |
+| cfncli/runner/runbook/package.py                                |       90 |       35 |     61% |27, 33, 43, 56, 59, 79, 102-117, 127, 130-147, 157-163, 182 |
 | cfncli/runner/stack\_selector.py                                |       17 |        5 |     71% | 20-25, 30 |
-|                                                       **TOTAL** | **2408** |  **878** | **64%** |           |
+|                                                       **TOTAL** | **2417** |  **667** | **72%** |           |
 
 
 ## Setup coverage badge

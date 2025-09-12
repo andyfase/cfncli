@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for cfncli/cli/utils/events.py: 87%</title>
+    <title>Coverage for cfncli/cli/utils/events.py: 83%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_58284776.png">
     <link rel="stylesheet" href="style_cb_6b508a39.css" type="text/css">
     <script src="coverage_html_cb_6fb7b396.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>cfncli/cli/utils/events.py</b>:
-            <span class="pc_cov">87%</span>
+            <span class="pc_cov">83%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -55,8 +55,8 @@
         </aside>
         <h2>
             <span class="text">54 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">47<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">7<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">45<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">9<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -64,8 +64,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="z_d802cdaec15c38e6_pager_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.5">coverage.py v7.10.5</a>,
-            created at 2025-09-06 00:23 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.6">coverage.py v7.10.6</a>,
+            created at 2025-09-12 18:09 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -133,8 +133,8 @@
     <p class="pln"><span class="n"><a id="t51" href="#t51">51</a></span><span class="t">            <span class="com"># tail only latest events</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t52" href="#t52">52</a></span><span class="t">            <span class="key">if</span> <span class="nam">first_run</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t53" href="#t53">53</a></span><span class="t">                <span class="key">if</span> <span class="nam">latest_events</span> <span class="op">></span> <span class="num">0</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t54" href="#t54">54</a></span><span class="t">                    <span class="key">if</span> <span class="nam">n</span> <span class="op">&lt;</span> <span class="nam">event_count</span> <span class="op">-</span> <span class="nam">latest_events</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t55" href="#t55">55</a></span><span class="t">                        <span class="key">continue</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t54" href="#t54">54</a></span><span class="t">                    <span class="key">if</span> <span class="nam">n</span> <span class="op">&lt;</span> <span class="nam">event_count</span> <span class="op">-</span> <span class="nam">latest_events</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t55" href="#t55">55</a></span><span class="t">                        <span class="key">continue</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t56" href="#t56">56</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t57" href="#t57">57</a></span><span class="t">            <span class="com"># tail sub stack events</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t58" href="#t58">58</a></span><span class="t">            <span class="key">if</span> <span class="op">(</span>&nbsp;</span><span class="r"></span></p>
@@ -142,19 +142,19 @@
     <p class="run run2"><span class="n"><a id="t60" href="#t60">60</a></span><span class="t">                <span class="key">and</span> <span class="nam">e</span><span class="op">.</span><span class="nam">physical_resource_id</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t61" href="#t61">61</a></span><span class="t">                <span class="key">and</span> <span class="nam">e</span><span class="op">.</span><span class="nam">physical_resource_id</span> <span class="key">not</span> <span class="key">in</span> <span class="nam">visited_stacks</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t62" href="#t62">62</a></span><span class="t">            <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t63" href="#t63">63</a></span><span class="t">                <span class="nam">visited_stacks</span><span class="op">.</span><span class="nam">add</span><span class="op">(</span><span class="nam">e</span><span class="op">.</span><span class="nam">physical_resource_id</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t63" href="#t63">63</a></span><span class="t">                <span class="nam">visited_stacks</span><span class="op">.</span><span class="nam">add</span><span class="op">(</span><span class="nam">e</span><span class="op">.</span><span class="nam">physical_resource_id</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t64" href="#t64">64</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t65" href="#t65">65</a></span><span class="t">                <span class="nam">cfn</span> <span class="op">=</span> <span class="nam">session</span><span class="op">.</span><span class="nam">resource</span><span class="op">(</span><span class="str">"cloudformation"</span><span class="op">,</span> <span class="nam">region_name</span><span class="op">=</span><span class="nam">stack</span><span class="op">.</span><span class="nam">meta</span><span class="op">.</span><span class="nam">client</span><span class="op">.</span><span class="nam">meta</span><span class="op">.</span><span class="nam">region_name</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t66" href="#t66">66</a></span><span class="t">                <span class="nam">sub_stack</span> <span class="op">=</span> <span class="nam">cfn</span><span class="op">.</span><span class="nam">Stack</span><span class="op">(</span><span class="nam">e</span><span class="op">.</span><span class="nam">physical_resource_id</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t65" href="#t65">65</a></span><span class="t">                <span class="nam">cfn</span> <span class="op">=</span> <span class="nam">session</span><span class="op">.</span><span class="nam">resource</span><span class="op">(</span><span class="str">"cloudformation"</span><span class="op">,</span> <span class="nam">region_name</span><span class="op">=</span><span class="nam">stack</span><span class="op">.</span><span class="nam">meta</span><span class="op">.</span><span class="nam">client</span><span class="op">.</span><span class="nam">meta</span><span class="op">.</span><span class="nam">region_name</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t66" href="#t66">66</a></span><span class="t">                <span class="nam">sub_stack</span> <span class="op">=</span> <span class="nam">cfn</span><span class="op">.</span><span class="nam">Stack</span><span class="op">(</span><span class="nam">e</span><span class="op">.</span><span class="nam">physical_resource_id</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t67" href="#t67">67</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t68" href="#t68">68</a></span><span class="t">                <span class="nam">start_tail_stack_events_daemon</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t69" href="#t69">69</a></span><span class="t">                    <span class="nam">session</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t70" href="#t70">70</a></span><span class="t">                    <span class="nam">sub_stack</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t71" href="#t71">71</a></span><span class="t">                    <span class="nam">latest_events</span><span class="op">=</span><span class="nam">latest_events</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t72" href="#t72">72</a></span><span class="t">                    <span class="nam">check_interval</span><span class="op">=</span><span class="nam">check_interval</span> <span class="op">+</span> <span class="num">1</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t73" href="#t73">73</a></span><span class="t">                    <span class="nam">indent</span><span class="op">=</span><span class="nam">indent</span> <span class="op">+</span> <span class="num">2</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t74" href="#t74">74</a></span><span class="t">                    <span class="nam">prefix</span><span class="op">=</span><span class="nam">e</span><span class="op">.</span><span class="nam">logical_resource_id</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run run2"><span class="n"><a id="t75" href="#t75">75</a></span><span class="t">                <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t68" href="#t68">68</a></span><span class="t">                <span class="nam">start_tail_stack_events_daemon</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t69" href="#t69">69</a></span><span class="t">                    <span class="nam">session</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t70" href="#t70">70</a></span><span class="t">                    <span class="nam">sub_stack</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t71" href="#t71">71</a></span><span class="t">                    <span class="nam">latest_events</span><span class="op">=</span><span class="nam">latest_events</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t72" href="#t72">72</a></span><span class="t">                    <span class="nam">check_interval</span><span class="op">=</span><span class="nam">check_interval</span> <span class="op">+</span> <span class="num">1</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t73" href="#t73">73</a></span><span class="t">                    <span class="nam">indent</span><span class="op">=</span><span class="nam">indent</span> <span class="op">+</span> <span class="num">2</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t74" href="#t74">74</a></span><span class="t">                    <span class="nam">prefix</span><span class="op">=</span><span class="nam">e</span><span class="op">.</span><span class="nam">logical_resource_id</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis mis2 show_mis"><span class="n"><a id="t75" href="#t75">75</a></span><span class="t">                <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t76" href="#t76">76</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t77" href="#t77">77</a></span><span class="t">            <span class="com"># print the event - as we have multiple prints on same line we use a mutex to ensure we dont</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t78" href="#t78">78</a></span><span class="t">            <span class="com"># print half before another thread (used for another sub-stack) starts printing</span>&nbsp;</span><span class="r"></span></p>
@@ -205,8 +205,8 @@
             <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a class="nav" href="z_d802cdaec15c38e6_pager_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.5">coverage.py v7.10.5</a>,
-            created at 2025-09-06 00:23 +0000
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.10.6">coverage.py v7.10.6</a>,
+            created at 2025-09-12 18:09 +0000
         </p>
     </div>
 </footer>
