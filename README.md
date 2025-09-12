@@ -66,7 +66,7 @@
 | cfncli/ext\_customizations/cloudformation/exceptions.py         |       22 |        3 |     86% |       5-7 |
 | cfncli/ext\_customizations/cloudformation/yamlhelper.py         |       40 |        3 |     92% |     49-55 |
 | cfncli/ext\_customizations/s3uploader/\_\_init\_\_.py           |        0 |        0 |    100% |           |
-| cfncli/ext\_customizations/s3uploader/s3uploader.py             |      103 |       23 |     78% |33-35, 55-57, 85-86, 95-96, 99, 109-113, 132, 147, 182-187 |
+| cfncli/ext\_customizations/s3uploader/s3uploader.py             |      103 |       20 |     81% |33-35, 55-57, 95-96, 99, 109-113, 132, 182-187 |
 | cfncli/runner/\_\_init\_\_.py                                   |        2 |        0 |    100% |           |
 | cfncli/runner/commands/\_\_init\_\_.py                          |        0 |        0 |    100% |           |
 | cfncli/runner/commands/command.py                               |        9 |        1 |     89% |        13 |
@@ -89,7 +89,7 @@
 | cfncli/runner/runbook/boto3\_runbook.py                         |       47 |        5 |     89% |     24-28 |
 | cfncli/runner/runbook/package.py                                |       90 |       35 |     61% |27, 33, 43, 56, 59, 79, 102-117, 127, 130-147, 157-163, 182 |
 | cfncli/runner/stack\_selector.py                                |       17 |        5 |     71% | 20-25, 30 |
-|                                                       **TOTAL** | **2417** |  **667** | **72%** |           |
+|                                                       **TOTAL** | **2417** |  **664** | **73%** |           |
 
 
 ## Setup coverage badge
