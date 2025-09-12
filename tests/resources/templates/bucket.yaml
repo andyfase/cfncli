@@ -7,7 +7,7 @@ Resources:
   TestBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Ref BucketName
+      BucketName: !Sub ${AWS::StackName}-${BucketName}
 Outputs:
   BucketName:
-    Value: !Ref TestBucket
+    Value: !!Ref TestBucket

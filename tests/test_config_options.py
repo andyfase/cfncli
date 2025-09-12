@@ -78,8 +78,6 @@ def test_stage_extend_merge(cli_runner, get_config):
 
     try:
         result = cli_runner.invoke(cli, ["-f", "cfn-cli.yaml", "-s", "ExtendedMerge.TestStack", "stack", "deploy"])
-        logger.error(result)
-        logger.error(result.output)
         assert result.exit_code == 0
         assert "Deploying stack ExtendedMerge.TestStack" in result.output
         assert "Stack deployment complete" in result.output
