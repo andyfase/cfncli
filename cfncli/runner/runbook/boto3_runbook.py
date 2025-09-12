@@ -38,14 +38,12 @@ class Boto3RunBook(RunBook):
                 context = Boto3DeploymentContext(self._profile, self._artifact_store, deployment, self._ppt)
                 deployment_account = self.get_account(context)
                 if stage_account != deployment_account:
-                    self._ppt.secho(
+                    raise RunBookError(
                         (
-                            f"Stage {deployment.stack_key.StageKey} configured for account: {stage_account} "
+                            f"Incorrect Account Detected!. Stage {deployment.stack_key.StageKey} is configured for account: {stage_account} "
                             f"but profile set as account: {deployment_account}"
-                        ),
-                        fg="red",
+                        )
                     )
-                    sys.exit()
                 checked_stages.append(deployment.stack_key.StageKey)
 
         whole_deployments = self._manager.query_stacks()

@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Test Lambda'
+
+Parameters:
+  Environment:
+    Type: String
+  Application:
+    Type: String
+  LambdaMemory:
+    Type: String
+    Default: "256"
+  LambdaTimeout:
+    Type: Number
+    Default: 15
+
+Resources:
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+        Version: '2012-10-17'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+
+  PackagedLambda:
+    Type: AWS::Lambda::Function
+    #checkov:skip=CKV_AWS_115:ReservedConcurrentExecutions is not required
+    #checkov:skip=CKV_AWS_173:Encrypted ENV variables not required (we dont store secrets in them)
+    #checkov:skip=CKV_AWS_116:DLQ not required
+    #checkov:skip=CKV_AWS_117:Lambda has no reason to be inside VPC
+    Metadata:
+      cfn_nag:
+        rules_to_suppress:
+          - id: W89
+            reason: Lambda has no reason to be inside VPC
+          - id: W92
+            reason: ReservedConcurrentExecutions is not required
+    Properties:
+      FunctionName: !Sub "${Application}-${Environment}-lambda"
+      Description: !Sub "${Application}-${Environment}-lambda"
+      Code: "./lambda.py"
+      TracingConfig:
+        Mode: Active
+      Handler: index.handler
+      MemorySize: !Ref LambdaMemory
+      Runtime: python3.12
+      Timeout: !Ref LambdaTimeout
+      Role: !GetAtt LambdaRole.Arn
+      Environment:
+        Variables:
+          Environment: !Ref Environment

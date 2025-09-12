@@ -1,0 +1,54 @@
+Version: 3
+
+Blueprints:
+  bucket:
+    Order: 1
+    Template: ./bucket.yaml
+    StackPolicy: ALLOW_ALL
+    Capabilities: [CAPABILITY_IAM]
+    Package:  false
+    # EnableTerminationProtection: false # Not supported in Moto
+
+Stages:
+  Normal:
+    Config:
+      Account: "123456789012"
+      Region: ca-central-1
+    TestStack:
+      Order: 1
+      Extends: bucket
+      StackName: test-bucket
+      Parameters:
+        BucketName: test    
+
+  IncorrectAccount:
+    Config:
+      Account: "123456789019"
+      Region: ca-central-1
+    TestStack:
+      Order: 1
+      Extends: bucket
+      StackName: test-bucket
+      Parameters:
+        BucketName: test    
+
+  USEastRegion:
+    Config:
+      Account: "123456789012"
+      Region: us-east-1
+    TestStack:
+      Order: 1
+      Extends: bucket
+      StackName: test-bucket
+      Parameters:
+        BucketName: test  
+
+  Extended:
+    Config:
+      Extends: Normal
+
+  ExtendedMerge:
+    Config:
+      Extends: Normal
+    TestStack:
+      StackName: different-bucket

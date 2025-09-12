@@ -1,0 +1,92 @@
+Version: 3
+
+Blueprints:
+  bucket:
+    Template: ./bucket.yaml
+    StackPolicy: ALLOW_ALL
+    Capabilities: [CAPABILITY_IAM]
+    Package:  false
+    # EnableTerminationProtection: false # Not supported in Moto
+
+Stages:
+  NormalOrder1:
+    Config:
+      Account: "123456789012"
+      Region: ca-central-1
+      Tags:
+        tag1: tag1
+        tag2: tag2
+      Order: 1
+    TestStack1:
+      Order: 1
+      Extends: bucket
+      StackName: normal1-test1
+      Parameters:
+        BucketName: test    
+    TestStack2:
+      Order: 2
+      Extends: bucket
+      StackName: normal1-test2
+      Parameters:
+        BucketName: test2
+  NormalOrder2:
+    Config:
+      Account: "123456789012"
+      Region: ca-central-1
+      Tags:
+        tag1: tag1
+        tag2: tag2
+      Order: 2
+    TestStack1:
+      Order: 1
+      Extends: bucket
+      StackName: normal2-test1
+      Parameters:
+        BucketName: test    
+    TestStack2:
+      Order: 2
+      Extends: bucket
+      StackName: normal2-test2
+      Parameters:
+        BucketName: test2
+
+  ReverseOrder1:
+    Config:
+      Account: "123456789012"
+      Region: ca-central-1
+      Tags:
+        tag1: tag1
+        tag2: tag2
+      Order: 2
+    TestStack1:
+      Order: 2
+      Extends: bucket
+      StackName: reverse1-test1
+      Parameters:
+        BucketName: test    
+    TestStack2:
+      Order: 1
+      Extends: bucket
+      StackName: reverse1-test2
+      Parameters:
+        BucketName: test2
+  ReverseOrder2:
+    Config:
+      Account: "123456789012"
+      Region: ca-central-1
+      Tags:
+        tag1: tag1
+        tag2: tag2
+      Order: 1
+    TestStack1:
+      Order: 2
+      Extends: bucket
+      StackName: reverse2-test1
+      Parameters:
+        BucketName: test    
+    TestStack2:
+      Order: 1
+      Extends: bucket
+      StackName: reverse2-test2
+      Parameters:
+        BucketName: test2
