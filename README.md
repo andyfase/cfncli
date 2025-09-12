@@ -2,6 +2,21 @@
 
 The missing CloudFormation CLI. Reborn!
 
+[![Coverage badge](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/andyfase/cfncli/python-coverage-comment-action-data/endpoint.json&label=Code%20Coverage)](https://htmlpreview.github.io/?https://github.com/andyfase/cfncli/blob/python-coverage-comment-action-data/htmlcov/index.html)
+
+`cfncli` is the CloudFormation CLI that AWS never built. Its use dramatically increases the developer friendlyness of using CloudFormation at scale, both within developer environemnts and CI/CD pipelines.
+
+Highlights:
+
+- Useful and colorful stack deployment output with full event tailing
+- DRY Configuration of multiple stacks in a single YAML file. 
+- Supports managing deployments across AWS accounts and regions
+- Automatic packaging of external resources (Lambda Code etc)
+- Cross-stack parameter reference that work cross-region and cross-account
+- Nested ChangeSet support, including full and friendly printy printing.
+- Organize stack using inhertied configuration across stages and blueprints
+
+
 > This code base was forked from [https://github.com/Kotaimen/awscfncli](https://github.com/Kotaimen/awscfncli) with the aim of continuing its use alongside AWS CLI v2 which enables login through AWS Identity Center
 
 This codebase does not aim to maintain the backwards compatibility that the original `cfn-cli` repo maintained. As such it was forked, detached and will be maintained separately with feature development that will likely not be paralleled in the original code base. This allows for modern dependencies of boto3 and botocore and other python libraries to be used - reducing conflict on installation of the CLI.
@@ -23,19 +38,6 @@ This tool is distributed under the MIT license. The AWS CLI dependent code is di
 
 See [Feature Development](./FEATURE_DEVELOPMENT.md) for a list of new features added since the repo was forked from the original source.
 
-## Introduction
-
-`cfncli` helps manage AWS CloudFormation deployments. 
-
-Highlights:
-
-- Manage deployments accoss accounts and regions use single YAML config file.
-- Cross-stack parameter reference works cross-region and cross-account.
-- Organize stack using stages and blueprints.
-- Automatically package and upload template resources.
-- Push button SAM deployment using `stack sync` command.
-- Display and track stack events in the CLI.
-- List stack resources, outputs and exports in the CLI.
 
 ## Install
 
@@ -292,4 +294,4 @@ Stack1:
 This feature make managing related cross-account and/or cross-region stacks much easier.
 See [VPC peering](samples/Advanced/VpcPeering/cfn-cli.yml) and [CodePipeline](https://github.com/Kotaimen/sample-python-sam-ci/blob/master/cfn-cli.sample400.yaml) for example.
 
-> Note: Take care of the order of deployment so eferenced stack is deployed first.
+> Note: Take care of the order of deployment so the referenced stack is deployed first.
