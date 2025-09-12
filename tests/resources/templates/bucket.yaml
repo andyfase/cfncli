@@ -7,7 +7,12 @@ Resources:
   TestBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub ${AWS::StackName}-${BucketName}
+      BucketName: 
+        Fn::Sub: "${AWS::StackName}-${BucketName}"
 Outputs:
   BucketName:
-    Value: !!Ref TestBucket
+    Value: 
+      Fn::Sub: "${TestBucket}"
+##
+## Note MOTO doesnt not seem to support shortform !Sub hence the use of Fn::Sub
+## See: https://github.com/getmoto/moto/issues/9283
