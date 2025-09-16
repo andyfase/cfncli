@@ -1,0 +1,30 @@
+Version: 3
+
+Stages:
+  Development:
+    Config:
+      Order: 1
+      Region: us-east-1
+    TestStack1:
+      Order: 1
+      Template: bucket.yaml
+      Parameters:
+        BucketName: test-bucket-1
+    NotTestStack2:
+      Order: 2
+      Template: bucket.yaml
+      Parameters:
+        BucketName: test-bucket-2
+  
+  Production:
+    Config:
+      Order: 2
+      Region: us-west-2
+    TestStack1:
+      Template: bucket.yaml
+      Parameters:
+        BucketName: prod-bucket-1
+    NotTestStack2:
+      Template: bucket.yaml
+      Parameters:
+        BucketName: prod-bucket-2

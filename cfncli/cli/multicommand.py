@@ -33,8 +33,8 @@ class MultiCommand(click.MultiCommand):
         try:
             pkg_name = self._commands[cmd_name]
         except KeyError:
-            logging.error(logger.error(f"Invalid command {cmd_name}"))
-            return
+            logger.error(f"Invalid command {cmd_name}")
+            return None
 
         try:
             mod = importlib.import_module(pkg_name)
