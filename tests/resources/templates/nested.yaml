@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Test Lambda'
+
+Parameters:
+  Environment:
+    Type: String
+  Application:
+    Type: String
+
+Metadata:
+  MetaDataObject:
+    foo: bar
+
+Resources:
+  SubStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ./lambda.yaml
+      Parameters:
+        Application: !Ref Application
+        Environment: !Ref Environment

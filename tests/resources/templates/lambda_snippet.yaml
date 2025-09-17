@@ -1,0 +1,5 @@
+## Note Moto doesnt support include references when parsing resources
+## hence we only include a minor attribute which isnt checked by moto
+## this still means cfn-cli will package and upload the reference to the include and add the s3 URL
+TracingConfig:
+  Mode: Active
