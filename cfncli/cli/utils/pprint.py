@@ -1,18 +1,15 @@
 """Proxy interfaces for cli print."""
 
-import difflib
-import json
-
 import backoff
 import botocore.exceptions
 import click
-import yaml
 
 from .colormaps import (
     CHANGESET_STATUS_TO_COLOR,
     CHANGESET_ACTION_TO_COLOR,
     CHANGESET_REPLACEMENT_TO_COLOR,
     DRIFT_STATUS_TO_COLOR,
+    DRIFT_RESOURCE_TYPE_TO_COLOR,
     STACK_STATUS_TO_COLOR,
     CHANGESET_RESOURCE_REPLACEMENT_TO_COLOR,
 )
@@ -313,6 +310,7 @@ class StackPrettyPrinter(object):
         echo_pair("Drifted resources", drifted_resources)
         echo_pair("Timestamp", timestamp)
 
+    ## this is called per resource that has drifted
     def pprint_resource_drift(self, status):
         logical_id = status["LogicalResourceId"]
         res_type = status["ResourceType"]
@@ -328,25 +326,25 @@ class StackPrettyPrinter(object):
         echo_pair("Drift Status", drift_status, value_style=DRIFT_STATUS_TO_COLOR[drift_status], indent=4)
         echo_pair("Timestamp", timestamp, indent=4)
 
-        if "ExpectedProperties" not in status:
+        if "PropertyDifferences" not in status or not status["PropertyDifferences"]:
             return
 
         echo_pair("Property Diff", ">", indent=4)
-        expected = yaml.safe_dump(json.loads(status["ExpectedProperties"]), default_flow_style=False)
-
-        actual = yaml.safe_dump(json.loads(status["ActualProperties"]), default_flow_style=False)
-        diff = difflib.unified_diff(expected.splitlines(), actual.splitlines(), "Expected", "Actual", n=5)
-
-        for n, line in enumerate(diff):
-            # skip file names and diff stat
-            if n < 5:
-                continue
-            if line.startswith("-"):
-                click.secho("      " + line, fg="red")
-            elif line.startswith("+"):
-                click.secho("      " + line, fg="green")
-            else:
-                click.secho("      " + line)
+        for property in status["PropertyDifferences"]:
+            echo_list(
+                property["PropertyPath"],
+                [
+                    property.get("ExpectedValue", "Unknown"),
+                    dict(fg=[76, 159, 158]),
+                    " -> ",
+                    None,
+                    property.get("ActualValue", "Unknown"),
+                    dict(fg=[208, 240, 192]),
+                    f' ({property["DifferenceType"]})',
+                    DRIFT_RESOURCE_TYPE_TO_COLOR[property["DifferenceType"]],
+                ],
+                indent=6,
+            )
 
     @backoff.on_exception(
         backoff.expo, botocore.exceptions.WaiterError, max_tries=10, giveup=is_not_rate_limited_exception

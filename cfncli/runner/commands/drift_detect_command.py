@@ -3,14 +3,13 @@ from collections import namedtuple
 import botocore.waiter
 
 from .command import Command
+from cfncli.runner.commands.drift_diff_command import DriftDiffOptions, DriftDiffCommand
 
 
 class DriftDetectOptions(
     namedtuple(
         "DriftDetectOptions",
-        [
-            "no_wait",
-        ],
+        ["no_wait", "no_show_resources"],
     )
 ):
     pass
@@ -80,5 +79,6 @@ class DriftDetectCommand(Command):
 
             self.ppt.pprint_stack_drift(result)
 
-            if result["DriftedStackResourceCount"] > 0:
-                self.ppt.secho("Use `drift diff` command to show drifted resources.")
+            if result["DriftedStackResourceCount"] > 0 and not self.options.no_show_resources:
+                command = DriftDiffCommand(self.ppt, options=DriftDiffOptions())
+                command.run(stack_context)
