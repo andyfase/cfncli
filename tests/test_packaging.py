@@ -112,7 +112,6 @@ def test_include_package_deploy_success(cli_runner, get_config, setenv_test_runn
         result = cli_runner.invoke(
             cli, ["-f", "cfn-cli.yaml", "-s", "Test.LambdaPackagedStack", "stack", "deploy"], catch_exceptions=False
         )
-        logger.error(result.output)
         assert result.exit_code == 0
         assert "Successfully packaged artifacts and uploaded to s3" in result.output
         assert "Stack deployment complete" in result.output
