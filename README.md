@@ -11,7 +11,7 @@
 | cfncli/cli/commands/\_\_init\_\_.py                             |        0 |        0 |    100% |           |
 | cfncli/cli/commands/drift/\_\_init\_\_.py                       |        1 |        1 |      0% |         1 |
 | cfncli/cli/commands/drift/detect/\_\_init\_\_.py                |        0 |        0 |    100% |           |
-| cfncli/cli/commands/drift/detect/detect.py                      |       13 |       13 |      0% |      3-24 |
+| cfncli/cli/commands/drift/detect/detect.py                      |       14 |       14 |      0% |      3-23 |
 | cfncli/cli/commands/drift/diff/\_\_init\_\_.py                  |        0 |        0 |    100% |           |
 | cfncli/cli/commands/drift/diff/diff.py                          |       12 |       12 |      0% |      3-21 |
 | cfncli/cli/commands/drift/drift.py                              |        9 |        9 |      0% |      1-15 |
@@ -48,12 +48,12 @@
 | cfncli/cli/multicommand.py                                      |       28 |        9 |     68% |35-37, 41-43, 47-49 |
 | cfncli/cli/types.py                                             |       10 |        0 |    100% |           |
 | cfncli/cli/utils/\_\_init\_\_.py                                |        0 |        0 |    100% |           |
-| cfncli/cli/utils/colormaps.py                                   |       26 |        2 |     92% |     97-98 |
+| cfncli/cli/utils/colormaps.py                                   |       28 |        0 |    100% |           |
 | cfncli/cli/utils/common.py                                      |        7 |        1 |     86% |         8 |
 | cfncli/cli/utils/deco.py                                        |       29 |        6 |     79% |24, 29-32, 36 |
 | cfncli/cli/utils/events.py                                      |       54 |        9 |     83% |30, 47, 63-68, 81-82, 94 |
 | cfncli/cli/utils/pager.py                                       |       12 |       11 |      8% |      8-23 |
-| cfncli/cli/utils/pprint.py                                      |      268 |      128 |     52% |26-40, 57, 94, 97, 126-128, 133-142, 157, 159, 167-171, 176-193, 212, 214-216, 219-228, 237, 252-255, 260, 267, 269, 271-287, 302-303, 306-314, 317-349, 370, 373-376, 395-399, 409-418 |
+| cfncli/cli/utils/pprint.py                                      |      256 |       64 |     75% |54, 91, 94, 123-125, 130-139, 154, 156, 164-168, 173-190, 209, 211-213, 216-225, 368, 371-374, 393-397, 407-416 |
 | cfncli/config/\_\_init\_\_.py                                   |       23 |        5 |     78% |     29-33 |
 | cfncli/config/config.py                                         |       28 |        1 |     96% |        27 |
 | cfncli/config/deployment.py                                     |       63 |        6 |     90% |48-50, 98-99, 102 |
@@ -62,15 +62,15 @@
 | cfncli/config/template.py                                       |       16 |        2 |     88% |     30-31 |
 | cfncli/ext\_customizations/\_\_init\_\_.py                      |        0 |        0 |    100% |           |
 | cfncli/ext\_customizations/cloudformation/\_\_init\_\_.py       |        0 |        0 |    100% |           |
-| cfncli/ext\_customizations/cloudformation/artifact\_exporter.py |      313 |       61 |     81% |48, 56, 91, 127, 134-135, 144-147, 192-200, 227, 232, 235-236, 248-250, 262-263, 433, 442-472, 535-552, 576, 599, 619-627, 640 |
+| cfncli/ext\_customizations/cloudformation/artifact\_exporter.py |      313 |       26 |     92% |56, 91, 127, 134-135, 144-147, 227, 232, 235-236, 248-250, 262-263, 451, 455, 536, 541, 548, 576, 624-625, 640 |
 | cfncli/ext\_customizations/cloudformation/exceptions.py         |       22 |        3 |     86% |       5-7 |
 | cfncli/ext\_customizations/cloudformation/yamlhelper.py         |       40 |        3 |     92% |     49-55 |
 | cfncli/ext\_customizations/s3uploader/\_\_init\_\_.py           |        0 |        0 |    100% |           |
-| cfncli/ext\_customizations/s3uploader/s3uploader.py             |      103 |       20 |     81% |33-35, 55-57, 95-96, 99, 109-113, 132, 182-187 |
+| cfncli/ext\_customizations/s3uploader/s3uploader.py             |      103 |       15 |     85% |33-35, 55-57, 95-96, 99, 109-113, 185 |
 | cfncli/runner/\_\_init\_\_.py                                   |        2 |        0 |    100% |           |
 | cfncli/runner/commands/\_\_init\_\_.py                          |        0 |        0 |    100% |           |
 | cfncli/runner/commands/command.py                               |        9 |        1 |     89% |        13 |
-| cfncli/runner/commands/drift\_detect\_command.py                |       26 |       26 |      0% |      1-84 |
+| cfncli/runner/commands/drift\_detect\_command.py                |       28 |       28 |      0% |      1-84 |
 | cfncli/runner/commands/drift\_diff\_command.py                  |       18 |       18 |      0% |      1-34 |
 | cfncli/runner/commands/stack\_changeset\_command.py             |       71 |       14 |     80% |42-44, 92, 101-120, 124 |
 | cfncli/runner/commands/stack\_delete\_command.py                |       29 |        2 |     93% |    40, 44 |
@@ -89,7 +89,7 @@
 | cfncli/runner/runbook/boto3\_runbook.py                         |       47 |        5 |     89% |     24-28 |
 | cfncli/runner/runbook/package.py                                |       90 |       35 |     61% |27, 33, 43, 56, 59, 79, 102-117, 127, 130-147, 157-163, 182 |
 | cfncli/runner/stack\_selector.py                                |       17 |        5 |     71% | 20-25, 30 |
-|                                                       **TOTAL** | **2387** |  **607** | **75%** |           |
+|                                                       **TOTAL** | **2380** |  **504** | **79%** |           |
 
 
 ## Setup coverage badge
