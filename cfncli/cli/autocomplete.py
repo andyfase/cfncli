@@ -1,6 +1,7 @@
 """Dynamic Autocomplete helpers"""
 
 import click
+from click.shell_completion import CompletionItem
 
 from cfncli.config import find_default_config, load_config, ConfigError
 
@@ -13,7 +14,7 @@ def profile_auto_complete(ctx, param, incomplete):
     import boto3
 
     profiles = boto3.session.Session().available_profiles
-    return [p for p in profiles if incomplete in p]
+    return [CompletionItem(p) for p in profiles if incomplete in p]
 
 
 def stack_auto_complete(ctx, param, incomplete):
@@ -22,12 +23,11 @@ def stack_auto_complete(ctx, param, incomplete):
     By default, returns qualified names start with qualified stack
     """
     # Get config file from context params
-    config_filename = ctx.params.get("file") if ctx.params else None
+    config_filename = ctx.params.get("file") if ctx.params else "./cfn-cli.yaml"
     config_filename = find_default_config(config_filename)
-
     try:
         deployments = load_config(config_filename)
-    except (ConfigError, Exception):
+    except (ConfigError, Exception) as ex:
         # ignore any config parsing errors
         return []
 
@@ -35,7 +35,7 @@ def stack_auto_complete(ctx, param, incomplete):
     incomplete_clean = incomplete.lower().translate({"*": "", "?": ""})
 
     return [
-        s.stack_key.qualified_name
+        CompletionItem(s.stack_key.qualified_name)
         for s in deployments.query_stacks()
         if s.stack_key.qualified_name.lower().startswith(incomplete_clean)
     ]

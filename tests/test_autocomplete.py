@@ -109,7 +109,7 @@ def test_stage_autocomplete(get_config):
 
         assert "Development.TestStack1" in completion_values
         assert "Development.NotTestStack2" in completion_values
-        assert "Production.TestStack1" not in completion_values
+        assert "Production.ProdStack1" not in completion_values
 
     finally:
         os.chdir(original_cwd)
@@ -132,8 +132,8 @@ def test_stack_autocomplete(get_config):
         completion_values = [c.value for c in completions]
 
         assert "Development.TestStack1" in completion_values
-        assert "Development.NotTestStack2" not in completion_values
-        assert "Production.TestStack1" not in completion_values
+        assert "Development.TestStack2" not in completion_values
+        assert "Production.ProdStack1" not in completion_values
 
     finally:
         os.chdir(original_cwd)

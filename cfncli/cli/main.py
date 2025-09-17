@@ -5,7 +5,7 @@ import logging
 import click
 
 from cfncli import __version__
-from cfncli.cli.autocomplete import stack_auto_complete, profile_auto_complete
+from cfncli.cli.types import StackType, ProfileType
 from cfncli.cli.context import Context, Options, DefaultContextBuilder
 from cfncli.cli.multicommand import MultiCommand
 
@@ -58,8 +58,7 @@ def install_completion_callback(ctx, param, value):
 @click.option(
     "-s",
     "--stack",
-    shell_complete=stack_auto_complete,
-    type=click.STRING,
+    type=StackType(),
     default="*",
     help="Select stacks to operate on, defined by STAGE_NAME.STACK_NAME, "
     "nix glob is supported to select multiple stacks. Default value is "
@@ -68,8 +67,7 @@ def install_completion_callback(ctx, param, value):
 @click.option(
     "-p",
     "--profile",
-    shell_complete=profile_auto_complete,
-    type=click.STRING,
+    type=ProfileType(),
     default=None,
     help="Override AWS profile specified in the config file.  Warning: "
     "Don't use this option on stacks in different accounts.",
