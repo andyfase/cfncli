@@ -5,20 +5,37 @@ import logging
 import click
 
 from cfncli import __version__
-from cfncli.cli.autocomplete import stack_auto_complete, profile_auto_complete, install_callback
+from cfncli.cli.types import StackType, ProfileType
 from cfncli.cli.context import Context, Options, DefaultContextBuilder
 from cfncli.cli.multicommand import MultiCommand
 
 CONTEXT_BUILDER = DefaultContextBuilder
 VERBOSITY_LOGLEVEL_MAPPING = [logging.WARNING, logging.INFO, logging.DEBUG]
 
-import click_completion
 
-# XXX: Monkey patch dynamic completion
-from .monkeypatch_clickcompletion import monkey_patch
+def install_completion_callback(ctx, param, value):
+    if not value or ctx.resilient_parsing:
+        return
 
-monkey_patch()
-click_completion.init()
+    import os
+    import subprocess
+
+    shell = os.environ.get("SHELL", "").split("/")[-1]
+    if shell in ["bash", "zsh", "fish"]:
+        try:
+            result = subprocess.run(
+                ["env", f"_CFN_CLI_COMPLETE={shell}_source", "cfn-cli"], capture_output=True, text=True
+            )
+            if result.returncode == 0:
+                click.echo(f"Add this to your {shell} profile:")
+                click.echo(result.stdout)
+            else:
+                click.echo(f"Error generating completion: {result.stderr}")
+        except Exception as e:
+            click.echo(f"Error: {e}")
+    else:
+        click.echo(f"Unsupported shell: {shell}")
+    ctx.exit()
 
 
 @click.command(cls=MultiCommand)
@@ -26,9 +43,10 @@ click_completion.init()
 @click.option(
     "--install-completion",
     is_flag=True,
-    callback=install_callback,
+    callback=lambda ctx, param, value: install_completion_callback(ctx, param, value),
     expose_value=False,
-    help="Automatically install completion for the current shell. Make sure " "to have psutil installed.",
+    is_eager=True,
+    help="Install completion script for the current shell.",
 )
 @click.option(
     "-f",
@@ -40,8 +58,7 @@ click_completion.init()
 @click.option(
     "-s",
     "--stack",
-    shell_complete=stack_auto_complete,
-    type=click.STRING,
+    type=StackType(),
     default="*",
     help="Select stacks to operate on, defined by STAGE_NAME.STACK_NAME, "
     "nix glob is supported to select multiple stacks. Default value is "
@@ -50,8 +67,7 @@ click_completion.init()
 @click.option(
     "-p",
     "--profile",
-    shell_complete=profile_auto_complete,
-    type=click.STRING,
+    type=ProfileType(),
     default=None,
     help="Override AWS profile specified in the config file.  Warning: "
     "Don't use this option on stacks in different accounts.",
@@ -106,7 +122,6 @@ def cli(ctx, file, stack, profile, region, artifact_store, verbose):
         CFN_STACK=StageName.StackName cfn-cli <command>
     """
 
-    # Setup global logging level
     if verbose >= 2:
         verbose = 2  # cap at 2
 
