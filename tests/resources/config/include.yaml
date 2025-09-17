@@ -1,0 +1,34 @@
+Version: 3
+
+Blueprints:
+  lambda:
+    Order: 1
+    Template: ./include.yaml
+    StackPolicy: ALLOW_ALL
+    Capabilities: [CAPABILITY_IAM, CAPABILITY_NAMED_IAM]
+    Package:  true
+    # EnableTerminationProtection: false # Not supported in Moto
+
+Stages:
+  Test:
+    Config:
+      Account: "123456789012"
+      Region: ca-central-1
+      Tags:
+        tag1: tag1
+        tag2: tag2
+    LambdaPackagedStack:
+      Order: 1
+      Extends: lambda
+      StackName: test-lambda
+      Parameters:
+        Environment: dev
+        Application: mototest
+    LambdaPackagedStackChanged:
+      Order: 1
+      Extends: lambda
+      StackName: test-lambda
+      Parameters:
+        Environment: dev
+        Application: mototest-changed
+

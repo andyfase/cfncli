@@ -1,0 +1,35 @@
+Version: 3
+
+Blueprints:
+  nested:
+    Order: 1
+    Template: ./nested.yaml
+    StackPolicy: ALLOW_ALL
+    Capabilities: [CAPABILITY_IAM, CAPABILITY_NAMED_IAM]
+    Package:  true
+    # EnableTerminationProtection: false # Not supported in Moto
+
+Stages:
+  Test:
+    Config:
+      Account: "123456789012"
+      Region: ca-central-1
+      Tags:
+        tag1: tag1
+        tag2: tag2
+    NestedStack:
+      Order: 1
+      Extends: nested
+      StackName: test-nested
+      Parameters:
+        Environment: dev
+        Application: mototest
+    NestedStackChanged:
+      Order: 1
+      Extends: nested
+      StackName: test-nested
+      Parameters:
+        Environment: dev
+        Application: mototest-changed
+
+

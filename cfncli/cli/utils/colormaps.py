@@ -84,6 +84,12 @@ _DRIFT_STATUS_TO_COLOR = {
     "DETECTION_COMPLETE": rgb_green,
 }
 
+_DRIFT_RESOURCE_TYPE_TO_COLOR = {
+    "ADD": rgb_green,
+    "REMOVE": rgb_red,
+    "NOT_EQUAL": rgb_amber,
+}
+
 
 class ColorMap:
     """Return a default colormap when status missing from mapping."""
@@ -104,6 +110,7 @@ CHANGESET_ACTION_TO_COLOR = ColorMap(_CHANGESET_ACTION_TO_COLOR)
 CHANGESET_RESOURCE_REPLACEMENT_TO_COLOR = ColorMap(_CHANGESET_RESOURCE_REPLACEMENT_TO_COLOR)
 CHANGESET_REPLACEMENT_TO_COLOR = ColorMap(_CHANGESET_REPLACEMENT_TO_COLOR)
 DRIFT_STATUS_TO_COLOR = ColorMap(_DRIFT_STATUS_TO_COLOR)
+DRIFT_RESOURCE_TYPE_TO_COLOR = ColorMap(_DRIFT_RESOURCE_TYPE_TO_COLOR)
 
 ## export specific colors for red/amber/green
 RED = rgb_red["fg"]
