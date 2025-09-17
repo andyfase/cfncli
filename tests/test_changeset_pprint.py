@@ -298,3 +298,96 @@ def test_pprint_changeset_colors():
 
         assert len(true_replacement_calls) > 0 and true_replacement_calls[0][2]["fg"] == RED
         assert len(false_replacement_calls) > 0 and false_replacement_calls[0][2]["fg"] == GREEN
+
+
+def test_pprint_changeset_nested_with_colors():
+    """Test nested changeset pretty printing with proper formatting and colors."""
+
+    mock_changeset_data = {
+        "ChangeSetName": "parent-changeset",
+        "Status": "CREATE_COMPLETE",
+        "Changes": [
+            {
+                "ResourceChange": {
+                    "LogicalResourceId": "NestedStack",
+                    "ResourceType": "AWS::CloudFormation::Stack",
+                    "Action": "Add",
+                    "PhysicalResourceId": "nested-stack-123",
+                    "Scope": ["Properties"],
+                }
+            }
+        ],
+    }
+
+    nested_changeset_data = {
+        "ChangeSetName": "nested-changeset",
+        "Status": "CREATE_COMPLETE",
+        "Changes": [
+            {
+                "ResourceChange": {
+                    "LogicalResourceId": "NestedBucket",
+                    "ResourceType": "AWS::S3::Bucket",
+                    "Action": "Modify",
+                    "Replacement": "False",
+                    "Details": [
+                        {
+                            "Target": {
+                                "Name": "BucketName",
+                                "Path": "/Properties/BucketName",
+                                "RequiresRecreation": "Never",
+                                "BeforeValue": "old-bucket",
+                                "AfterValue": "new-bucket",
+                            },
+                            "Evaluation": "Static",
+                            "ChangeSource": "DirectModification",
+                            "CausingEntity": "BucketName",
+                        }
+                    ],
+                }
+            }
+        ],
+    }
+
+    with patch("click.secho") as mock_secho, patch("click.echo") as mock_echo:
+        output_calls = []
+
+        def capture_secho(*args, **kwargs):
+            output_calls.append(("secho", args, kwargs))
+
+        def capture_echo(*args, **kwargs):
+            output_calls.append(("echo", args, kwargs))
+
+        mock_secho.side_effect = capture_secho
+        mock_echo.side_effect = capture_echo
+
+        printer = StackPrettyPrinter()
+        printer.nested_changesets["parent-changeset-NestedStack"] = nested_changeset_data
+        printer.pprint_changeset(mock_changeset_data)
+
+        all_lines = [call[1][0] if call[1] else "" for call in output_calls]
+
+        # Verify parent stack formatting
+        assert has_resource_format(all_lines, "NestedStack", "AWS::CloudFormation::Stack", 2)
+        assert has_key_value_format(all_lines, "Action", 4, "Add")
+        assert has_key_value_format(all_lines, "Changeset for", 4, "NestedStack")
+
+        # Verify nested stack formatting with proper indentation
+        assert has_resource_format(all_lines, "NestedBucket", "AWS::S3::Bucket", 8)
+        assert has_key_value_format(all_lines, "Action", 10, "Modify")
+        assert has_key_value_format(all_lines, "Replacement", 10, "False")
+        assert has_key_value_format(all_lines, "Changed Properties", 10)
+        assert has_key_value_format(all_lines, "BucketName", 12)
+        assert has_key_value_format(all_lines, "Requires Recreation", 14, "Never")
+        assert has_key_value_format(all_lines, "Causing Entity", 14, "BucketName")
+        assert has_key_value_format(all_lines, "Change Source", 14, "DirectModification")
+
+        # Verify colors are applied correctly
+        add_calls = [call for call in output_calls if len(call[1]) > 0 and call[1][0] == "Add"]
+        modify_calls = [call for call in output_calls if len(call[1]) > 0 and call[1][0] == "Modify"]
+        false_replacement_calls = [call for call in output_calls if len(call[1]) > 0 and call[1][0] == "False"]
+        never_recreation_calls = [call for call in output_calls if len(call[1]) > 0 and call[1][0] == "Never"]
+
+        assert len(add_calls) > 0 and add_calls[0][2]["fg"] == GREEN
+        assert len(modify_calls) > 0 and modify_calls[0][2]["fg"] == AMBER
+        assert len(false_replacement_calls) > 0 and false_replacement_calls[0][2]["fg"] == GREEN
+        assert len(never_recreation_calls) > 0 and never_recreation_calls[0][2]["fg"] == GREEN
