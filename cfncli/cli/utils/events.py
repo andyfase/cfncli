@@ -15,13 +15,21 @@ class StoppableTailThread:
     def __init__(self, thread, stop_event):
         self.thread = thread
         self.stop_event = stop_event
-    
+
     def stop(self):
         self.stop_event.set()
 
 
 def tail_stack_events(
-    session, stack, latest_events=1, event_limit=10000, time_limit=3600, check_interval=5, indent=0, prefix="XX", stop_event=None
+    session,
+    stack,
+    latest_events=1,
+    event_limit=10000,
+    time_limit=3600,
+    check_interval=5,
+    indent=0,
+    prefix="XX",
+    stop_event=None,
 ):
     """Tail stack events and print them"""
     then = time.time()
@@ -116,7 +124,15 @@ def tail_stack_events(
 
 
 def start_tail_stack_events_daemon(
-    session, stack, latest_events=1, event_limit=10000, time_limit=3600, check_interval=5, indent=0, prefix=None, stop_event=None
+    session,
+    stack,
+    latest_events=1,
+    event_limit=10000,
+    time_limit=3600,
+    check_interval=5,
+    indent=0,
+    prefix=None,
+    stop_event=None,
 ):
     """Start tailing stack events"""
 
