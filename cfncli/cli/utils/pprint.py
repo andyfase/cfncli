@@ -350,11 +350,16 @@ class StackPrettyPrinter(object):
         backoff.expo, botocore.exceptions.WaiterError, max_tries=10, giveup=is_not_rate_limited_exception
     )
     def wait_until_deploy_complete(self, session, stack, disable_tail_events=False):
+        tail_thread = None
         if not disable_tail_events:
-            start_tail_stack_events_daemon(session, stack, latest_events=0)
+            tail_thread = start_tail_stack_events_daemon(session, stack, latest_events=0)
 
-        waiter = session.client("cloudformation").get_waiter("stack_create_complete")
-        waiter.wait(StackName=stack.stack_id)
+        try:
+            waiter = session.client("cloudformation").get_waiter("stack_create_complete")
+            waiter.wait(StackName=stack.stack_id)
+        finally:
+            if tail_thread:
+                tail_thread.stop()
 
     @backoff.on_exception(
         backoff.expo, botocore.exceptions.WaiterError, max_tries=10, giveup=is_not_rate_limited_exception
@@ -368,20 +373,29 @@ class StackPrettyPrinter(object):
                 click.echo(str(e))
             return
 
-        start_tail_stack_events_daemon(session, stack)
+        tail_thread = start_tail_stack_events_daemon(session, stack)
 
-        waiter = session.client("cloudformation").get_waiter("stack_delete_complete")
-        waiter.wait(StackName=stack.stack_id)
+        try:
+            waiter = session.client("cloudformation").get_waiter("stack_delete_complete")
+            waiter.wait(StackName=stack.stack_id)
+        finally:
+            if tail_thread:
+                tail_thread.stop()
 
     @backoff.on_exception(
         backoff.expo, botocore.exceptions.WaiterError, max_tries=10, giveup=is_not_rate_limited_exception
     )
     def wait_until_update_complete(self, session, stack, disable_tail_events=False):
+        tail_thread = None
         if not disable_tail_events:
-            start_tail_stack_events_daemon(session, stack)
+            tail_thread = start_tail_stack_events_daemon(session, stack)
 
-        waiter = session.client("cloudformation").get_waiter("stack_update_complete")
-        waiter.wait(StackName=stack.stack_id)
+        try:
+            waiter = session.client("cloudformation").get_waiter("stack_update_complete")
+            waiter.wait(StackName=stack.stack_id)
+        finally:
+            if tail_thread:
+                tail_thread.stop()
 
     @backoff.on_exception(
         backoff.expo, botocore.exceptions.WaiterError, max_tries=10, giveup=is_not_rate_limited_exception

@@ -24,7 +24,7 @@ def is_stack_does_not_exist_exception(ex):
     """Check whether given exception is "stack does not exist",
     botocore doesn't throw a distinct exception class in this case.
     """
-    if isinstance(ex, botocore.exceptions.ClientError):
+    if isinstance(ex, botocore.exceptions.ClientError) or isinstance(ex, botocore.exceptions.ValidationError):
         error = ex.response.get("Error", {})
         error_message = error.get("Message", "Unknown")
         return error_message.endswith("does not exist")

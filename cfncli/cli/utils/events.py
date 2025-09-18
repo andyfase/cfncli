@@ -4,14 +4,24 @@ import time
 import threading
 import click
 import botocore.exceptions
+from cfncli.runner.commands.utils import is_stack_does_not_exist_exception
 
 from .colormaps import STACK_STATUS_TO_COLOR
 
 print_mutex = threading.Lock()
 
 
+class StoppableTailThread:
+    def __init__(self, thread, stop_event):
+        self.thread = thread
+        self.stop_event = stop_event
+    
+    def stop(self):
+        self.stop_event.set()
+
+
 def tail_stack_events(
-    session, stack, latest_events=1, event_limit=10000, time_limit=3600, check_interval=5, indent=0, prefix="XX"
+    session, stack, latest_events=1, event_limit=10000, time_limit=3600, check_interval=5, indent=0, prefix="XX", stop_event=None
 ):
     """Tail stack events and print them"""
     then = time.time()
@@ -23,8 +33,11 @@ def tail_stack_events(
 
     first_run = True
 
-    # loop until time limit
+    # loop until time limit or stop event
     while time.time() - then < time_limit:
+        # check if we should stop
+        if stop_event and stop_event.is_set():
+            break
         # or too many events are visited
         if len(visited_events) > event_limit:
             break
@@ -32,8 +45,9 @@ def tail_stack_events(
         # get all stack events
         try:
             events = list(stack.events.all())
-        except botocore.exceptions.ClientError as e:
-            click.echo(str(e))
+        except (botocore.exceptions.ClientError, botocore.exceptions.ValidationError) as e:
+            if not is_stack_does_not_exist_exception(e):
+                click.echo(str(e))
             break
         else:
             # put latest events at first
@@ -65,6 +79,7 @@ def tail_stack_events(
                 cfn = session.resource("cloudformation", region_name=stack.meta.client.meta.region_name)
                 sub_stack = cfn.Stack(e.physical_resource_id)
 
+                # Share the same stop_event so nested threads stop with parent
                 start_tail_stack_events_daemon(
                     session,
                     sub_stack,
@@ -72,6 +87,7 @@ def tail_stack_events(
                     check_interval=check_interval + 1,
                     indent=indent + 2,
                     prefix=e.logical_resource_id,
+                    stop_event=stop_event,
                 )
 
             # print the event - as we have multiple prints on same line we use a mutex to ensure we dont
@@ -100,7 +116,7 @@ def tail_stack_events(
 
 
 def start_tail_stack_events_daemon(
-    session, stack, latest_events=1, event_limit=10000, time_limit=3600, check_interval=5, indent=0, prefix=None
+    session, stack, latest_events=1, event_limit=10000, time_limit=3600, check_interval=5, indent=0, prefix=None, stop_event=None
 ):
     """Start tailing stack events"""
 
@@ -109,9 +125,12 @@ def start_tail_stack_events_daemon(
     #       Should implement a barrier on how many querys are being sent
     #       concurrently.
 
+    if stop_event is None:
+        stop_event = threading.Event()
     thread = threading.Thread(
         target=tail_stack_events,
-        args=(session, stack, latest_events, event_limit, time_limit, check_interval, indent, prefix),
+        args=(session, stack, latest_events, event_limit, time_limit, check_interval, indent, prefix, stop_event),
     )
     thread.daemon = True
     thread.start()
+    return StoppableTailThread(thread, stop_event)
