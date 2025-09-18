@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="z_a61cd5ebabd47eab___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.10.6">coverage.py v7.10.6</a>,
-            created at 2025-09-17 20:32 +0000
+            created at 2025-09-18 21:00 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -106,7 +106,7 @@
     <p class="pln"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t">    <span class="str">"""Check whether given exception is "stack does not exist",</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t"><span class="str">    botocore doesn't throw a distinct exception class in this case.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t26" href="#t26">26</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t27" href="#t27">27</a></span><span class="t">    <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">ex</span><span class="op">,</span> <span class="nam">botocore</span><span class="op">.</span><span class="nam">exceptions</span><span class="op">.</span><span class="nam">ClientError</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t27" href="#t27">27</a></span><span class="t">    <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">ex</span><span class="op">,</span> <span class="nam">botocore</span><span class="op">.</span><span class="nam">exceptions</span><span class="op">.</span><span class="nam">ClientError</span><span class="op">)</span> <span class="key">or</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">ex</span><span class="op">,</span> <span class="nam">botocore</span><span class="op">.</span><span class="nam">exceptions</span><span class="op">.</span><span class="nam">ValidationError</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t28" href="#t28">28</a></span><span class="t">        <span class="nam">error</span> <span class="op">=</span> <span class="nam">ex</span><span class="op">.</span><span class="nam">response</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="str">"Error"</span><span class="op">,</span> <span class="op">{</span><span class="op">}</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t29" href="#t29">29</a></span><span class="t">        <span class="nam">error_message</span> <span class="op">=</span> <span class="nam">error</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="str">"Message"</span><span class="op">,</span> <span class="str">"Unknown"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t30" href="#t30">30</a></span><span class="t">        <span class="key">return</span> <span class="nam">error_message</span><span class="op">.</span><span class="nam">endswith</span><span class="op">(</span><span class="str">"does not exist"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
@@ -227,7 +227,7 @@
             <a class="nav" href="z_a61cd5ebabd47eab___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.10.6">coverage.py v7.10.6</a>,
-            created at 2025-09-17 20:32 +0000
+            created at 2025-09-18 21:00 +0000
         </p>
     </div>
 </footer>
