@@ -43,4 +43,4 @@ format:
 	python -m black .
 
 lint:
-	python -m flake8 .
+	python -m black .

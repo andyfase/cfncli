@@ -40,15 +40,7 @@ from cfncli.runner.commands.stack_deploy_command import StackDeployCommand, Stac
 )
 @click.pass_context
 @command_exception_handler
-def deploy(
-    ctx,
-    no_wait,
-    on_failure,
-    disable_rollback,
-    timeout_in_minutes,
-    ignore_existing,
-    show_physical_ids
-):
+def deploy(ctx, no_wait, on_failure, disable_rollback, timeout_in_minutes, ignore_existing, show_physical_ids):
     """Deploy new stacks."""
     assert isinstance(ctx.obj, Context)
 
@@ -58,7 +50,7 @@ def deploy(
         disable_rollback=disable_rollback,
         timeout_in_minutes=timeout_in_minutes,
         ignore_existing=ignore_existing,
-        show_physical_ids=show_physical_ids
+        show_physical_ids=show_physical_ids,
     )
 
     command = StackDeployCommand(pretty_printer=ctx.obj.ppt, options=options)

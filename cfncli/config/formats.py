@@ -144,7 +144,7 @@ class FormatV2(ConfigFormat):
 
         ## add prefix to stack name if set in config
         if "StackPrefix" in stage_config:
-            stack_config["StackName"] = ''.join([stage_config['StackPrefix'], stack_config['StackName']])
+            stack_config["StackName"] = "".join([stage_config["StackPrefix"], stack_config["StackName"]])
 
         ## add any stage parameters to stack parameters
         if "Parameters" in stage_config:

@@ -8,7 +8,14 @@ from .utils import update_termination_protection, is_no_updates_being_performed_
 class StackUpdateOptions(
     namedtuple(
         "StackUpdateOptions",
-        ["no_wait", "use_previous_template", "disable_rollback", "ignore_no_update", "override_policy", "show_physical_ids"],
+        [
+            "no_wait",
+            "use_previous_template",
+            "disable_rollback",
+            "ignore_no_update",
+            "override_policy",
+            "show_physical_ids",
+        ],
     )
 ):
     pass

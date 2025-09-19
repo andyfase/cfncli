@@ -13,6 +13,7 @@ from .utils import (
     describe_change_set,
     check_changeset_type,
     execute_change_set,
+    get_changeset_name,
 )
 from cfncli.cli.utils.colormaps import RED, AMBER, GREEN
 from .stack_changeset_command import StackChangesetCommand
@@ -47,7 +48,11 @@ class StackExecuteChangesetCommand(Command):
         changeset_arn = self.options.changesets[stack_context.stack_key]
 
         # print stack qualified name
-        self.ppt.pprint_changeset_with_stack("Executing Changeset", stack_context.stack_key, changeset_arn if self.options.show_physical_ids else '')
+        self.ppt.pprint_changeset_with_stack(
+            "Executing Changeset",
+            stack_context.stack_key,
+            get_changeset_name(changeset_arn, not self.options.show_physical_ids),
+        )
 
         ## ensure stack status
         try:
@@ -108,7 +113,11 @@ class StackExecuteChangesetCommand(Command):
         stack = cfn.Stack(parameters["StackName"])
 
         if changeset_type == "CREATE":
-            self.ppt.wait_until_deploy_complete(session, stack, self.options.disable_tail_events, show_physical_resources=self.options.show_physical_ids)
+            self.ppt.wait_until_deploy_complete(
+                session, stack, self.options.disable_tail_events, show_physical_resources=self.options.show_physical_ids
+            )
         else:
-            self.ppt.wait_until_update_complete(session, stack, self.options.disable_tail_events, show_physical_resources=self.options.show_physical_ids)
+            self.ppt.wait_until_update_complete(
+                session, stack, self.options.disable_tail_events, show_physical_resources=self.options.show_physical_ids
+            )
         self.ppt.secho("ChangeSet execution complete.", fg=GREEN)

@@ -12,6 +12,7 @@ print_mutex = threading.Lock()
 
 MAX_PRINT_RESOURCE_ID = 40
 
+
 class StoppableTailThread:
     def __init__(self, thread, stop_event):
         self.thread = thread
@@ -19,6 +20,7 @@ class StoppableTailThread:
 
     def stop(self):
         self.stop_event.set()
+
 
 def start_tail_stack_events_daemon(
     session,
@@ -30,7 +32,7 @@ def start_tail_stack_events_daemon(
     indent=0,
     prefix=None,
     stop_event=None,
-    show_physical_resources=False
+    show_physical_resources=False,
 ):
     """Start tailing stack events"""
 
@@ -43,7 +45,18 @@ def start_tail_stack_events_daemon(
         stop_event = threading.Event()
     thread = threading.Thread(
         target=tail_stack_events,
-        args=(session, stack, latest_events, event_limit, time_limit, check_interval, indent, prefix, stop_event, show_physical_resources),
+        args=(
+            session,
+            stack,
+            latest_events,
+            event_limit,
+            time_limit,
+            check_interval,
+            indent,
+            prefix,
+            stop_event,
+            show_physical_resources,
+        ),
     )
     thread.daemon = True
     thread.start()
@@ -60,7 +73,7 @@ def tail_stack_events(
     indent=0,
     prefix="XX",
     stop_event=None,
-    show_physical_resources=False
+    show_physical_resources=False,
 ):
     """Tail stack events and print them"""
     then = time.time()
@@ -127,7 +140,7 @@ def tail_stack_events(
                     indent=indent + 2,
                     prefix=e.logical_resource_id,
                     stop_event=stop_event,
-                    show_physical_resources=show_physical_resources
+                    show_physical_resources=show_physical_resources,
                 )
 
             # print the event - as we have multiple prints on same line we use a mutex to ensure we dont
@@ -144,7 +157,9 @@ def tail_stack_events(
 
                 if e.resource_status_reason:
                     click.echo(" - %s" % e.resource_status_reason)
-                elif e.physical_resource_id and (show_physical_resources or len(e.physical_resource_id) < MAX_PRINT_RESOURCE_ID):
+                elif e.physical_resource_id and (
+                    show_physical_resources or len(e.physical_resource_id) < MAX_PRINT_RESOURCE_ID
+                ):
                     click.echo(" - %s" % e.physical_resource_id)
                 else:
                     click.echo("")

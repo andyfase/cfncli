@@ -58,7 +58,7 @@ def update(ctx, no_wait, use_previous_template, disable_rollback, ignore_no_upda
         disable_rollback=disable_rollback,
         ignore_no_update=ignore_no_update,
         override_policy=override_policy,
-        show_physical_ids=show_physical_ids
+        show_physical_ids=show_physical_ids,
     )
 
     command = StackUpdateCommand(pretty_printer=ctx.obj.ppt, options=options)

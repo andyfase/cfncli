@@ -352,7 +352,9 @@ class StackPrettyPrinter(object):
     def wait_until_deploy_complete(self, session, stack, disable_tail_events=False, show_physical_resources=False):
         tail_thread = None
         if not disable_tail_events:
-            tail_thread = start_tail_stack_events_daemon(session, stack, latest_events=0, show_physical_resources=show_physical_resources)
+            tail_thread = start_tail_stack_events_daemon(
+                session, stack, latest_events=0, show_physical_resources=show_physical_resources
+            )
 
         try:
             waiter = session.client("cloudformation").get_waiter("stack_create_complete")
@@ -388,7 +390,9 @@ class StackPrettyPrinter(object):
     def wait_until_update_complete(self, session, stack, disable_tail_events=False, show_physical_resources=False):
         tail_thread = None
         if not disable_tail_events:
-            tail_thread = start_tail_stack_events_daemon(session, stack, show_physical_resources=show_physical_resources)
+            tail_thread = start_tail_stack_events_daemon(
+                session, stack, show_physical_resources=show_physical_resources
+            )
 
         try:
             waiter = session.client("cloudformation").get_waiter("stack_update_complete")

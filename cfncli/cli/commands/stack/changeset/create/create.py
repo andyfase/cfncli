@@ -51,7 +51,7 @@ def create(ctx, use_previous_template, ignore_no_update, disable_nested, show_ph
         use_previous_template=use_previous_template,
         disable_nested=disable_nested,
         ignore_no_update=ignore_no_update,
-        show_physical_ids=show_physical_ids
+        show_physical_ids=show_physical_ids,
     )
 
     command = StackChangesetCommand(pretty_printer=ctx.obj.ppt, options=options)
