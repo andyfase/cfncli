@@ -4,7 +4,7 @@ from .command import Command
 from .utils import update_termination_protection, is_stack_does_not_exist_exception
 
 
-class StackDeleteOptions(namedtuple("StackDeleteOptions", ["no_wait", "ignore_missing"])):
+class StackDeleteOptions(namedtuple("StackDeleteOptions", ["no_wait", "ignore_missing", "show_physical_ids"])):
     pass
 
 
@@ -43,5 +43,5 @@ class StackDeleteCommand(Command):
         if self.options.no_wait:
             self.ppt.secho("Stack is being deleted.")
         else:
-            self.ppt.wait_until_delete_complete(session, stack)
+            self.ppt.wait_until_delete_complete(session, stack, show_physical_resources=self.options.show_physical_ids)
             self.ppt.secho("Stack delete complete.", fg="green")

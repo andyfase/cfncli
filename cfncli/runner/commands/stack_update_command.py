@@ -8,7 +8,14 @@ from .utils import update_termination_protection, is_no_updates_being_performed_
 class StackUpdateOptions(
     namedtuple(
         "StackUpdateOptions",
-        ["no_wait", "use_previous_template", "disable_rollback", "ignore_no_update", "override_policy"],
+        [
+            "no_wait",
+            "use_previous_template",
+            "disable_rollback",
+            "ignore_no_update",
+            "override_policy",
+            "show_physical_ids",
+        ],
     )
 ):
     pass
@@ -73,5 +80,5 @@ class StackUpdateCommand(Command):
         if self.options.no_wait:
             self.ppt.secho("Stack update started.")
         else:
-            self.ppt.wait_until_update_complete(session, stack)
+            self.ppt.wait_until_update_complete(session, stack, show_physical_resources=self.options.show_physical_ids)
             self.ppt.secho("Stack update complete.", fg="green")

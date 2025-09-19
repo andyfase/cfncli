@@ -98,14 +98,15 @@ class FormatV2(ConfigFormat):
 
     def parse(self, config):
         deployment = Deployment()
-
         blueprints = config.get("Blueprints", dict())
         stages = config.get("Stages", dict())
         for stage_key, stage_stacks in stages.items():
             stacks = copy.deepcopy(stage_stacks)
             stage_config = stacks.get("Config", {})
-
-            stage_extend = stages.get(stage_config.get("Extends", ""), {})
+            stage_extend_name = stage_config.get("Extends", None)
+            stage_extend = stages.get(stage_extend_name, None)
+            if stage_extend_name and not stage_extend:
+                raise FormatError('Stage Extend "%s" not found' % stage_extend_name)
             if stage_extend:
                 stage_config.pop("Extends", {})
                 stage_extend_config = stage_extend.get("Config", {})
@@ -140,6 +141,20 @@ class FormatV2(ConfigFormat):
         # add default name
         if "StackName" not in stack_config:
             stack_config["StackName"] = stack_key
+
+        ## add prefix to stack name if set in config
+        if "StackPrefix" in stage_config:
+            stack_config["StackName"] = "".join([stage_config["StackPrefix"], stack_config["StackName"]])
+
+        ## add any stage parameters to stack parameters
+        if "Parameters" in stage_config:
+            if not stack_config.get("Parameters", None):
+                stack_config["Parameters"] = stage_config["Parameters"]
+            else:
+                ## allow Stack parameters to overwrite Stage Parameters
+                stage_parameters = copy.deepcopy(stage_config["Parameters"])
+                stage_parameters.update(stack_config["Parameters"])
+                stack_config["Parameters"] = stage_parameters
 
         # Make relate template path
         template = stack_config.get("Template")

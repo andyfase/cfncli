@@ -10,6 +10,8 @@ from .colormaps import STACK_STATUS_TO_COLOR
 
 print_mutex = threading.Lock()
 
+MAX_PRINT_RESOURCE_ID = 40
+
 
 class StoppableTailThread:
     def __init__(self, thread, stop_event):
@@ -18,6 +20,47 @@ class StoppableTailThread:
 
     def stop(self):
         self.stop_event.set()
+
+
+def start_tail_stack_events_daemon(
+    session,
+    stack,
+    latest_events=1,
+    event_limit=10000,
+    time_limit=3600,
+    check_interval=5,
+    indent=0,
+    prefix=None,
+    stop_event=None,
+    show_physical_resources=False,
+):
+    """Start tailing stack events"""
+
+    # TODO: Now this causes AWS throttling boto3 call if the tracking stack
+    #       contains a lot of nested stacks and/or long update history.
+    #       Should implement a barrier on how many querys are being sent
+    #       concurrently.
+
+    if stop_event is None:
+        stop_event = threading.Event()
+    thread = threading.Thread(
+        target=tail_stack_events,
+        args=(
+            session,
+            stack,
+            latest_events,
+            event_limit,
+            time_limit,
+            check_interval,
+            indent,
+            prefix,
+            stop_event,
+            show_physical_resources,
+        ),
+    )
+    thread.daemon = True
+    thread.start()
+    return StoppableTailThread(thread, stop_event)
 
 
 def tail_stack_events(
@@ -30,6 +73,7 @@ def tail_stack_events(
     indent=0,
     prefix="XX",
     stop_event=None,
+    show_physical_resources=False,
 ):
     """Tail stack events and print them"""
     then = time.time()
@@ -96,6 +140,7 @@ def tail_stack_events(
                     indent=indent + 2,
                     prefix=e.logical_resource_id,
                     stop_event=stop_event,
+                    show_physical_resources=show_physical_resources,
                 )
 
             # print the event - as we have multiple prints on same line we use a mutex to ensure we dont
@@ -108,11 +153,13 @@ def tail_stack_events(
                 click.echo(e.timestamp.strftime("%x %X"), nl=False)
                 click.echo(" - ", nl=False)
                 click.secho(e.resource_status, nl=False, **STACK_STATUS_TO_COLOR[e.resource_status])
-                click.echo(" - %s(%s)" % (e.logical_resource_id, e.resource_type), nl=False)
+                click.echo("\t- %s (%s)" % (e.logical_resource_id, e.resource_type), nl=False)
 
                 if e.resource_status_reason:
                     click.echo(" - %s" % e.resource_status_reason)
-                elif e.physical_resource_id:
+                elif e.physical_resource_id and (
+                    show_physical_resources or len(e.physical_resource_id) < MAX_PRINT_RESOURCE_ID
+                ):
                     click.echo(" - %s" % e.physical_resource_id)
                 else:
                     click.echo("")
@@ -121,32 +168,3 @@ def tail_stack_events(
             first_run = False
 
         time.sleep(check_interval)
-
-
-def start_tail_stack_events_daemon(
-    session,
-    stack,
-    latest_events=1,
-    event_limit=10000,
-    time_limit=3600,
-    check_interval=5,
-    indent=0,
-    prefix=None,
-    stop_event=None,
-):
-    """Start tailing stack events"""
-
-    # TODO: Now this causes AWS throttling boto3 call if the tracking stack
-    #       contains a lot of nested stacks and/or long update history.
-    #       Should implement a barrier on how many querys are being sent
-    #       concurrently.
-
-    if stop_event is None:
-        stop_event = threading.Event()
-    thread = threading.Thread(
-        target=tail_stack_events,
-        args=(session, stack, latest_events, event_limit, time_limit, check_interval, indent, prefix, stop_event),
-    )
-    thread.daemon = True
-    thread.start()
-    return StoppableTailThread(thread, stop_event)

@@ -23,6 +23,7 @@ class StackSyncOptions(
             "disable_rollback",
             "disable_tail_events",
             "disable_nested",
+            "show_physical_ids",
             "ignore_no_update",
         ],
     )
