@@ -7,6 +7,7 @@ def get_changeset_name(changeset_arn, shorten=True):
     # arn format for changeset arn:aws:cloudformation:region:account-id:changeSet/change-set-name/change-set-id
     return changeset_arn if not shorten else changeset_arn.split("/")[1]
 
+
 def update_termination_protection(session, termination_protection, stack_name, ppt):
     """Update termination protection on a stack"""
 
