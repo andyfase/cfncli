@@ -1,0 +1,83 @@
+Version: 3
+
+PROJECT_SETTINGS: &PROJECT_SETTINGS
+    Application: mysuperapp
+
+ENV_PROD_SETTINGS: &ENV_PROD_SETTINGS
+    Environment: prod
+
+ENV_DR_SETTINGS: &ENV_DR_SETTINGS
+    Environment: dr
+
+Blueprints:
+  Bucket: 
+    Order: 1
+    Template: ./templates/bucket.yaml
+    StackPolicy: ALLOW_ALL
+    Capabilities: [CAPABILITY_IAM]
+    Parameters:
+      <<: *PROJECT_SETTINGS
+      BucketSuffix: cfncli
+
+  Lambda:
+    Order: 2
+    Template: ./templates/lambda.yaml
+    StackPolicy: ALLOW_ALL
+    Capabilities: [CAPABILITY_IAM]
+    Package:  true
+    Parameters:
+      <<: *PROJECT_SETTINGS
+      LambdaMemory: 256 ## Default can be overridden
+
+  NestedLambda:
+    Order: 2
+    Template: ./templates/nested.yaml
+    StackPolicy: ALLOW_ALL
+    Capabilities: [CAPABILITY_IAM]
+    Package:  true
+    Parameters:
+      <<: *PROJECT_SETTINGS
+      LambdaMemory: 256 ## Default can be overridden
+
+Stages:
+  ##
+  ## DR Stage has a single Lambda stack with default memory. The Bucket Param is imported from the Prod stage 
+  ## Even though its defined in coding first, it will deploy after Prod based on the Order parameter
+  dr:
+    Config:
+      Order: 2
+      Region: us-east-1
+      StackPrefix: 'dr-'
+      Tags:
+        Team: SuperSecDevOps 
+        DR: "True"
+      Parameters:
+        <<: *ENV_DR_SETTINGS
+    lambda:
+      Extends: Lambda
+      StackName: lambda
+      Parameters:
+        BucketName: ${prod.bucket.BucketName} ## there is no hard CFN Import used which allows for updating/deleting in future
+
+  ##
+  ## Prod Stage inherits the DR stage lambda stack and adds a bucket stack, we bump lambda memory as its prod
+  ## Will deploy first thus allow the Dr stage to fetch the bucket output
+  prod:
+    Config:
+      Extends: dr
+      Order: 1
+      Region: us-west-2
+      StackPrefix: 'prod-'
+      Tags:
+        DR: "False"
+      Parameters:
+        <<: *ENV_PROD_SETTINGS
+    bucket:
+      Extends: Bucket
+      StackName: "bucket"
+      Parameters:
+         isDr: "False"
+    lambda:
+      Parameters:
+        LambdaMemory: 1024
+        LambdaTimeout: 600

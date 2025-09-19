@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Demo Lambda Stack'
+
+Parameters:
+  Environment:
+    Type: String
+  Application:
+    Type: String
+  LambdaMemory:
+    Type: String
+    Default: 128
+  LambdaTimeout:
+    Type: Number
+    Default: 15
+  BucketName:
+    Type: String
+
+Resources:
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+        Version: '2012-10-17'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: s3access
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+            - Effect: Allow
+              Action:
+                - 's3:GetObject'
+              Resource: !Sub arn:${AWS::Partition}:s3:::${BucketName}
+
+
+  WebappLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub "${Application}-${Environment}-lambda"
+      Description: !Sub "${Application}-${Environment}-lambda"
+      Code: "../src/test/"
+      TracingConfig:
+        Mode: Active
+      Handler: index.handler
+      MemorySize: !Ref LambdaMemory
+      Runtime: python3.12
+      Timeout: !Ref LambdaTimeout
+      Role: !GetAtt LambdaRole.Arn
+      Environment:
+        Variables:
+          Environment: !Ref Environment
