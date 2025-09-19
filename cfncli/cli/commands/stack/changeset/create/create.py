@@ -23,15 +23,15 @@ from cfncli.cli.utils.colormaps import RED
     default=False,
     help="Ignore error when there are no updates to be performed.",
 )
-@click.option("--disable-tail-events", is_flag=True, default=False, help="Disable tailing of cloudformation events")
 @click.option("--disable-nested", is_flag=True, default=False, help="Disable creation of nested changesets")
+@click.option("--show-physical-ids", is_flag=True, default=False, help="Shows physical ID of changeset produced")
 @click.option("--store", is_flag=True, default=False, help="Store changeset ARNS for execution in subsequent command")
 @click.option(
     "--output", default=".cfn-cli-changesets", help="file path of changeset file store (Default .cfn-cli-changesets)"
 )
 @click.pass_context
 @command_exception_handler
-def create(ctx, use_previous_template, ignore_no_update, disable_tail_events, disable_nested, store, output):
+def create(ctx, use_previous_template, ignore_no_update, disable_nested, show_physical_ids, store, output):
     """Create a ChangeSet
 
     `Combines "aws cloudformation package" and "aws cloudformation create-change-set" command
@@ -49,9 +49,9 @@ def create(ctx, use_previous_template, ignore_no_update, disable_tail_events, di
 
     options = StackChangesetOptions(
         use_previous_template=use_previous_template,
-        disable_tail_events=disable_tail_events,
         disable_nested=disable_nested,
         ignore_no_update=ignore_no_update,
+        show_physical_ids=show_physical_ids
     )
 
     command = StackChangesetCommand(pretty_printer=ctx.obj.ppt, options=options)

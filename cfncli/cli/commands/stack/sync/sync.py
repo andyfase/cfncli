@@ -32,6 +32,7 @@ from cfncli.runner.commands.stack_sync_command import StackSyncOptions, StackSyn
     "in the stack configuration file.",
 )
 @click.option("--disable-tail-events", is_flag=True, default=False, help="Disable tailing of cloudformation events")
+@click.option("--show-physical-ids", is_flag=True, default=False, help="Shows physical IDs in tail events")
 @click.option("--disable-nested", is_flag=True, default=False, help="Disable creation of nested changesets")
 @click.pass_context
 @command_exception_handler
@@ -43,6 +44,7 @@ def sync(
     use_previous_template,
     disable_rollback,
     disable_tail_events,
+    show_physical_ids,
     disable_nested,
 ):
     """Create and execute ChangeSets (SAM)
@@ -60,6 +62,7 @@ def sync(
         disable_rollback=disable_rollback,
         disable_tail_events=disable_tail_events,
         disable_nested=disable_nested,
+        show_physical_ids=show_physical_ids,
         ignore_no_update=ignore_no_update,
     )
 

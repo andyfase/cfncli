@@ -15,6 +15,7 @@ from cfncli.runner.commands.stack_exec_changeset_command import (
 
 @click.command()
 @click.option("--disable-tail-events", is_flag=True, default=False, help="Disable tailing of cloudformation events")
+@click.option("--show-physical-ids", is_flag=True, default=False, help="Shows physical IDs in tail events")
 @click.option(
     "--ignore-no-exists",
     "-i",
@@ -36,7 +37,7 @@ from cfncli.runner.commands.stack_exec_changeset_command import (
 )
 @click.pass_context
 @command_exception_handler
-def exec(ctx, disable_tail_events, disable_rollback, input, ignore_no_exists):
+def exec(ctx, disable_tail_events, show_physical_ids, disable_rollback, input, ignore_no_exists):
     """Execute a existing ChangeSet
 
     `Combines "aws cloudformation package" and "aws cloudformation create-change-set" command
@@ -54,6 +55,7 @@ def exec(ctx, disable_tail_events, disable_rollback, input, ignore_no_exists):
     with open(input) as f:
         changesets = json.load(f)
         options = StackExecuteChangesetOptions(
+            show_physical_ids=show_physical_ids,
             disable_tail_events=disable_tail_events,
             disable_rollback=disable_rollback,
             changesets=changesets,

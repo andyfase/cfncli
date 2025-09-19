@@ -10,6 +10,7 @@ from cfncli.runner.commands.stack_update_command import StackUpdateOptions, Stac
 
 @click.command()
 @click.option("--no-wait", "-w", is_flag=True, default=False, help="Exit immediately after update is started.")
+@click.option("--show-physical-ids", is_flag=True, default=False, help="Shows physical IDs in tail events")
 @click.option(
     "--use-previous-template",
     is_flag=True,
@@ -44,7 +45,7 @@ from cfncli.runner.commands.stack_update_command import StackUpdateOptions, Stac
 )
 @click.pass_context
 @command_exception_handler
-def update(ctx, no_wait, use_previous_template, disable_rollback, ignore_no_update, override_policy):
+def update(ctx, no_wait, use_previous_template, disable_rollback, ignore_no_update, override_policy, show_physical_ids):
     """Update existing stacks.
 
     Any stack configuration changes are also applied as well.
@@ -57,6 +58,7 @@ def update(ctx, no_wait, use_previous_template, disable_rollback, ignore_no_upda
         disable_rollback=disable_rollback,
         ignore_no_update=ignore_no_update,
         override_policy=override_policy,
+        show_physical_ids=show_physical_ids
     )
 
     command = StackUpdateCommand(pretty_printer=ctx.obj.ppt, options=options)

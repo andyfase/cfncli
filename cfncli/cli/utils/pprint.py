@@ -349,10 +349,10 @@ class StackPrettyPrinter(object):
     @backoff.on_exception(
         backoff.expo, botocore.exceptions.WaiterError, max_tries=10, giveup=is_not_rate_limited_exception
     )
-    def wait_until_deploy_complete(self, session, stack, disable_tail_events=False):
+    def wait_until_deploy_complete(self, session, stack, disable_tail_events=False, show_physical_resources=False):
         tail_thread = None
         if not disable_tail_events:
-            tail_thread = start_tail_stack_events_daemon(session, stack, latest_events=0)
+            tail_thread = start_tail_stack_events_daemon(session, stack, latest_events=0, show_physical_resources=show_physical_resources)
 
         try:
             waiter = session.client("cloudformation").get_waiter("stack_create_complete")
@@ -364,7 +364,7 @@ class StackPrettyPrinter(object):
     @backoff.on_exception(
         backoff.expo, botocore.exceptions.WaiterError, max_tries=10, giveup=is_not_rate_limited_exception
     )
-    def wait_until_delete_complete(self, session, stack):
+    def wait_until_delete_complete(self, session, stack, show_physical_resources=False):
         ## test to ensure stack still exists before we wait and tail
         try:
             stack.load()
@@ -373,7 +373,7 @@ class StackPrettyPrinter(object):
                 click.echo(str(e))
             return
 
-        tail_thread = start_tail_stack_events_daemon(session, stack)
+        tail_thread = start_tail_stack_events_daemon(session, stack, show_physical_resources=show_physical_resources)
 
         try:
             waiter = session.client("cloudformation").get_waiter("stack_delete_complete")
@@ -385,10 +385,10 @@ class StackPrettyPrinter(object):
     @backoff.on_exception(
         backoff.expo, botocore.exceptions.WaiterError, max_tries=10, giveup=is_not_rate_limited_exception
     )
-    def wait_until_update_complete(self, session, stack, disable_tail_events=False):
+    def wait_until_update_complete(self, session, stack, disable_tail_events=False, show_physical_resources=False):
         tail_thread = None
         if not disable_tail_events:
-            tail_thread = start_tail_stack_events_daemon(session, stack)
+            tail_thread = start_tail_stack_events_daemon(session, stack, show_physical_resources=show_physical_resources)
 
         try:
             waiter = session.client("cloudformation").get_waiter("stack_update_complete")

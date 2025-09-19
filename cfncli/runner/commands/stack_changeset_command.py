@@ -20,7 +20,7 @@ from cfncli.cli.utils.colormaps import CHANGESET_STATUS_TO_COLOR, RED, AMBER, GR
 
 class StackChangesetOptions(
     namedtuple(
-        "StackChangesetOptions", ["use_previous_template", "disable_tail_events", "ignore_no_update", "disable_nested"]
+        "StackChangesetOptions", ["use_previous_template", "ignore_no_update", "disable_nested", "show_physical_ids"]
     )
 ):
     pass
@@ -91,7 +91,8 @@ class StackChangesetCommand(Command):
                         )
                 raise e
             changeset_id = result["Id"]
-            echo_pair("ChangeSet ARN", changeset_id)
+            if self.options.show_physical_ids:
+                echo_pair("ChangeSet ARN", changeset_id)
 
             self.ppt.wait_until_changset_complete(client, changeset_id)
             result = describe_change_set(client, changeset_arn=changeset_id)

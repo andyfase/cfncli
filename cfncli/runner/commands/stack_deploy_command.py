@@ -7,7 +7,7 @@ from .utils import is_stack_already_exists_exception
 
 class StackDeployOptions(
     namedtuple(
-        "StackDeployOptions", ["no_wait", "on_failure", "disable_rollback", "timeout_in_minutes", "ignore_existing"]
+        "StackDeployOptions", ["no_wait", "on_failure", "disable_rollback", "timeout_in_minutes", "ignore_existing", "show_physical_ids"]
     )
 ):
     pass
@@ -59,5 +59,5 @@ class StackDeployCommand(Command):
         if self.options.no_wait:
             self.ppt.secho("Stack deployment started.")
         else:
-            self.ppt.wait_until_deploy_complete(session, stack)
+            self.ppt.wait_until_deploy_complete(session, stack, show_physical_resources=self.options.show_physical_ids)
             self.ppt.secho("Stack deployment complete.", fg="green")

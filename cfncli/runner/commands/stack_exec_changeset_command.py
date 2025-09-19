@@ -21,7 +21,7 @@ from .stack_changeset_command import StackChangesetCommand
 class StackExecuteChangesetOptions(
     namedtuple(
         "StackExecuteChangeSetOptions",
-        ["disable_rollback", "disable_tail_events", "changesets", "ignore_no_exists"],
+        ["disable_rollback", "disable_tail_events", "show_physical_ids", "changesets", "ignore_no_exists"],
     )
 ):
     pass
@@ -47,7 +47,7 @@ class StackExecuteChangesetCommand(Command):
         changeset_arn = self.options.changesets[stack_context.stack_key]
 
         # print stack qualified name
-        self.ppt.pprint_changeset_with_stack("Executing Changeset", stack_context.stack_key, changeset_arn)
+        self.ppt.pprint_changeset_with_stack("Executing Changeset", stack_context.stack_key, changeset_arn if self.options.show_physical_ids else '')
 
         ## ensure stack status
         try:
@@ -108,7 +108,7 @@ class StackExecuteChangesetCommand(Command):
         stack = cfn.Stack(parameters["StackName"])
 
         if changeset_type == "CREATE":
-            self.ppt.wait_until_deploy_complete(session, stack, self.options.disable_tail_events)
+            self.ppt.wait_until_deploy_complete(session, stack, self.options.disable_tail_events, show_physical_resources=self.options.show_physical_ids)
         else:
-            self.ppt.wait_until_update_complete(session, stack, self.options.disable_tail_events)
+            self.ppt.wait_until_update_complete(session, stack, self.options.disable_tail_events, show_physical_resources=self.options.show_physical_ids)
         self.ppt.secho("ChangeSet execution complete.", fg=GREEN)
