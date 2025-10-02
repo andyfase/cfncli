@@ -10,6 +10,7 @@ build:
   jobs:
     pre_install:
       - pip install mkdocs-material
+      - pip install mkdocs-click
 
 mkdocs:
   configuration: docs/mkdocs.yaml
