@@ -7,3 +7,4 @@ pytest-cov
 black
 mkdocs
 mkdocs-material
+mkdocs-click

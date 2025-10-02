@@ -2,3 +2,7 @@ site_name: CFN CLI
 site_url: !ENV READTHEDOCS_CANONICAL_URL
 theme:
   name: material
+  palette:
+    scheme: slate
+markdown_extensions:
+    - mkdocs-click

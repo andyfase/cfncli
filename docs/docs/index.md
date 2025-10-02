@@ -9,6 +9,13 @@ For full documentation visit [mkdocs.org](https://www.mkdocs.org).
 * `mkdocs build` - Build the documentation site.
 * `mkdocs -h` - Print help message and exit.
 
+
+## Test CLI docs
+
+::: mkdocs-click
+    :module: cfncli.main
+    :command: cli
+
 ## Project layout
 
     mkdocs.yml    # The configuration file.
