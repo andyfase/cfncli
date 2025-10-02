@@ -9,8 +9,8 @@ build:
   # https://docs.readthedocs.io/page/guides/reproducible-builds.html
   jobs:
     pre_install:
-      - pip install mkdocs-material
-      - pip install mkdocs-click
+      - pip install -r requirements-dev.txt
+      - make install
 
 mkdocs:
   configuration: docs/mkdocs.yaml

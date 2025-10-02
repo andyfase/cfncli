@@ -10,7 +10,7 @@ from .update.update import update
 from .changeset import changeset
 
 
-@click.group()
+@click.group(name="stack")
 @click.pass_context
 def cli(ctx):
     """Stack operation sub-commands."""
@@ -24,5 +24,4 @@ cli.add_command(tail)
 cli.add_command(describe)
 cli.add_command(cancel)
 cli.add_command(delete)
-# cli.add_command(cli)
 cli.add_command(changeset)
