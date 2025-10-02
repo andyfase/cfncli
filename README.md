@@ -4,39 +4,36 @@ The missing CloudFormation CLI. Reborn!
 
 [![Coverage badge](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/andyfase/cfncli/python-coverage-comment-action-data/endpoint.json&label=Code%20Coverage)](https://htmlpreview.github.io/?https://github.com/andyfase/cfncli/blob/python-coverage-comment-action-data/htmlcov/index.html)
 
-`cfncli` is the CloudFormation CLI that AWS never built. Its use dramatically increases the developer friendlyness of using CloudFormation at scale, both within developer environemnts and CI/CD pipelines.
+`cfncli` is the CloudFormation CLI that AWS never built. Its use dramatically increases the developer friendliness of using CloudFormation at scale, both within developer environments and CI/CD pipelines.
 
 Highlights:
 
-- Useful and colorful stack deployment output with full event tailing
-- DRY Configuration of multiple stacks in a single YAML file. 
-- Supports managing deployments across AWS accounts and regions
-- Automatic packaging of external resources (Lambda Code etc)
-- Cross-stack parameter reference that work cross-region and cross-account
+- Simple and Intuative CLI that encapsulates the complexity of CloudFormation operations (Packaging, ChangeSets, Drift, Status  etc) 
+- Useful and colourful stack deployment output with full event tailing
+- DRY Configuration of stacks in a single YAML file 
+- Supports ordered stack operations across AWS accounts and regions
+- Automatic packaging of external resources (Lambda Code, Nested Stacks and many more resources)
+- Loosely coupled cross-stack parameter reference that work cross-region and cross-account
 - Nested ChangeSet support, including full and friendly printy printing.
-- Organize stack using inhertied configuration across stages and blueprints
+- Stack configuration inheritence across stages and blueprints
+
+Example Usage:
+
+![demo](/Users/andy/code/cfncli/demo/demo.gif)
 
 
-> This code base was forked from [https://github.com/Kotaimen/awscfncli](https://github.com/Kotaimen/awscfncli) with the aim of continuing its use alongside AWS CLI v2 which enables login through AWS Identity Center
 
-This codebase does not aim to maintain the backwards compatibility that the original `cfn-cli` repo maintained. As such it was forked, detached and will be maintained separately with feature development that will likely not be paralleled in the original code base. This allows for modern dependencies of boto3 and botocore and other python libraries to be used - reducing conflict on installation of the CLI.
 
-This version of `cfn-cli` has been tested and validated operational on AWS CloudShell, AWS Cloud 9, AWS Linux 2023 AMIs. 
+> This code base was forked from [https://github.com/Kotaimen/awscfncli](https://github.com/Kotaimen/awscfncli) with the aim of continuing its use alongside AWS CLI v2 which enables login through AWS Identity Center. This codebase does not aim to maintain the backwards compatibility that the original `cfn-cli` repo maintained. As such it was forked, detached and will be maintained separately with feature development that will likely not be paralleled in the original code base. 
 
 
 ## Compatibility
 
-This tool supports Python 3.7 and above. Python 2.X is not supported. 
-
-> Note this tool is incompatible with the [AWS `cloudformation-cli` package](https://github.com/aws-cloudformation/cloudformation-cli) due to the name clash between the two tools. A "rename" is not being considered at the moment as it is considered unlilkely to require both this tool and the AWS module/resource provider development tool within the same Python environment (i.e. without use of .venv)
+This tool supports Python 3.7 and above. Python 2.X is not supported. `cfn-cli` has been tested and validated operational on AWS CloudShell, AWS Cloud 9, AWS Linux 2023 AMIs and within CI/CD pipeline runners operating in GitHub, Gitlab and Azure DevOps
 
 ## License
 
-This tool is distributed under the MIT license. The AWS CLI dependent code is distributed under the Apache 2.0 license - see ext_customizations README and LICENCE.
-
-## Whats New
-
-See [Feature Development](./FEATURE_DEVELOPMENT.md) for a list of new features added since the repo was forked from the original source.
+This tool is distributed under the MIT license. The AWS CLI dependent code is distributed under the Apache 2.0 license - see ext_customizations [README](./cfncli/ext_customizations/README.md) and [LICENCE](./cfncli/ext_customizations/LICENSE.md).
 
 
 ## Install
@@ -46,6 +43,10 @@ Install from PyPi
 ```
 pip3 install cfncli
 ```
+
+## Documentation
+
+See [GitHub pages](https://cfncli.andyfase.com) for documentation covering usage usage of the CLI and it configuration syntax  
 
 ## Development
 

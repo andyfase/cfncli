@@ -1,0 +1,4 @@
+site_name: CFN CLI
+site_url: !ENV READTHEDOCS_CANONICAL_URL
+theme:
+  name: material
