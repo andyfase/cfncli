@@ -1,0 +1,66 @@
+/* Custom header sizing */
+.md-typeset h1 {
+  font-size: 1.8em;
+}
+
+.md-typeset h2 {
+  font-size: 1.5em;
+}
+
+.md-typeset h3 {
+  font-size: 1.3em;
+}
+
+.md-typeset h4 {
+  font-size: 1.1em;
+}
+
+.md-typeset h5 {
+  font-size: 1em;
+}
+
+.md-typeset h6 {
+  font-size: 0.9em;
+}
+
+/* Larger paragraph text */
+.md-typeset p {
+  font-size: 1.1em;
+}
+
+/* Larger bullet list text */
+.md-typeset ul li,
+.md-typeset ol li {
+  font-size: 1.1em;
+}
+
+/* Larger navigation text */
+.md-nav__item .md-nav__link {
+  font-size: 1.2em;
+}
+
+/* Wider main content area */
+.md-main__inner {
+  max-width: none;
+}
+
+.md-content {
+  max-width: 1200px;
+}
+
+/* Always show table of contents */
+.md-sidebar--secondary {
+  display: block !important;
+}
+
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--secondary {
+    width: 14rem;
+  }
+}
+
+
+
+
+
+

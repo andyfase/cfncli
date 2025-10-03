@@ -8,3 +8,4 @@ black
 mkdocs
 mkdocs-material
 mkdocs-click
+mkdocs-nav-weight
