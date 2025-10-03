@@ -19,5 +19,5 @@ Features:
 
 Example Usage:
 
-![demo](../assets/demo.gif)
+![demo](assets/demo.gif)
 
