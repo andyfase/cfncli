@@ -11,7 +11,7 @@ weight: 10
 
 Major sections of the configuration are **Blueprints** which typically define a given template and its required capabilities and polices and **Stages** which defined a collection of stacks that would typically define an entire AWS architecture for a given environment.
 
-The `cfn-cli` YAML syntax allows for extensive re-use, to avoid dupliate configuration. The **Extends** keyword can be used on a stage (to inherit all configuration from an existing stage - useful for DR purposes) and on a stack within a stage, allowing a stack to inherit a previously defined Blueprints configuration.
+The `cfn-cli` YAML syntax allows for extensive re-use, to avoid duplicate configuration. The **Extends** keyword can be used on a stage (to inherit all configuration from an existing stage - useful for DR purposes) and on a stack within a stage, allowing a stack to inherit a previously defined Blueprints configuration.
 
 ## Ordered Stack Operations
 
@@ -23,15 +23,15 @@ Stages define the region and optional AWS profile required for the deployment op
 
 ## Packaging
 
-`cfn-cli` will automaically find and package locally referenced resources within your CloudFormation templates is the configuration option `Package` is set to `True`. This vastly simplifing and reducing the amount of pre-processing required for CloudFormation deployments.  This effectively replaces the need to perform a `aws cloudformation package` pre-step on each template within a deployment.
+`cfn-cli` will automatically find and package locally referenced resources within your CloudFormation templates is the configuration option `Package` is set to `True`. This vastly simplifies and reduces the amount of pre-processing required for CloudFormation deployments.  This effectively replaces the need to perform an `aws cloudformation package` pre-step on each template within a deployment.
 
-By default resources are uploaded to a artifact s3 bucket. The default name for this bucket is `cfncli-${AWS_ACCOUNT_ID}-${AWS_RERION}`. If this bucket does not exist `cfn-cli` will atempt to create it.
+By default resources are uploaded to a artifact s3 bucket. The default name for this bucket is `cfncli-${AWS_ACCOUNT_ID}-${AWS_REGION}`. If this bucket does not exist `cfn-cli` will attempt to create it.
 
 > Note the S3 bucket name can be over-ridden via the use of the `--artifact-store` flag
 
 The list of resource types that can be packaged by `cfn-cli` are:
 
-| Resouce Type                                | Property                                                     |
+| Resource Type                               | Property                                                     |
 | ------------------------------------------- | ------------------------------------------------------------ |
 | `AWS::Serverless::Function`                 | CodeUri                                                      |
 | `AWS::Serverless::Api`                      | DefinitionUri                                                |
@@ -49,7 +49,7 @@ The list of resource types that can be packaged by `cfn-cli` are:
 | `AWS::Serverless::Application`              | Location                                                     |
 | `AWS::CodeCommit::Repository`               | Code.S3                                                      |
 
-In additiion any `AWS::I	nclude` used within a template (used for transforms) can also be packaged.
+In addition any `AWS::Include` used within a template (used for transforms) can also be packaged.
 
 ## Stack References
 
@@ -57,7 +57,7 @@ In additiion any `AWS::I	nclude` used within a template (used for transforms) ca
 
 Any output defined in a prior deployed stack can be referenced via: `${StageName.StackName.OutputName}`
 
-These references work across AWS profiles (i.e. AWS accounts) and AWS Regions and as such are much more flexible than the in-built AWS CloudFormation Export/Import mechansim which are limited in use to within the same region and account 
+These references work across AWS profiles (i.e. AWS accounts) and AWS Regions and as such are much more flexible than the in-built AWS CloudFormation Export/Import mechanism which are limited in use to within the same region and account 
 
 ## ChangeSet Support
 
