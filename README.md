@@ -22,7 +22,7 @@ Features:
 
 `cfn-cli` in action:
 
-![demo](/Users/andy/code/cfncli/demo/demo.gif)
+![demo](docs/docs/assets/demo.gif)
 
 ## Compatibility
 
