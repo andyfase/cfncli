@@ -1,19 +1,19 @@
 # AWS CloudFormation CLI
 
-The missing CloudFormation CLI. Reborn!
-
 <div style="display: flex; align-items: center; gap: 10px;">
 
 <a href="https://htmlpreview.github.io/?https://github.com/andyfase/cfncli/blob/python-coverage-comment-action-data/htmlcov/index.html">
-<img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/andyfase/cfncli/python-coverage-comment-action-data/endpoint.json&label=Code%20Coverage" alt="Coverage badge">
+<img height="24" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/andyfase/cfncli/python-coverage-comment-action-data/endpoint.json&label=Code%20Coverage" alt="Coverage badge">
 </a>
 
 <a href="https://cfncli.readthedocs.io/" title="CFN CLI Documentation">
-<img src="https://img.shields.io/badge/docs-Read%20The%20Docs-blue" alt="Documentation">
+<img height="24" src="https://img.shields.io/badge/Docs-Read%20The%20Docs-blue" alt="Documentation">
 </a>
 
 </div>
 <br/>
+
+The missing CloudFormation CLI. Reborn!
 
 `cfn-cli` is the CloudFormation CLI that AWS never built. Its use dramatically increases the developer friendliness of using CloudFormation at scale, both within developer environments and CI/CD pipelines.
 
