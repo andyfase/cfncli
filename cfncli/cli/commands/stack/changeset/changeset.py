@@ -4,7 +4,7 @@ from .create.create import create
 from .exec.exec import exec
 
 
-@click.group()
+@click.group(name="changeset")
 @click.pass_context
 def changeset(ctx):
     """Changeset operation sub-commands."""

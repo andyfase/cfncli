@@ -1,0 +1,36 @@
+site_name: CFN CLI
+site_url: !ENV READTHEDOCS_CANONICAL_URL
+theme:
+  name: material
+  features:
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - content.code.annotate
+    - content.code.copy
+  palette:
+    - scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    # Palette toggle for light mode
+    - scheme: default
+      primary: blue
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+extra_css:
+  - stylesheets/docs.css
+markdown_extensions:
+    - attr_list
+    - mkdocs-click
+    - pymdownx.highlight:
+        anchor_linenums: true
+        line_spans: __span
+        pygments_lang_class: true
+    - pymdownx.inlinehilite
+    - pymdownx.snippets
+    - pymdownx.superfences
+plugins:
+  - search
+  - mkdocs-nav-weight

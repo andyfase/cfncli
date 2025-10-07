@@ -4,7 +4,7 @@ from .detect.detect import detect
 from .diff.diff import diff
 
 
-@click.group()
+@click.group(name="drift")
 @click.pass_context
 def cli(ctx):
     """Drift detection sub-commands."""

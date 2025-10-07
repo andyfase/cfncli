@@ -5,3 +5,7 @@ flake8
 moto[cloudformation,s3,sts]
 pytest-cov
 black
+mkdocs
+mkdocs-material
+mkdocs-click
+mkdocs-nav-weight

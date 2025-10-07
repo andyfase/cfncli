@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Demo Bucket template
+Parameters:
+  Environment:
+    Type: String
+  Application:
+    Type: String
+  BucketSuffix:
+    Type: String
+  isDr: 
+    Type: String
+    Default: "False"
+    AllowedValues:
+      - "True"
+      - "False"
+
+Conditions:
+  notDr: 
+    !Equals
+      - !Ref isDr
+      - "False"
+
+Resources:
+  TestBucket:
+    Condition: notDr
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: 
+        Fn::Sub: "${Application}-${Environment}-${BucketSuffix}"
+
+Outputs:
+  BucketName:
+    Condition: notDr
+    Value: !Ref TestBucket
