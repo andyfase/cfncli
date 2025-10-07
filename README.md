@@ -2,8 +2,23 @@
 
 The missing CloudFormation CLI. Reborn!
 
-[![Coverage badge](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/andyfase/cfncli/python-coverage-comment-action-data/endpoint.json&label=Code%20Coverage)](https://htmlpreview.github.io/?https://github.com/andyfase/cfncli/blob/python-coverage-comment-action-data/htmlcov/index.html)
+<div style="display: flex; align-items: center; gap: 10px;">
 
+<a href="https://htmlpreview.github.io/?https://github.com/andyfase/cfncli/blob/python-coverage-comment-action-data/htmlcov/index.html">
+<img width="150" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/andyfase/cfncli/python-coverage-comment-action-data/endpoint.json&label=Code%20Coverage" alt="Coverage badge">
+</a>
+
+<a href="https://cfncli.readthedocs.io/" title="CFN CLI Documentation">
+<span style='display: flex; align-items: center; gap: 8px;'>
+<svg width="30" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path>
+  </svg>
+<span>Read The Docs</span>
+</span>
+</a>
+
+</div>
+<br/>
 
 `cfn-cli` is the CloudFormation CLI that AWS never built. Its use dramatically increases the developer friendliness of using CloudFormation at scale, both within developer environments and CI/CD pipelines.
 
