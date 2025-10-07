@@ -3,11 +3,11 @@
 <div style="display: flex; align-items: center; gap: 10px;">
 
 <a href="https://htmlpreview.github.io/?https://github.com/andyfase/cfncli/blob/python-coverage-comment-action-data/htmlcov/index.html">
-<img height="24" src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/andyfase/cfncli/python-coverage-comment-action-data/endpoint.json&label=Code%20Coverage" alt="Coverage badge">
+<img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/andyfase/cfncli/python-coverage-comment-action-data/endpoint.json&label=Code%20Coverage" alt="Coverage badge">
 </a>
 
 <a href="https://cfncli.readthedocs.io/" title="CFN CLI Documentation">
-<img height="24" src="https://img.shields.io/badge/Docs-Read%20The%20Docs-blue" alt="Documentation">
+<img src="https://img.shields.io/badge/Docs-Read%20The%20Docs-blue" alt="Documentation">
 </a>
 
 </div>
