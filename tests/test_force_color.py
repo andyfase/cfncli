@@ -5,6 +5,7 @@ from moto import mock_aws
 from cfncli.cli.main import cli
 import os
 
+
 @mock_aws
 @pytest.mark.parametrize("get_config", ["single.yaml"], indirect=["get_config"])
 def test_force_color_true(cli_runner, get_config, monkeypatch):

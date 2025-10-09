@@ -122,8 +122,8 @@ def cli(ctx, file, stack, profile, region, artifact_store, verbose):
     \b
         CFN_STACK=StageName.StackName cfn-cli <command>
     """
-    ### force setting colors, needed for CI, see https://github.com/pallets/click/issues/1090 
-    if os.environ.get("FORCE_COLOR", "false").lower() == 'true':
+    ### force setting colors, needed for CI, see https://github.com/pallets/click/issues/1090
+    if os.environ.get("FORCE_COLOR", "false").lower() == "true":
         ctx.color = True
 
     if verbose >= 2:

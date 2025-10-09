@@ -15,6 +15,7 @@ COMMAND_PACKAGE_MAPPING = OrderedDict(
         ("validate", "cfncli.cli.commands.validate"),
         ("stack", "cfncli.cli.commands.stack"),
         ("drift", "cfncli.cli.commands.drift"),
+        ("export", "cfncli.cli.commands.export"),
     ]
 )
 
