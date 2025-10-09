@@ -30,7 +30,7 @@ class StackExportCommand(Command):
         if not os.path.exists(self.options.output_dir):
             os.mkdir(self.options.output_dir)
 
-        stack_output_name = stack_context.stack_key.replace('.', '_')
+        stack_output_name = stack_context.stack_key.replace(".", "_")
 
         ## write packaged template file
         template_type = "json" if parameters.get("TemplateBody", "").startswith("{") else "yaml"
