@@ -124,3 +124,6 @@ pip-selfcheck.json
 
 ### Visual Studio Code
 .vscode
+
+## cfn-cli export dir
+**/cfn-cli-export

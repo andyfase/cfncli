@@ -9,3 +9,4 @@ mkdocs
 mkdocs-material
 mkdocs-click
 mkdocs-nav-weight
+yq

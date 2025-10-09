@@ -37,7 +37,7 @@ def package_template(ppt, session, template_path, bucket_region, bucket_name=Non
     if bucket_name is None:
         sts = session.client("sts")
         account_id = sts.get_caller_identity()["Account"]
-        bucket_name = "awscfncli-%s-%s" % (account_id, bucket_region)
+        bucket_name = "cfncli-%s-%s" % (account_id, bucket_region)
         ppt.secho("Using default artifact bucket s3://{}".format(bucket_name))
     else:
         ppt.secho("Using specified artifact bucket s3://{}".format(bucket_name))
