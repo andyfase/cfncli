@@ -11,6 +11,53 @@ permissions:
   checks: write
 
 jobs:
+
+  checkpypi:
+    if: github.event_name == 'pull_request' ## only check test PyPi on pull request - main locked down
+    needs: 
+      - test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11"]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check Project Version
+        run: |
+          VERSION=$(cat pyproject.toml | tomlq -r .project.version)
+          TEST_VERSIONS=$(curl "https://test.pypi.org/pypi/cfncli/json" | jq -rc '.releases | keys')
+          if echo "$TEST_VERSIONS" | jq -e --arg version "$VERSION" 'index($version)' > /dev/null; then
+            echo "Error: Version $VERSION already exists in test.pypi.org"
+            exit 1
+          fi
+          echo "Version $VERSION is available for publishing"
+
+  publish-to-testpypi:
+    name: Publish to TestPyPI
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' # run if push to main
+
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/project/cfncli
+
+    permissions:
+      id-token: write  # IMPORTANT: mandatory for trusted publishing
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Publish distribution 📦 to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
+
   test:
     runs-on: ubuntu-latest
     strategy:
@@ -38,7 +85,7 @@ jobs:
     - name: Run tests
       run: |
         pytest --junitxml=junit.xml --cov=cfncli --cov-report=xml --cov-report=html --cov-report=term
-    
+
     - name: Upload test results
       uses: actions/upload-artifact@v4
       if: always()
