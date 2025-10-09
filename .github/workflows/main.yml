@@ -3,6 +3,8 @@ name: Lint, Tests and Coverage
 on:
   push:
     branches: [ main ]
+    tags:
+      - 'v*'
   pull_request:
 
 permissions:
@@ -13,7 +15,8 @@ permissions:
 jobs:
 
   checkpypi:
-    if: github.event_name == 'pull_request' ## only check test PyPi on pull request - main locked down
+    ## only check test PyPi on pull request - main locked down
+    if: github.event_name == 'pull_request' && !contains(github.event.pull_request.title, 'NO_CLI_CHANGE')
     needs: 
       - test
     runs-on: ubuntu-latest
