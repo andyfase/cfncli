@@ -3,6 +3,10 @@ title: CLI Options
 weight: 20
 ---
 
+# Environment Variable Overrides
+
+`FORCE_COLOR`: set this to `true` to force color output. This is needed for CI pipelines which will not pass Clicks "is this a valid tty" test. 
+
 # CLI Options
 
 ::: mkdocs-click

@@ -3,6 +3,7 @@
 import logging
 
 import click
+import os
 
 from cfncli import __version__
 from cfncli.cli.types import StackType, ProfileType
@@ -121,6 +122,9 @@ def cli(ctx, file, stack, profile, region, artifact_store, verbose):
     \b
         CFN_STACK=StageName.StackName cfn-cli <command>
     """
+    ### force setting colors, needed for CI, see https://github.com/pallets/click/issues/1090 
+    if os.environ.get("FORCE_COLOR", "false").lower() == 'true':
+        ctx.color = True
 
     if verbose >= 2:
         verbose = 2  # cap at 2
