@@ -17,6 +17,12 @@ Features:
 - Nested ChangeSet support, including full and friendly pretty printing.
 - Stack configuration inheritance across stages and blueprints
 
+Install via pypi
+
+> pip install cfncli
+
+(Note: Python 3.10 and above is required)
+
 Example Usage:
 
 ![demo](assets/demo.gif)
