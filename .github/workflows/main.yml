@@ -89,6 +89,8 @@ jobs:
 
   publish-to-pypi:
     name: Publish to PyPI
+    needs:
+      - test
     runs-on: ubuntu-latest
     strategy:
       matrix:
