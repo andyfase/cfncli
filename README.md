@@ -53,7 +53,7 @@
 | cfncli/cli/utils/colormaps.py                                   |       28 |        0 |    100% |           |
 | cfncli/cli/utils/common.py                                      |        7 |        1 |     86% |         8 |
 | cfncli/cli/utils/deco.py                                        |       29 |        6 |     79% |24, 29-32, 36 |
-| cfncli/cli/utils/events.py                                      |       68 |        9 |     87% |95, 113, 129-135, 150-151, 163 |
+| cfncli/cli/utils/events.py                                      |       68 |       10 |     85% |95, 102, 113, 129-135, 150-151, 163 |
 | cfncli/cli/utils/pager.py                                       |       12 |       11 |      8% |      8-23 |
 | cfncli/cli/utils/pprint.py                                      |      267 |       67 |     75% |54, 91, 94, 123-125, 130-139, 154, 156, 164-168, 173-190, 209, 211-213, 216-225, 375, 378-385, 411-415, 425-434 |
 | cfncli/config/\_\_init\_\_.py                                   |       23 |        5 |     78% |     29-33 |
@@ -92,7 +92,7 @@
 | cfncli/runner/runbook/boto3\_runbook.py                         |       47 |        5 |     89% |     24-28 |
 | cfncli/runner/runbook/package.py                                |       90 |       35 |     61% |27, 33, 43, 56, 59, 79, 102-117, 127, 130-147, 157-163, 182 |
 | cfncli/runner/stack\_selector.py                                |       17 |        5 |     71% | 20-25, 30 |
-|                                                       **TOTAL** | **2474** |  **562** | **77%** |           |
+|                                                       **TOTAL** | **2474** |  **563** | **77%** |           |
 
 
 ## Setup coverage badge
