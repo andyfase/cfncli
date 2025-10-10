@@ -15,7 +15,7 @@ permissions:
 jobs:
 
   checkpypi:
-    ## only check test PyPi on pull request - main locked down
+    ## only check test PyPi on pull request, ignore any PR with NO_CLI_CHANGE in title
     if: github.event_name == 'pull_request' && !contains(github.event.pull_request.title, 'NO_CLI_CHANGE')
     needs: 
       - test
@@ -55,7 +55,9 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.11"]
-    if: github.ref == 'refs/heads/main' # run if push to main
+    # run if push to main and commit does not contain NO_CLI_CHANGE. 
+    # Note we only allow squash merges to main so only one commit to check
+    if: github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, 'NO_CLI_CHANGE') 
 
     environment:
       name: testpypi
