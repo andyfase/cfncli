@@ -45,6 +45,9 @@ This tool is distributed under the MIT license. The AWS CLI dependent code is di
 
 ## Install
 
+> [!IMPORTANT] 
+> Python 3.10 and above is required to install `cfn-cli`
+
 Install from PyPi
 
 ```
