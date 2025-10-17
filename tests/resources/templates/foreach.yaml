@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::LanguageExtensions
+Description: Template with Fn::ForEach language extension
+Parameters:
+  Environments:
+    Type: CommaDelimitedList
+    Default: "dev,staging,prod"
+
+Resources:
+  'Fn::ForEach::Buckets':
+    - Env
+    - Fn::Ref: Environments
+    - 'Bucket${Env}':
+        Type: AWS::S3::Bucket
+        Properties:
+          BucketName: 
+            Fn::Sub: 'foreach-bucket-${Env}'
+  
+  RegularBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: regular-bucket

@@ -1,0 +1,18 @@
+Version: 3
+
+Blueprints:
+  foreach:
+    Order: 1
+    Template: ./foreach.yaml
+    StackPolicy: ALLOW_ALL
+    Package: true
+
+Stages:
+  Test:
+    Config:
+      Account: "123456789012"
+      Region: ca-central-1
+    ForeachStack:
+      Order: 1
+      Extends: foreach
+      StackName: test-foreach
