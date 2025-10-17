@@ -630,7 +630,7 @@ class Template(object):
         """
         Exports the local artifacts referenced by the given template to an
         s3 bucket.
-        
+
         Note: CloudFormation Language Extensions (Transform: AWS::LanguageExtensions)
         can create non-standard resource structures (e.g., Fn::ForEach creates lists).
         These are skipped during packaging as they are processed by CloudFormation

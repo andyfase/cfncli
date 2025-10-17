@@ -20,7 +20,7 @@ def test_foreach_validate(cli_runner, get_config):
 
         assert "AttributeError" not in result.output
         assert "'list' object has no attribute 'get'" not in result.output
-        
+
         if result.exit_code != 0:
             print(f"\nValidate failed (unrelated to our fix): {result.output}")
             # Still verify fix worked - no list.get() error
@@ -33,7 +33,7 @@ def test_foreach_validate(cli_runner, get_config):
 @pytest.mark.parametrize("get_config", ["foreach.yaml"], indirect=["get_config"])
 def test_foreach_packaging(cli_runner, get_config):
     """Test that templates with Fn::ForEach can be packaged without errors.
-    
+
     Note: This test verifies that the skip fix allows the packaging phase to complete
     successfully. Full deployment in moto fails because moto doesn't support
     Fn::ForEach, but that's a limitation of the test environment so for now I think okay.
@@ -47,9 +47,9 @@ def test_foreach_packaging(cli_runner, get_config):
         result = cli_runner.invoke(cli, ["-f", "cfn-cli.yaml", "-s", "Test.ForeachStack", "stack", "deploy"])
 
         assert "Successfully packaged artifacts" in result.output
-        
+
         assert "Unable to upload artifact" not in result.output
-        
+
         # Note: exit_code will be 1 due to moto's limitation with Fn::ForEach,
         # I think this is a moto limitation being unable to validate language extensions
     finally:
