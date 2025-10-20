@@ -36,7 +36,7 @@
 | cfncli/cli/commands/stack/describe/describe.py                  |       15 |        5 |     67% |     19-31 |
 | cfncli/cli/commands/stack/stack.py                              |       21 |        0 |    100% |           |
 | cfncli/cli/commands/stack/sync/\_\_init\_\_.py                  |        0 |        0 |    100% |           |
-| cfncli/cli/commands/stack/sync/sync.py                          |       20 |        4 |     80% |     56-71 |
+| cfncli/cli/commands/stack/sync/sync.py                          |       20 |        0 |    100% |           |
 | cfncli/cli/commands/stack/tail/\_\_init\_\_.py                  |        0 |        0 |    100% |           |
 | cfncli/cli/commands/stack/tail/tail.py                          |       18 |        8 |     56% |     29-42 |
 | cfncli/cli/commands/stack/update/\_\_init\_\_.py                |        0 |        0 |    100% |           |
@@ -53,7 +53,7 @@
 | cfncli/cli/utils/colormaps.py                                   |       28 |        0 |    100% |           |
 | cfncli/cli/utils/common.py                                      |        7 |        1 |     86% |         8 |
 | cfncli/cli/utils/deco.py                                        |       29 |        6 |     79% |24, 29-32, 36 |
-| cfncli/cli/utils/events.py                                      |       68 |        9 |     87% |95, 113, 129-135, 150-151, 163 |
+| cfncli/cli/utils/events.py                                      |       68 |       10 |     85% |95, 102, 113, 129-135, 150-151, 163 |
 | cfncli/cli/utils/pager.py                                       |       12 |       11 |      8% |      8-23 |
 | cfncli/cli/utils/pprint.py                                      |      267 |       67 |     75% |54, 91, 94, 123-125, 130-139, 154, 156, 164-168, 173-190, 209, 211-213, 216-225, 375, 378-385, 411-415, 425-434 |
 | cfncli/config/\_\_init\_\_.py                                   |       23 |        5 |     78% |     29-33 |
@@ -77,12 +77,12 @@
 | cfncli/runner/commands/stack\_changeset\_command.py             |       72 |       15 |     79% |42-44, 92, 95, 102-121, 125 |
 | cfncli/runner/commands/stack\_delete\_command.py                |       29 |        2 |     93% |    40, 44 |
 | cfncli/runner/commands/stack\_deploy\_command.py                |       35 |        1 |     97% |        55 |
-| cfncli/runner/commands/stack\_exec\_changeset\_command.py       |       55 |       15 |     73% |44-47, 60-68, 74, 80, 89, 116 |
+| cfncli/runner/commands/stack\_exec\_changeset\_command.py       |       55 |       14 |     75% |44-47, 60-68, 74, 80, 89 |
 | cfncli/runner/commands/stack\_export\_command.py                |       31 |       31 |      0% |      1-53 |
 | cfncli/runner/commands/stack\_status\_command.py                |       35 |        5 |     86% |28, 46, 54-56 |
-| cfncli/runner/commands/stack\_sync\_command.py                  |       29 |       14 |     52% |     37-66 |
+| cfncli/runner/commands/stack\_sync\_command.py                  |       30 |        6 |     80% |47-48, 51-54 |
 | cfncli/runner/commands/stack\_update\_command.py                |       41 |        9 |     78% |50, 56-59, 70-75, 81 |
-| cfncli/runner/commands/utils.py                                 |       78 |       25 |     68% |18-25, 37, 44-49, 61, 68-73, 103, 108, 113, 119, 125, 137, 139, 142 |
+| cfncli/runner/commands/utils.py                                 |       78 |       24 |     69% |18-25, 37, 44-49, 61, 68-73, 103, 108, 113, 119, 125, 137, 139 |
 | cfncli/runner/runbook/\_\_init\_\_.py                           |        2 |        0 |    100% |           |
 | cfncli/runner/runbook/base.py                                   |       35 |        5 |     86% |11, 15, 19, 23, 35 |
 | cfncli/runner/runbook/boto3\_context.py                         |       53 |        2 |     96% |    72, 87 |
@@ -92,7 +92,7 @@
 | cfncli/runner/runbook/boto3\_runbook.py                         |       47 |        5 |     89% |     24-28 |
 | cfncli/runner/runbook/package.py                                |       90 |       35 |     61% |27, 33, 43, 56, 59, 79, 102-117, 127, 130-147, 157-163, 182 |
 | cfncli/runner/stack\_selector.py                                |       17 |        5 |     71% | 20-25, 30 |
-|                                                       **TOTAL** | **2474** |  **562** | **77%** |           |
+|                                                       **TOTAL** | **2475** |  **549** | **78%** |           |
 
 
 ## Setup coverage badge
