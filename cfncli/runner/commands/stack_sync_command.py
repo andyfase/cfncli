@@ -60,7 +60,9 @@ class StackSyncCommand(Command):
                 changesets={stack_context.stack_key: changeset["ChangeSetId"]},
                 disable_tail_events=self.options.disable_tail_events,
                 disable_rollback=self.options.disable_rollback,
+                show_physical_ids=self.options.show_physical_ids,
                 ignore_no_exists=False,  ### should never get here as we just created the changeset
             ),
         )
         command.run(stack_context)
+        self.ppt.secho("Stack sync complete.", fg="green")
