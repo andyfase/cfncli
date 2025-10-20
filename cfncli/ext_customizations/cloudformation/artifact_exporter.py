@@ -631,6 +631,11 @@ class Template(object):
         Exports the local artifacts referenced by the given template to an
         s3 bucket.
 
+        Note: CloudFormation Language Extensions (Transform: AWS::LanguageExtensions)
+        can create non-standard resource structures (e.g., Fn::ForEach creates lists).
+        These are skipped during packaging as they are processed by CloudFormation
+        at deployment time.
+
         :return: The template with references to artifacts that have been
         exported to s3.
         """
@@ -642,6 +647,17 @@ class Template(object):
         self.template_dict = self.export_global_artifacts(self.template_dict)
 
         for resource_id, resource in self.template_dict["Resources"].items():
+
+            # Skip non-dict resources CloudFormation Language Extensions like Fn::ForEach,
+            # Fn::FindInMap. These can can create list or other non-dict structures in Resources.
+            # Language extensions are processed by CloudFormation at deploy time, not during packaging.
+            if not isinstance(resource, dict):
+                LOG.debug(
+                    f"Skipping resource '{resource_id}' - not a dictionary. "
+                    f"This is expected for CloudFormation intrinsic functions like Fn::ForEach. "
+                    f"Type: {type(resource).__name__}"
+                )
+                continue
 
             resource_type = resource.get("Type", None)
             resource_dict = resource.get("Properties", None)
